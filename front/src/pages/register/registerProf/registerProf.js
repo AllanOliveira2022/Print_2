@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 
-function RegisterTecLab() {
+function RegisterProf() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-green-700">SIGEF</h1>
-            <h2 className="mt-6 text-2xl font-semibold text-gray-800">Criar conta - Técnico de Laboratório</h2>
+            <h2 className="mt-6 text-2xl font-semibold text-gray-800">Criar conta - Professor</h2>
           </div>
   
           <form className="mt-8 space-y-6 bg-white p-8 rounded-xl shadow-md">
@@ -68,6 +68,20 @@ function RegisterTecLab() {
                 />
               </div>
   
+              <div>
+                <label htmlFor="area-atuacao" className="block text-sm font-medium text-gray-700">
+                  Área de Atuação
+                </label>
+                <input
+                  id="area-atuacao"
+                  name="area-atuacao"
+                  type="text"
+                  required
+                  className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  placeholder="Sua área de especialização"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700">
@@ -119,4 +133,4 @@ function RegisterTecLab() {
     );
   }
   
-  export default RegisterTecLab;
+  export default RegisterProf;

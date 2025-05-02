@@ -22,15 +22,21 @@ function TypeAccount() {
             <FaArrowRightLong/>
           </Link>
 
-          <button className="w-full gap-2 p-4 flex flex-row items-center border border-gray-200 rounded-lg hover:border-green-400 hover:bg-green-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+          <Link
+            to="/register/professor"
+            className="w-full gap-2 p-4 flex flex-row items-center border border-gray-200 rounded-lg hover:border-green-400 hover:bg-green-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
             <span className="text-lg font-medium">Professor</span>
             <FaArrowRightLong/>
-          </button>
+          </Link>
 
-          <button className="w-full gap-2 p-4 flex flex-row items-center border border-gray-200 rounded-lg hover:border-green-400 hover:bg-green-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+          <Link
+            to="/register/estudante"
+            className="w-full gap-2 p-4 flex flex-row items-center border border-gray-200 rounded-lg hover:border-green-400 hover:bg-green-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
             <span className="text-lg font-medium">Estudante</span>
             <FaArrowRightLong/>
-          </button>
+          </Link>
         </div>
 
         <div className="pt-4 text-center">

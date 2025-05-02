@@ -61,7 +61,7 @@ function Login() {
 
           <div className="flex items-center justify-center">
             <Link 
-              to="/forgot-password" 
+              to="/recuperarSenha" 
               className="text-sm font-medium text-green-600 hover:text-green-500"
             >
               Esqueceu sua senha?
