@@ -45,12 +45,12 @@ function Login() {
           </div>
 
           <div className="space-y-3">
-            <button
-              type="submit"
-              className="w-full py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
+            <Link
+              to="/admin/laboratorios"
+              className="w-full py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 inline-flex justify-center items-center"
             >
-              ENTRAR NA CONTA
-            </button>
+              Entrar na conta
+            </Link>
 
             <Link
               to="/select-account"

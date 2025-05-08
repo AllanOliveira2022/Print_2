@@ -11,6 +11,8 @@ import RegisterEstudante from './pages/register/registerEstudante/registerEstuda
 /* Password */
 import RecuperarSenha from './pages/password/recuperarSenha/recuperarSenha';
 import NovaSenha from './pages/password/novaSenha/novaSenha';
+/* Telas Admin */
+import LabsAdmin from './pages/admin/labsAdmin/labsAdmin';
 
 const router = createBrowserRouter([
   {
@@ -41,6 +43,10 @@ const router = createBrowserRouter([
     path: "/novaSenha",
     element: <NovaSenha />,
   },
+  {
+    path: "/admin/laboratorios",
+    element: <LabsAdmin/>
+  }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

@@ -24,7 +24,7 @@ function Menu({ userName, userCode, activeSection = "Dashboard" }) {
             <div className="flex flex-col gap-2 flex-grow">
                 <MenuSection 
                     icon={<HiMiniComputerDesktop />} 
-                    sectionName="Dashboard" 
+                    sectionName="Laboratórios" 
                     isActive={activeSection === "Dashboard"}
                 />
                 <MenuSection 
