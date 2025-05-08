@@ -5,14 +5,14 @@ function RegisterTecLab() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
           <form className="mt-8 space-y-6 bg-white p-8 rounded-xl shadow-md">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-green-700">SIGEF</h1>
-              <h2 className="mt-6 text-2xl font-semibold text-gray-800">Criar conta - Técnico de Laboratório</h2>
+            <div className="text-left">
+              <h1 className="text-3xl font-bold text-black-700">SIGEF</h1>
+              <h2 className="mt-4 text-1xl font-semibold text-black-800">Criar conta - Administrador/Técnico</h2>
             </div>
             <div className="space-y-4">
                 <div>
                   <label htmlFor="institutional-code" className="block text-sm font-medium text-gray-700">
-                    Código Institucional
+                    Código Institucional:
                   </label>
                   <input
                     id="institutional-code"
@@ -26,7 +26,7 @@ function RegisterTecLab() {
   
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                  Nome Completo
+                  Nome:
                 </label>
                 <input
                   id="name"
@@ -40,7 +40,7 @@ function RegisterTecLab() {
   
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Email
+                  Email:
                 </label>
                 <input
                   id="email"
@@ -55,7 +55,7 @@ function RegisterTecLab() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                    Senha
+                    Senha:
                   </label>
                   <input
                     id="password"
@@ -68,7 +68,7 @@ function RegisterTecLab() {
                 </div>
                 <div>
                   <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
-                    Confirmar Senha
+                    Confirmar Senha:
                   </label>
                   <input
                     id="confirm-password"
@@ -87,14 +87,14 @@ function RegisterTecLab() {
                 type="submit"
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
               >
-                Criar Conta
+                CRIAR CONTA
               </button>
   
               <Link
                 to="/"
-                className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
+                className="w-full flex justify-center py-2 px-4 border border-green-300 rounded-lg shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
               >
-                Já tenho uma conta
+                JÁ TENHO UMA CONTA
               </Link>
             </div>
           </form>

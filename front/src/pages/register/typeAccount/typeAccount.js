@@ -7,9 +7,8 @@ function TypeAccount() {
       <div className="w-full max-w-md p-8 space-y-4 bg-white rounded-xl shadow-lg relative">
         {/* SIGEF no canto superior esquerdo da caixa */}
         <h1 className="text-3xl font-bold text-black">SIGEF</h1>
-
         <div className="text-left mt-2">
-          <h2 className="text-2xl font-semibold text-gray-800">Selecione um perfil</h2>
+          <h2 className="text-2xl font-semibold text-black-800">Selecione um perfil</h2>
           <p className="mt-1 text-sm text-gray-500">
             Selecione seu tipo de perfil para criar uma conta no SIGEF
           </p>
@@ -20,7 +19,7 @@ function TypeAccount() {
             to="/register/tecnico"
             className="w-full gap-2 p-4 flex flex-row items-center border border-gray-200 rounded-lg hover:border-green-400 hover:bg-green-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            <span className="text-lg font-medium">Técnico de Laboratório</span>
+            <span className="text-lg font-medium">Administrador/Técnico</span>
             <FaArrowRightLong />
           </Link>
 
