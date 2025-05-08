@@ -3,20 +3,22 @@ import { Link } from "react-router-dom";
 function NovaSenha() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-green-700">SIGEF</h1>
-          <h2 className="mt-6 text-2xl font-semibold text-gray-800">Redefinir Senha</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Crie uma nova senha para sua conta
-          </p>
+      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-md">
+        <div className="text-left space-y-6">
+          <h1 className="text-4xl font-bold text-black-700">SIGEF</h1>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold text-black-800">Recuperar Senha</h2>
+            <p className="text-sm text-gray-600">
+              Insira uma nova senha.
+            </p>
+          </div>
         </div>
 
-        <form className="mt-8 space-y-6 bg-white p-8 rounded-xl shadow-md">
+        <form className="mt-8 space-y-6">
           <div className="space-y-4">
             <div>
               <label htmlFor="new-password" className="block text-sm font-medium text-gray-700">
-                Nova Senha
+                Nova senha:
               </label>
               <input
                 id="new-password"
@@ -26,14 +28,11 @@ function NovaSenha() {
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 placeholder="••••••••"
               />
-              <p className="mt-1 text-xs text-gray-500">
-                Mínimo de 8 caracteres, incluindo letras e números
-              </p>
             </div>
 
             <div>
               <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
-                Confirmar Nova Senha
+                Confirmar nova senha:
               </label>
               <input
                 id="confirm-password"
@@ -51,14 +50,14 @@ function NovaSenha() {
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
             >
-              Finalizar Recuperação
+              FINALIZAR RECUPERAÇÃO DE SENHA
             </button>
 
             <Link
               to="/login"
-              className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
+              className="w-full flex justify-center py-2 px-4 border border-green-300 rounded-lg shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
             >
-              Cancelar
+              CANCELAR
             </Link>
           </div>
         </form>
