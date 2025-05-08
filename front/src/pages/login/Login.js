@@ -5,10 +5,10 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-green-800">SIGEF</h1>
-          <h2 className="mt-4 text-2xl font-semibold text-gray-800">Conectar na conta</h2>
-          <p className="mt-2 text-sm text-gray-600">
+        <div className="text-left">
+          <h1 className="text-4xl font-bold text-black-800">SIGEF</h1>
+          <h2 className="mt-4 text-2xl font-semibold text-black-800 text-left">Entrar na conta</h2>
+          <p className="mt-2 text-sm text-gray-600 text-left">
             Entre na sua conta SIGEF ou crie uma nova
           </p>
         </div>
@@ -17,7 +17,7 @@ function Login() {
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Login
+                Login:
               </label>
               <input
                 id="email"
@@ -31,7 +31,7 @@ function Login() {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Senha
+                Senha:
               </label>
               <input
                 id="password"
@@ -49,14 +49,14 @@ function Login() {
               type="submit"
               className="w-full py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
             >
-              Entrar na conta
+              ENTRAR NA CONTA
             </button>
 
             <Link
               to="/select-account"
-              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
+              className="w-full inline-flex justify-center py-2 px-4 border border-green-300 rounded-lg shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
             >
-              Criar nova conta
+              CRIAR CONTA
             </Link>
           </div>
 
@@ -65,7 +65,7 @@ function Login() {
               to="/recuperarSenha" 
               className="text-sm font-medium text-green-600 hover:text-green-500"
             >
-              Esqueceu sua senha?
+              RECUPERAR SENHA
             </Link>
           </div>
         </form>

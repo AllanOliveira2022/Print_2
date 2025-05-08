@@ -11,20 +11,6 @@ function RegisterProf() {
               <h2 className="mt-6 text-2xl font-semibold text-gray-800">Criar conta - Professor</h2>
             </div>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="position" className="block text-sm font-medium text-gray-700">
-                    Cargo
-                  </label>
-                  <input
-                    id="position"
-                    name="position"
-                    type="text"
-                    required
-                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    placeholder="Seu cargo"
-                  />
-                </div>
                 <div>
                   <label htmlFor="institutional-code" className="block text-sm font-medium text-gray-700">
                     Código Institucional
@@ -37,7 +23,6 @@ function RegisterProf() {
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="Código"
                   />
-                </div>
               </div>
   
               <div>
