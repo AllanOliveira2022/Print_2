@@ -47,14 +47,14 @@ function Login() {
           <div className="space-y-3">
             <Link
               to="/admin/laboratorios"
-              className="w-full py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 inline-flex justify-center items-center"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
             >
               ENTRAR NA CONTA
             </Link>
 
             <Link
               to="/select-account"
-              className="w-full inline-flex justify-center py-2 px-4 border border-green-300 rounded-lg shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
+              className="w-full inline-flex justify-center py-2 px-4 border border-green-300 rounded-lg shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 hover:text-green-500"
             >
               CRIAR CONTA
             </Link>
@@ -63,7 +63,7 @@ function Login() {
           <div className="flex items-center justify-center">
             <Link 
               to="/recuperarSenha" 
-              className="text-sm font-medium text-green-600 hover:text-green-500"
+              className="text-sm font-medium text-green-600 hover:text-green-400"
             >
               RECUPERAR SENHA
             </Link>

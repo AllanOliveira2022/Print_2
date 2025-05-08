@@ -17,7 +17,7 @@ function TypeAccount() {
         <div className="space-y-4 text-green-700">
           <Link
             to="/register/tecnico"
-            className="w-full gap-2 p-4 flex flex-row items-center border border-gray-200 rounded-lg hover:border-green-400 hover:bg-green-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full gap-2 p-4 flex flex-row items-center border border-gray-200 rounded-lg hover:border-green-400 hover:text-white hover:bg-green-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <span className="text-lg font-medium">Administrador/Técnico</span>
             <FaArrowRightLong />
@@ -25,7 +25,7 @@ function TypeAccount() {
 
           <Link
             to="/register/professor"
-            className="w-full gap-2 p-4 flex flex-row items-center border border-gray-200 rounded-lg hover:border-green-400 hover:bg-green-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full gap-2 p-4 flex flex-row items-center border border-gray-200 rounded-lg hover:border-green-400 hover:text-white hover:bg-green-600  transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <span className="text-lg font-medium">Professor</span>
             <FaArrowRightLong />
@@ -33,7 +33,7 @@ function TypeAccount() {
 
           <Link
             to="/register/estudante"
-            className="w-full gap-2 p-4 flex flex-row items-center border border-gray-200 rounded-lg hover:border-green-400 hover:bg-green-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full gap-2 p-4 flex flex-row items-center border border-gray-200 rounded-lg hover:border-green-400 hover:text-white hover:bg-green-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <span className="text-lg font-medium">Estudante</span>
             <FaArrowRightLong />
