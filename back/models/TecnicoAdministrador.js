@@ -9,6 +9,8 @@ export default (sequelize) => {
             allowNull: false,
             unique: true,
         },
+    },{
+            tableName: 'TecnicoAdministradores' // 👈 Aqui está a correção
     });
 
     // Relacionamento com Usuario

@@ -13,11 +13,14 @@ export default (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
+    }, {
+        tableName: 'Professores' // 👈 Aqui está a correção
     });
 
     // Relacionamento com Usuario
     Professor.associate = (models) => {
         Professor.belongsTo(models.Usuario, { foreignKey: 'id' });
     };
+
     return Professor;
 };
