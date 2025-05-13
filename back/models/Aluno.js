@@ -12,7 +12,8 @@ export default (sequelize) => {
     });
 
     // Relacionamento com Usuario
-    Aluno.belongsTo(sequelize.models.Usuario, { foreignKey: 'id' });
-
+    Aluno.associate = (models) => {
+        Aluno.belongsTo(models.Usuario, { foreignKey: 'id' });
+    };
     return Aluno;
 };

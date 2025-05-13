@@ -12,7 +12,9 @@ export default (sequelize) => {
     });
 
     // Relacionamento com Usuario
-    TecnicoAdministrador.belongsTo(sequelize.models.Usuario, { foreignKey: 'id' });
+    TecnicoAdministrador.associate = (models) => {
+        TecnicoAdministrador.belongsTo(models.Usuario, { foreignKey: 'id' });
+    };
 
     return TecnicoAdministrador;
 };
