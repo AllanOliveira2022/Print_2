@@ -1,8 +1,9 @@
 import express from 'express';
-import { cadastrarAdministrador } from '../controllers/admController.js';
+import { cadastrarAdministrador, listarUsuariosCompletos } from '../controllers/admController.js';
 
 const router = express.Router();
 
 router.post('/cadastrar', cadastrarAdministrador);
+router.get('/listartudo', listarUsuariosCompletos);
 
 export default router;

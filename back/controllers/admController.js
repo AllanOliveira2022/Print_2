@@ -27,3 +27,27 @@ export const cadastrarAdministrador = async (req, res) => {
     res.status(500).json({ message: 'Erro interno ao cadastrar administrador.' });
   }
 };
+
+// mostra todos os dados dos usuarios, independente do tipo
+export const listarUsuariosCompletos = async (req, res) => {
+  try {
+      const [usuarios, metadata] = await db.sequelize.query(`
+          SELECT u.id, u.nome, u.email, u.tipo,
+              a.matricula,
+              COALESCE(p.codigo_institucional, t.codigo_institucional) AS codigo_institucional,
+              p.area_atuacao
+          FROM Usuarios u
+          LEFT JOIN Alunos a ON a.id = u.id
+          LEFT JOIN Professores p ON p.id = u.id
+          LEFT JOIN TecnicoAdministradores t ON t.id = u.id
+      `);
+
+      res.status(200).json(usuarios);
+  } catch (error) {
+      console.error('Erro ao listar usuários (raw):', error);
+      res.status(500).json({ erro: 'Erro ao buscar usuários', detalhes: error.message });
+  }
+};
+
+
+
