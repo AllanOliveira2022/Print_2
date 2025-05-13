@@ -3,35 +3,21 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Usuarios', {
+    await queryInterface.createTable('TecnicoAdministradores', {
       id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
         type: Sequelize.BIGINT.UNSIGNED,
-      },
-      nome: {
-        type: Sequelize.STRING,
+        primaryKey: true,
         allowNull: false,
+        references: {
+          model: 'Usuarios',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
       },
-      email: {
+      codigo_institucional: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,
-        validate: {
-          isEmail: true,
-        },
-      },
-      senha: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        validate: {
-            notEmpty: true
-          },
-      },
-      tipo: {
-        type: Sequelize.ENUM('aluno', 'professor', 'tecnico'),
-        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -47,6 +33,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Usuarios');
+    await queryInterface.dropTable('TecnicoAdministradores');
   }
 };

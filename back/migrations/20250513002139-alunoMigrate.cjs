@@ -3,34 +3,20 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Usuarios', {
+    await queryInterface.createTable('Alunos', {
       id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
         type: Sequelize.BIGINT.UNSIGNED,
-      },
-      nome: {
-        type: Sequelize.STRING,
+        primaryKey: true,
         allowNull: false,
-      },
-      email: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-        validate: {
-          isEmail: true,
+        references: {
+          model: 'Usuarios',
+          key: 'id',
         },
+        onDelete: 'CASCADE',
       },
-      senha: {
+      matricula: {
         type: Sequelize.STRING,
-        allowNull: false,
-        validate: {
-            notEmpty: true
-          },
-      },
-      tipo: {
-        type: Sequelize.ENUM('aluno', 'professor', 'tecnico'),
+        unique: true,
         allowNull: false,
       },
       createdAt: {
@@ -47,6 +33,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Usuarios');
+    await queryInterface.dropTable('Alunos');
   }
 };
