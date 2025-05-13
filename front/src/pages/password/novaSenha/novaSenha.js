@@ -5,7 +5,7 @@ function NovaSenha() {
   const navigate = useNavigate();
 
   const handleCancel = () => {
-    navigate("/"); // Redireciona para a página de login
+    navigate("/");
   };
 
   return (

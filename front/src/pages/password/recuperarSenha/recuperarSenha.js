@@ -5,8 +5,8 @@ function RecuperarSenha() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aqui você pode adicionar lógica de validação/submissão se necessário
-    navigate("/novaSenha"); // Redireciona para a página de nova senha
+    
+    navigate("/novaSenha"); 
   };
 
   return (
