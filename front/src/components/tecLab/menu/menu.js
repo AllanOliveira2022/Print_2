@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { HiMiniComputerDesktop } from "react-icons/hi2";
 import { GrCubes } from "react-icons/gr";
-import { FaChalkboardTeacher, FaRegBell } from "react-icons/fa";
+import { FaRegListAlt, FaUserGraduate, FaRegBell, FaClipboardCheck } from "react-icons/fa";
 import { PiStudentFill } from "react-icons/pi";
 import { LuArrowLeftFromLine } from "react-icons/lu";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
@@ -48,19 +48,29 @@ function Menu({ userName, userCode, activeSection = "Dashboard" }) {
                         isActive={activeSection === "Dashboard"}
                     />
                     <MenuSection
-                        icon={<GrCubes />}
-                        sectionName="Cursos"
-                        isActive={activeSection === "Cursos"}
+                        icon={<FaRegListAlt />}
+                        sectionName="Reservas"
+                        isActive={activeSection === "Reservas"}
                     />
                     <MenuSection
-                        icon={<FaChalkboardTeacher />}
+                        icon={<FaClipboardCheck />}
+                        sectionName="Solicitações"
+                        isActive={activeSection === "Solicitações"}
+                    />
+                    <MenuSection
+                        icon={<GrCubes />}
+                        sectionName="Materiais"
+                        isActive={activeSection === "Materiais"}
+                    />
+                    <MenuSection
+                        icon={<FaUserGraduate />}
                         sectionName="Professores"
                         isActive={activeSection === "Professores"}
                     />
                     <MenuSection
                         icon={<PiStudentFill />}
-                        sectionName="Alunos"
-                        isActive={activeSection === "Alunos"}
+                        sectionName="Estudantes"
+                        isActive={activeSection === "Estudantes"}
                     />
                     <MenuSection
                         icon={<FaRegBell />}
