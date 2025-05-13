@@ -10,27 +10,31 @@ import MenuSection from "../menuSection/menuSection";
 function Menu({ userName, userCode, activeSection = "Dashboard" }) {
     const [isOpen, setIsOpen] = useState(false);
 
+    const handleMouseEnter = () => setIsOpen(true);
+    const handleMouseLeave = () => setIsOpen(false);
+
     return (
         <>
+            {/* Botão de abrir menu */}
             <button
-                className="md:hidden fixed top-4 left-4 z-50 bg-green-700 text-white p-2 rounded-md"
-                onClick={() => setIsOpen(!isOpen)}
+                className="fixed top-4 left-4 z-50 bg-green-700 text-white p-2 rounded-md"
+                onClick={() => setIsOpen((prev) => !prev)}
             >
                 <HiOutlineMenuAlt3 size={30} />
             </button>
 
+            {/* Menu lateral */}
             <div
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
                 className={`
                     fixed top-0 left-0 h-full bg-gray-100 border-r border-gray-300
                     transition-transform duration-300 ease-in-out z-40
                     ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-                    md:translate-x-0 md:w-72
-                    w-72 px-5 py-10 pt-20    
-                    flex flex-col
+                    w-80 px-6 py-10 pt-20 flex flex-col
                 `}
-                onMouseEnter={() => !isOpen && setIsOpen(true)}
-                onMouseLeave={() => window.innerWidth < 768 && setIsOpen(false)}
             >
+                {/* Cabeçalho */}
                 <div className="mb-10">
                     <h1 className="text-2xl font-bold text-green-800 mb-3">SIGEF</h1>
                     <h2 className="text-sm font-semibold text-gray-700 uppercase">
@@ -41,7 +45,8 @@ function Menu({ userName, userCode, activeSection = "Dashboard" }) {
                     </p>
                 </div>
 
-                <div className="flex flex-col space-y-5 flex-grow">
+                {/* Itens do menu */}
+                <div className="flex flex-col space-y-2 flex-grow">
                     <MenuSection
                         icon={<HiMiniComputerDesktop />}
                         sectionName="Laboratórios"
@@ -79,11 +84,13 @@ function Menu({ userName, userCode, activeSection = "Dashboard" }) {
                     />
                 </div>
 
+                {/* Botão de sair com hover vermelho em box */}
                 <div className="mt-6 pt-4 border-t border-gray-300">
                     <MenuSection
                         icon={<LuArrowLeftFromLine />}
                         sectionName="Sair"
                         isActive={false}
+                        customClass="hover:bg-red-700 text-red-600 hover:text-white-700"
                     />
                 </div>
             </div>
