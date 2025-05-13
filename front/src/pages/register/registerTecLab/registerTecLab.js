@@ -5,8 +5,8 @@ function RegisterTecLab() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
           <form className="mt-8 space-y-6 bg-white p-8 rounded-xl shadow-md">
-            <div className="text-left">
-              <h1 className="text-3xl font-bold text-black-700">SIGEF</h1>
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-green-700">SIGEF</h1>
               <h2 className="mt-4 text-1xl font-semibold text-black-800">Criar conta - Administrador/Técnico</h2>
             </div>
             <div className="space-y-4">
@@ -87,14 +87,14 @@ function RegisterTecLab() {
                 type="submit"
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
               >
-                CRIAR CONTA
+                Criar Conta
               </button>
   
               <Link
                 to="/"
-                className="w-full flex justify-center py-2 px-4 border border-green-300 rounded-lg shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
+                className="w-full flex justify-center py-2 px-4 border border-green-600 rounded-lg shadow-sm text-sm font-medium text-green-600 bg-white hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
               >
-                JÁ TENHO UMA CONTA
+                Já Tenho Uma Conta
               </Link>
             </div>
           </form>

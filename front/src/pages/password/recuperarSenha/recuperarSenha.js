@@ -12,8 +12,8 @@ function RecuperarSenha() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-md">
-        <div className="text-left space-y-6">
-          <h1 className="text-4xl font-bold text-black-700">SIGEF</h1>
+        <div className="text-center space-y-6">
+          <h1 className="text-3xl font-bold text-green-700">SIGEF</h1>
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold text-black-800">Recuperar Senha</h2>
             <p className="text-sm text-gray-600">
@@ -42,14 +42,14 @@ function RecuperarSenha() {
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
             >
-              CONTINUAR RECUPERAÇÃO DE SENHA
+              Continuar Recuperação de Senha
             </button>
 
             <Link
               to="/"
-              className="w-full flex justify-center py-2 px-4 border border-green-300 rounded-lg shadow-sm text-sm font-medium text-green-700 hover:text-white bg-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
+              className="w-full flex justify-center py-2 px-4 border border-red-500 rounded-lg shadow-sm text-sm font-medium text-red-500 hover:text-white bg-white hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
             >
-              CANCELAR
+              Cancelar
             </Link>
           </div>
         </form>

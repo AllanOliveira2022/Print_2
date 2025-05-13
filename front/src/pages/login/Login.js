@@ -5,10 +5,10 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
-        <div className="text-left">
-          <h1 className="text-4xl font-bold text-black-800">SIGEF</h1>
-          <h2 className="mt-4 text-2xl font-semibold text-black-800 text-left">Entrar na conta</h2>
-          <p className="mt-2 text-sm text-gray-600 text-left">
+        <div className='text-center'>
+          <h1 className="text-4xl font-bold text-green-700">SIGEF</h1>
+          <h2 className="mt-4 text-2xl font-semibold text-black-800">Entrar na conta</h2>
+          <p className="mt-2 text-sm text-gray-600">
             Entre na sua conta SIGEF ou crie uma nova
           </p>
         </div>
@@ -49,23 +49,23 @@ function Login() {
               to="/admin/laboratorios"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
             >
-              ENTRAR NA CONTA
+              Entrar na Conta
             </Link>
 
             <Link
               to="/select-account"
-              className="w-full inline-flex justify-center py-2 px-4 border border-green-300 rounded-lg shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 hover:text-green-500"
+              className="w-full inline-flex justify-center py-2 px-4 border border-green-600 rounded-lg shadow-sm text-sm font-medium text-green-600 bg-white hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 hover:text-green-500"
             >
-              CRIAR CONTA
+              Criar Conta
             </Link>
           </div>
 
           <div className="flex items-center justify-center">
             <Link 
               to="/recuperarSenha" 
-              className="text-sm font-medium text-green-600 hover:text-green-400"
+              className="text-sm font-medium text-green-600 hover:text-green-700"
             >
-              RECUPERAR SENHA
+              Recuperar Senha
             </Link>
           </div>
         </form>
