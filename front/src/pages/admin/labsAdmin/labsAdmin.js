@@ -1,7 +1,14 @@
 import { FaSearch } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import Menu from "../../../components/tecLab/menu/menu";
 
 function MenuLabs() {
+    const navigate = useNavigate(); // hook para navegação
+
+    const handleCadastro = () => {
+        navigate("/admin/laboratorios/cadastrar"); // rota correta
+    };      
+    
     return (
         <div className="flex flex-col md:flex-row w-full min-h-screen">
             <Menu />
@@ -31,7 +38,10 @@ function MenuLabs() {
                             <button className="w-full sm:w-auto px-[5%] py-[2.5%] text-green-600 border-2 border-green-600 uppercase hover:bg-green-600 hover:text-white rounded-lg transition-colors">
                                 Filtrar
                             </button>
-                            <button className="w-full sm:w-auto px-[5%] py-[2.5%] bg-green-600 text-white hover:bg-green-700 transition-colors uppercase rounded-lg">
+                            <button
+                                onClick={handleCadastro}
+                                className="w-full sm:w-auto px-[5%] py-[2.5%] bg-green-600 text-white hover:bg-green-700 transition-colors uppercase rounded-lg"
+                            >
                                 Cadastrar Laboratório
                             </button>
                         </div>

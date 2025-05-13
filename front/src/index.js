@@ -13,6 +13,7 @@ import RecuperarSenha from './pages/password/recuperarSenha/recuperarSenha';
 import NovaSenha from './pages/password/novaSenha/novaSenha';
 /* Telas Admin */
 import LabsAdmin from './pages/admin/labsAdmin/labsAdmin';
+import CadastrarLaboratorio from './pages/admin/cadastrarLaboratorio/cadastrarLaboratorio';
 
 const router = createBrowserRouter([
   {
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
   {
     path: "/admin/laboratorios",
     element: <LabsAdmin/>
+  },
+  {
+    path: "/admin/laboratorios/cadastrar",
+    element: <CadastrarLaboratorio />
   }
 ]);
 
