@@ -243,7 +243,7 @@ function CadastrarLaboratorio() {
               </button>
               <button
                 onClick={handleConfirmCancel}
-                className="bg-red-600 text-white px-10 py-3 rounded hover:bg-red-700"
+                className="bg-red-500 text-white px-10 py-3 rounded hover:bg-red-700"
               >
                 Sim, Cancelar
               </button>

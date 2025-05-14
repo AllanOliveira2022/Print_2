@@ -7,7 +7,7 @@ import { LuArrowLeftFromLine } from "react-icons/lu";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import MenuSection from "../menuSection/menuSection";
 
-function Menu({ userName, userCode, activeSection = "Dashboard" }) {
+function Menu({ userName, userCode, activeSection = "Laboratórios" }) {
     const [isOpen, setIsOpen] = useState(false);
 
     const handleMouseEnter = () => setIsOpen(true);
@@ -50,47 +50,55 @@ function Menu({ userName, userCode, activeSection = "Dashboard" }) {
                     <MenuSection
                         icon={<HiMiniComputerDesktop />}
                         sectionName="Laboratórios"
-                        isActive={activeSection === "Dashboard"}
+                        redirectPath="/admin/laboratorios"
+                        isActive={activeSection === "Laboratórios"}
                     />
                     <MenuSection
                         icon={<FaRegListAlt />}
                         sectionName="Reservas"
+                        redirectPath="/admin/reservas"
                         isActive={activeSection === "Reservas"}
                     />
                     <MenuSection
                         icon={<FaClipboardCheck />}
                         sectionName="Solicitações"
+                        redirectPath="/admin/solicitacoes"
                         isActive={activeSection === "Solicitações"}
                     />
                     <MenuSection
                         icon={<GrCubes />}
                         sectionName="Materiais"
+                        redirectPath="/admin/materiais"
                         isActive={activeSection === "Materiais"}
                     />
                     <MenuSection
                         icon={<FaUserGraduate />}
                         sectionName="Professores"
+                        redirectPath="/admin/professores"
                         isActive={activeSection === "Professores"}
                     />
                     <MenuSection
                         icon={<PiStudentFill />}
                         sectionName="Estudantes"
+                        redirectPath="/admin/estudantes"
                         isActive={activeSection === "Estudantes"}
                     />
                     <MenuSection
                         icon={<FaRegBell />}
                         sectionName="Notificações"
+                        redirectPath="/admin/notificacoes"
                         isActive={activeSection === "Notificações"}
                     />
                 </div>
 
-                {/* Botão de sair com hover vermelho em box */}
+                {/* Botão de sair com hover vermelho */}
                 <div className="mt-6 pt-4 border-t border-gray-300">
                     <MenuSection
                         icon={<LuArrowLeftFromLine />}
                         sectionName="Sair"
                         isActive={false}
                         customClass="hover:bg-red-700 text-red-600 hover:text-white-700"
+                        redirectPath="/"
                     />
                 </div>
             </div>

@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 
-function MenuSection({ icon, sectionName, isActive, customClass = "" }) {
+function MenuSection({ icon, sectionName, isActive, customClass = "", redirectPath }) {
     const navigate = useNavigate();
 
     const handleClick = () => {
-        const route = "/" + sectionName.toLowerCase();
+        // Usando o redirectPath se for fornecido, caso contrário, utilizando uma rota padrão.
+        const route = redirectPath || `/${sectionName.toLowerCase().replace(" ", "")}`;
         navigate(route);
     };
 
