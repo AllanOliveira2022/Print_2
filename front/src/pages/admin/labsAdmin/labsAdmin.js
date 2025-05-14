@@ -29,7 +29,7 @@ function MenuLabs() {
                             <input
                                 type="text"
                                 placeholder="Buscar laboratório"
-                                className="w-full pl-12 pr-4 py-3 border border-gray-300 bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:text-green-600 rounded-lg"
+                                className="w-full pl-12 pr-4 py-3 border border-gray-300 bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-green-700 focus:text-black-700 rounded-lg"
                             />
                         </div>
 
