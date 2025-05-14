@@ -18,30 +18,15 @@ function CadastrarLaboratorio() {
     observacoes: "",
   });
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false); // Estado para controlar a visibilidade do modal
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const validateForm = () => {
-    if (!formData.nome || !formData.codigo || !formData.tipo) {
-      setError("Os campos Nome, Código e Tipo são obrigatórios.");
-      return false;
-    }
-    return true;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) return;
-
-    setIsLoading(true);
-    setError(null);
-
     try {
       const response = await fetch("/api/laboratorios", {
         method: "POST",
@@ -49,59 +34,62 @@ function CadastrarLaboratorio() {
         body: JSON.stringify(formData),
       });
 
-      setIsLoading(false);
-
       if (response.ok) {
         alert("Laboratório cadastrado com sucesso!");
         navigate("/admin/laboratorios");
       } else {
-        setError("Erro ao cadastrar laboratório.");
+        alert("Erro ao cadastrar laboratório.");
       }
     } catch (error) {
-      setIsLoading(false);
-      setError("Erro de conexão.");
+      alert("Erro de conexão.");
     }
+  };
+
+  const handleCancel = () => {
+    setShowModal(true); // Exibe o modal de confirmação
+  };
+
+  const handleConfirmCancel = () => {
+    setShowModal(false);
+    navigate("/admin/laboratorios"); // Navega para a lista de laboratórios caso confirme o cancelamento
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false); // Fecha o modal sem fazer nada
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Menu />
-      <div className="flex flex-col w-full p-8">
-        <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-8">
-          <h2 className="text-3xl font-semibold text-gray-800 mb-6">Cadastrar Laboratório</h2>
-          <p className="text-gray-600 mb-6">
-            Cadastre um novo laboratório no SIGEF. Adicione as informações sobre o novo laboratório.
+      <div className="flex flex-col w-full p-8 items-center">
+        <div className="w-full max-w-6xl bg-white p-8 rounded shadow-md">
+          <h2 className="text-3xl font-bold text-black mb-2">Cadastrar laboratório</h2>
+          <p className="text-gray-500 mb-6">
+            Cadastre um novo laboratório no SIGEF. Adicione as informações abaixo.
           </p>
 
-          {/* Exibição de erro */}
-          {error && <div className="text-red-600 mb-4 text-lg">{error}</div>}
-
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-8 max-w-4xl mx-auto">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {/* Informações Gerais */}
             <div>
-              <h3 className="text-2xl font-semibold text-gray-800 mb-4">Informações Gerais</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="relative">
-                  <label htmlFor="nome" className="block text-sm font-medium text-gray-600">Nome</label>
+              <h3 className="text-lg font-semibold text-black mb-4">Informações Gerais</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-black">Nome do laboratório:</label>
                   <input
-                    id="nome"
                     name="nome"
                     value={formData.nome}
                     onChange={handleChange}
-                    placeholder="Nome do laboratório"
-                    className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-600 focus:outline-none"
+                    className="w-full p-3 h-11 text-sm border border-gray-300 rounded-md bg-gray-200"
                     required
                   />
                 </div>
-                <div className="relative">
-                  <label htmlFor="codigo" className="block text-sm font-medium text-gray-600">Código</label>
+                <div>
+                  <label className="text-sm font-medium text-black">Código de identificação:</label>
                   <input
-                    id="codigo"
                     name="codigo"
                     value={formData.codigo}
                     onChange={handleChange}
-                    placeholder="Código de identificação"
-                    className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-600 focus:outline-none"
+                    className="w-full p-3 h-11 text-sm border border-gray-300 rounded-md bg-gray-200"
                     required
                   />
                 </div>
@@ -110,28 +98,24 @@ function CadastrarLaboratorio() {
 
             {/* Localização */}
             <div>
-              <h3 className="text-2xl font-semibold text-gray-800 mb-4">Localização</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="relative">
-                  <label htmlFor="bloco" className="block text-sm font-medium text-gray-600">Bloco Didático</label>
+              <h3 className="text-lg font-semibold text-black mb-4">Localização</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-black">Bloco didático:</label>
                   <input
-                    id="bloco"
                     name="bloco"
                     value={formData.bloco}
                     onChange={handleChange}
-                    placeholder="Bloco"
-                    className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-600 focus:outline-none"
+                    className="w-full p-3 h-11 text-sm border border-gray-300 rounded-md bg-gray-200"
                   />
                 </div>
-                <div className="relative">
-                  <label htmlFor="numero" className="block text-sm font-medium text-gray-600">Número</label>
+                <div>
+                  <label className="text-sm font-medium text-black">Número:</label>
                   <input
-                    id="numero"
                     name="numero"
                     value={formData.numero}
                     onChange={handleChange}
-                    placeholder="Número"
-                    className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-600 focus:outline-none"
+                    className="w-full p-3 h-11 text-sm border border-gray-300 rounded-md bg-gray-200"
                   />
                 </div>
               </div>
@@ -139,51 +123,60 @@ function CadastrarLaboratorio() {
 
             {/* Estrutura e Capacidade */}
             <div>
-              <h3 className="text-2xl font-semibold text-gray-800 mb-4">Estrutura e Capacidade</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="relative">
-                  <label htmlFor="tipo" className="block text-sm font-medium text-gray-600">Tipo de Laboratório</label>
+              <h3 className="text-lg font-semibold text-black mb-4">Estrutura e Capacidade</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-black">Tipo de laboratório:</label>
                   <input
-                    id="tipo"
                     name="tipo"
                     value={formData.tipo}
                     onChange={handleChange}
-                    placeholder="Tipo do laboratório"
-                    className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-600 focus:outline-none"
-                    required
+                    className="w-full p-3 h-11 text-sm border border-gray-300 rounded-md bg-gray-200"
                   />
                 </div>
-                <div className="relative">
-                  <label htmlFor="capacidade" className="block text-sm font-medium text-gray-600">Capacidade</label>
+                <div>
+                  <label className="text-sm font-medium text-black">Capacidade total:</label>
                   <input
-                    id="capacidade"
                     name="capacidade"
                     value={formData.capacidade}
                     onChange={handleChange}
-                    placeholder="Capacidade"
-                    className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-600 focus:outline-none"
+                    className="w-full p-3 h-11 text-sm border border-gray-300 rounded-md bg-gray-200"
                   />
                 </div>
-                <div className="relative">
-                  <label htmlFor="quantidadeComputadores" className="block text-sm font-medium text-gray-600">Quantidade de Computadores</label>
+                <div>
+                  <label className="text-sm font-medium text-black">Quantidade de computadores:</label>
                   <input
-                    id="quantidadeComputadores"
                     name="quantidadeComputadores"
                     value={formData.quantidadeComputadores}
                     onChange={handleChange}
-                    placeholder="Quantidade de computadores"
-                    className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-600 focus:outline-none"
+                    className="w-full p-3 h-11 text-sm border border-gray-300 rounded-md bg-gray-200"
                   />
                 </div>
-                <div className="relative">
-                  <label htmlFor="equipamentos" className="block text-sm font-medium text-gray-600">Equipamentos Disponíveis</label>
+                <div>
+                  <label className="text-sm font-medium text-black">Equipamentos disponíveis:</label>
                   <input
-                    id="equipamentos"
                     name="equipamentos"
                     value={formData.equipamentos}
                     onChange={handleChange}
-                    placeholder="Equipamentos disponíveis"
-                    className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-600 focus:outline-none"
+                    className="w-full p-3 h-11 text-sm border border-gray-300 rounded-md bg-gray-200"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-black">Softwares instalados:</label>
+                  <input
+                    name="softwares"
+                    value={formData.softwares}
+                    onChange={handleChange}
+                    className="w-full p-3 h-11 text-sm border border-gray-300 rounded-md bg-gray-200"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-black">Capacidade para PCD:</label>
+                  <input
+                    name="capacidadePCD"
+                    value={formData.capacidadePCD}
+                    onChange={handleChange}
+                    className="w-full p-3 h-11 text-sm border border-gray-300 rounded-md bg-gray-200"
                   />
                 </div>
               </div>
@@ -191,53 +184,73 @@ function CadastrarLaboratorio() {
 
             {/* Observações */}
             <div>
-              <h3 className="text-2xl font-semibold text-gray-800 mb-4">Observações</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="relative">
-                  <label htmlFor="observacoes" className="block text-sm font-medium text-gray-600">Observações</label>
+              <h3 className="text-lg font-semibold text-black mb-4">Observações</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-black">Responsável:</label>
                   <input
-                    id="observacoes"
-                    name="observacoes"
-                    value={formData.observacoes}
-                    onChange={handleChange}
-                    placeholder="Observações (opcional)"
-                    className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-600 focus:outline-none"
-                  />
-                </div>
-                <div className="relative">
-                  <label htmlFor="responsavel" className="block text-sm font-medium text-gray-600">Responsável</label>
-                  <input
-                    id="responsavel"
                     name="responsavel"
                     value={formData.responsavel}
                     onChange={handleChange}
-                    placeholder="Responsável"
-                    className="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-600 focus:outline-none"
+                    className="w-full p-3 h-11 text-sm border border-gray-300 rounded-md bg-gray-200"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-black">Observações (opcional):</label>
+                  <input
+                    name="observacoes"
+                    value={formData.observacoes}
+                    onChange={handleChange}
+                    className="w-full p-3 h-11 text-sm border border-gray-300 rounded-md bg-gray-200"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Botões */}
             <div className="flex justify-between mt-6">
               <button
                 type="button"
-                onClick={() => navigate("/admin/laboratorios")}
-                className="border border-green-600 text-green-600 px-6 py-3 rounded-lg hover:bg-green-50 text-lg"
+                onClick={handleCancel}
+                className="border border-green-600 text-green-600 px-10 py-3 rounded hover:bg-red-700 hover:text-white hover:border-red-700"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className={`bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 text-lg ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
-                disabled={isLoading}
+                className="bg-green-600 text-white px-10 py-3 rounded hover:bg-green-800"
               >
-                {isLoading ? "Cadastrando..." : "Cadastrar Laboratório"}
+                Cadastrar Laboratório
               </button>
             </div>
           </form>
         </div>
       </div>
+
+      {/* Modal de confirmação */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-100">
+          <div className="bg-white p-8 rounded shadow-lg w-85">
+            <h3 className="text-xl font-semibold text-black mb-4">Cancelar cadastro de laboratório?</h3>
+            <h5 className="text-sm font-semibold text-gray-700 mb-10">
+              Deseja realmente cancelar o cadastro deste laboratório? Ao clicar em "Cancelar cadastro", todas as informações serão perdidas.
+            </h5>
+            <div className="flex justify-between">
+              <button
+                onClick={handleCloseModal}
+                className="bg-white-600 text-green-700 border border-green-600 px-10 py-3 rounded hover:bg-green-700 hover:text-white"
+              >
+                Não, Continuar
+              </button>
+              <button
+                onClick={handleConfirmCancel}
+                className="bg-red-600 text-white px-10 py-3 rounded hover:bg-red-700"
+              >
+                Sim, Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
