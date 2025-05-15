@@ -17,7 +17,7 @@ function MenuLabs() {
     const laboratorios = [
         { id: 1, nome: "Lab de Informática", localizacao: "Bloco A", tipo: "Tecnologia", situacao: "Disponivel" },
         { id: 2, nome: "Lab de Química", localizacao: "Bloco B", tipo: "Ciências", situacao: "Indisponivel" },
-        { id: 3, nome: "Lab de Física", localizacao: "Bloco C", tipo: "Exatas", situacao: "Disponivel" },
+        { id: 3, nome: "Lab de Física", localizacao: "Bloco C", tipo: "Exatas", situacao: "Indisponivel" },
         { id: 4, nome: "Lab de Mecatronica", localizacao: "Bloco A", tipo: "Mecatronica", situacao: "Disponivel" }
     ];
 
