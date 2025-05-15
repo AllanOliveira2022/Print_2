@@ -14,6 +14,9 @@ import NovaSenha from './pages/password/novaSenha/novaSenha';
 /* Telas Admin */
 import LabsAdmin from './pages/admin/labsAdmin/labsAdmin';
 import CadastrarLaboratorio from './pages/admin/cadastrarLaboratorio/cadastrarLaboratorio';
+import SolicitacoesReservaAdmin from "./pages/admin/solicitacoesReservasAdmin/solicitacoesReservasAdmin";
+import DetalhesSolicitacao from './pages/admin/solicitacoesReservasAdmin/detalhesSolicitacao/detalhesSolicitacao';
+import EditarLaboratorio from "./pages/admin/editarLaboratorio/editarLaboratorio";
 /*Telas Professor*/
 import LaboratoriosProfessor from './pages/professor/laboratoriosProfessor/laboratoriosProfessor';
 import SolicitarReserva from './pages/professor/solicitarReserva/solicitarReserva';
@@ -62,6 +65,18 @@ const router = createBrowserRouter([
   {
     path: "/professor/solicitarReserva",
     element: <SolicitarReserva />
+  },
+  {
+    path: "/admin/solicitacoes",
+    element: <SolicitacoesReservaAdmin />
+  },
+  {
+    path: "/admin/solicitacoes/:id",
+    element: <DetalhesSolicitacao />
+  },
+  {
+    path: "/admin/laboratorios/editar/:id",
+    element: <EditarLaboratorio />
   }
 ]);
 

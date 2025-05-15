@@ -9,6 +9,11 @@ function MenuLabs() {
         navigate("/admin/laboratorios/cadastrar");
     };
 
+    // Função para redirecionar para a página de edição, passando o id
+    const handleEditar = (id) => {
+        navigate(`/admin/laboratorios/editar/${id}`);
+    };
+
     const laboratorios = [
         { id: 1, nome: "Lab de Informática", localizacao: "Bloco A", tipo: "Tecnologia", situacao: "Disponivel" },
         { id: 2, nome: "Lab de Química", localizacao: "Bloco B", tipo: "Ciências", situacao: "Indisponivel" },
@@ -79,7 +84,10 @@ function MenuLabs() {
                                                 <button className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors">
                                                     Detalhes
                                                 </button>
-                                                <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                                <button
+                                                    onClick={() => handleEditar(lab.id)}
+                                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                                                >
                                                     Editar
                                                 </button>
                                                 <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
