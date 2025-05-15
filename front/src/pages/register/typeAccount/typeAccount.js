@@ -19,7 +19,7 @@ function TypeAccount() {
         <div className="space-y-4 text-green-600">
           <Link
             to="/register/tecnico"
-            className="w-full gap-2 p-4 flex flex-row items-center border border-green-600 rounded-lg hover:text-white hover:bg-green-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full gap-2 p-4 flex flex-row items-center border border-green-600 rounded-lg hover:text-white hover:bg-green-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <span className="text-lg font-medium">Administrador/Técnico</span>
             <FaArrowRightLong />
@@ -27,7 +27,7 @@ function TypeAccount() {
 
           <Link
             to="/register/professor"
-            className="w-full gap-2 p-4 flex flex-row items-center border border-green-600 rounded-lg hover:text-white hover:bg-green-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full gap-2 p-4 flex flex-row items-center border border-green-600 rounded-lg hover:text-white hover:bg-green-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <span className="text-lg font-medium">Professor</span>
             <FaArrowRightLong />
@@ -35,7 +35,7 @@ function TypeAccount() {
 
           <Link
             to="/register/estudante"
-            className="w-full gap-2 p-4 flex flex-row items-center border border-green-600 rounded-lg hover:text-white hover:bg-green-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full gap-2 p-4 flex flex-row items-center border border-green-600 rounded-lg hover:text-white hover:bg-green-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <span className="text-lg font-medium">Estudante</span>
             <FaArrowRightLong />
@@ -45,7 +45,7 @@ function TypeAccount() {
         <div className="pt-4">
           <Link
             to="/"
-            className="w-full flex justify-center py-2 px-4 border border-green-600 rounded-lg shadow-sm text-sm font-medium text-green-600 bg-white hover:bg-green-100 hover:text-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
+            className="w-full flex justify-center py-2 px-4 border border-green-600 rounded-lg shadow-sm text-sm font-medium text-green-600 bg-white hover:bg-green-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
           >
             Já Tenho Uma Conta
           </Link>
