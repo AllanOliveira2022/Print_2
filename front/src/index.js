@@ -14,6 +14,9 @@ import NovaSenha from './pages/password/novaSenha/novaSenha';
 /* Telas Admin */
 import LabsAdmin from './pages/admin/labsAdmin/labsAdmin';
 import CadastrarLaboratorio from './pages/admin/cadastrarLaboratorio/cadastrarLaboratorio';
+/*Telas Professor*/
+import LaboratoriosProfessor from './pages/professor/laboratoriosProfessor/laboratoriosProfessor';
+import SolicitarReserva from './pages/professor/solicitarReserva/solicitarReserva';
 
 const router = createBrowserRouter([
   {
@@ -51,6 +54,14 @@ const router = createBrowserRouter([
   {
     path: "/admin/laboratorios/cadastrar",
     element: <CadastrarLaboratorio />
+  },
+  {
+    path: "/professor/laboratorios",
+    element: <LaboratoriosProfessor />
+  },
+  {
+    path: "/professor/solicitarReserva",
+    element: <SolicitarReserva />
   }
 ]);
 
