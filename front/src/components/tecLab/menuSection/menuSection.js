@@ -4,7 +4,6 @@ function MenuSection({ icon, sectionName, isActive, customClass = "", redirectPa
     const navigate = useNavigate();
 
     const handleClick = () => {
-        // Usando o redirectPath se for fornecido, caso contrário, utilizando uma rota padrão.
         const route = redirectPath || `/${sectionName.toLowerCase().replace(" ", "")}`;
         navigate(route);
     };
@@ -14,7 +13,7 @@ function MenuSection({ icon, sectionName, isActive, customClass = "", redirectPa
             onClick={handleClick}
             className={`
                 flex items-center gap-4 py-3 px-4 rounded-lg transition-all
-                ${isActive ? "bg-green-700 text-white" : "text-green-700 hover:text-white hover:bg-green-700"}
+                ${isActive ? "bg-green-600 text-white" : "text-green-700 hover:bg-green-200"}
                 w-full text-left font-medium text-base
                 ${customClass}
             `}

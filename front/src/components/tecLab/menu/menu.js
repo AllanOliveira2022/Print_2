@@ -95,7 +95,6 @@ function Menu({ userName, userCode, activeSection = "Laboratórios" }) {
                         icon={<LuArrowLeftFromLine />}
                         sectionName="Sair"
                         isActive={false}
-                        customClass="hover:bg-red-700 text-red-600 hover:text-white-700"
                         redirectPath="/"
                     />
                 </div>
