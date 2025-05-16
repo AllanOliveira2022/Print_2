@@ -17,9 +17,11 @@ import CadastrarLaboratorio from './pages/admin/cadastrarLaboratorio/cadastrarLa
 import SolicitacoesReservaAdmin from "./pages/admin/solicitacoesReservasAdmin/solicitacoesReservasAdmin";
 import DetalhesSolicitacao from './pages/admin/solicitacoesReservasAdmin/detalhesSolicitacao/detalhesSolicitacao';
 import EditarLaboratorio from "./pages/admin/editarLaboratorio/editarLaboratorio";
+import ReservasAceitas from './pages/admin/reservasAceitas/reservasAceitas';
 /*Telas Professor*/
 import LaboratoriosProfessor from './pages/professor/laboratoriosProfessor/laboratoriosProfessor';
 import SolicitarReserva from './pages/professor/solicitarReserva/solicitarReserva';
+import SolicitacoesProfessor from './pages/professor/solicitacoesProfessor/solicitacoesProfessor';
 
 const router = createBrowserRouter([
   {
@@ -77,6 +79,14 @@ const router = createBrowserRouter([
   {
     path: "/admin/laboratorios/editar/:id",
     element: <EditarLaboratorio />
+  },
+  {
+    path: "/admin/reservas",
+    element: <ReservasAceitas />
+  },
+  {
+    path: "/professor/solicitacoes",
+    element: <SolicitacoesProfessor />
   }
 ]);
 

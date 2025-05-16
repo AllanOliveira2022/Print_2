@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import Menu from '../../components/tecLab/menu/menu';
 
 function Login() {
   return (

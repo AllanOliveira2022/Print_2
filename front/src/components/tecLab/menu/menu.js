@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { HiMiniComputerDesktop } from "react-icons/hi2";
 import { GrCubes } from "react-icons/gr";
 import { FaRegListAlt, FaUserGraduate, FaRegBell, FaClipboardCheck } from "react-icons/fa";
@@ -7,8 +8,10 @@ import { LuArrowLeftFromLine } from "react-icons/lu";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import MenuSection from "../menuSection/menuSection";
 
-function Menu({ userName, userCode, activeSection = "Laboratórios" }) {
+function Menu({ userName, userCode }) {
     const [isOpen, setIsOpen] = useState(false);
+    const location = useLocation();
+    const currentPath = location.pathname;
 
     return (
         <>
@@ -27,7 +30,6 @@ function Menu({ userName, userCode, activeSection = "Laboratórios" }) {
                     z-40 px-6 py-10 pt-20 flex flex-col
                     transition-all duration-300 ease-in-out
                     overflow-hidden
-                    /* Comportamento responsivo */
                     sm:translate-x-0 sm:w-80
                     ${isOpen ? "translate-x-0 w-80" : "-translate-x-full w-0"}
                 `}
@@ -49,58 +51,59 @@ function Menu({ userName, userCode, activeSection = "Laboratórios" }) {
                         icon={<HiMiniComputerDesktop />}
                         sectionName="Laboratórios"
                         redirectPath="/admin/laboratorios"
-                        isActive={activeSection === "Laboratórios"}
+                        isActive={currentPath === "/admin/laboratorios"}
                     />
                     <MenuSection
                         icon={<FaRegListAlt />}
                         sectionName="Reservas"
                         redirectPath="/admin/reservas"
-                        isActive={activeSection === "Reservas"}
+                        isActive={currentPath === "/admin/reservas"}
                     />
                     <MenuSection
                         icon={<FaClipboardCheck />}
                         sectionName="Solicitações"
                         redirectPath="/admin/solicitacoes"
-                        isActive={activeSection === "Solicitações"}
+                        isActive={currentPath === "/admin/solicitacoes"}
                     />
                     <MenuSection
                         icon={<GrCubes />}
                         sectionName="Materiais"
                         redirectPath="/admin/materiais"
-                        isActive={activeSection === "Materiais"}
+                        isActive={currentPath === "/admin/materiais"}
                     />
                     <MenuSection
                         icon={<FaUserGraduate />}
                         sectionName="Professores"
                         redirectPath="/admin/professores"
-                        isActive={activeSection === "Professores"}
+                        isActive={currentPath === "/admin/professores"}
                     />
                     <MenuSection
                         icon={<PiStudentFill />}
                         sectionName="Estudantes"
                         redirectPath="/admin/estudantes"
-                        isActive={activeSection === "Estudantes"}
+                        isActive={currentPath === "/admin/estudantes"}
                     />
                     <MenuSection
                         icon={<FaRegBell />}
                         sectionName="Notificações"
                         redirectPath="/admin/notificacoes"
-                        isActive={activeSection === "Notificações"}
+                        isActive={currentPath === "/admin/notificacoes"}
                     />
                 </div>
 
-                {/* Botão de sair com hover vermelho */}
+                {/* Botão de sair */}
                 <div className="mt-6 pt-4 border-t border-gray-300 min-w-[280px]">
                     <MenuSection
                         icon={<LuArrowLeftFromLine />}
                         sectionName="Sair"
                         isActive={false}
+                        customClass="hover:bg-red-700 text-red-700 hover:text-white"
                         redirectPath="/"
                     />
                 </div>
             </div>
 
-            {/* Espaço reservado para o menu (para evitar que outros elementos fiquem abaixo) */}
+            {/* Espaço reservado para o menu (para evitar sobreposição) */}
             <div className="hidden sm:block sm:w-80 flex-shrink-0"></div>
         </>
     );
