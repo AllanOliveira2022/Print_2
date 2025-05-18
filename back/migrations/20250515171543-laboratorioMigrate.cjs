@@ -59,7 +59,7 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true,
       },
-      situacao: {
+      situacao: { // se está disponivel ou não
         type: Sequelize.STRING,
         allowNull: false,
       },
