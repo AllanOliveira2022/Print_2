@@ -6,7 +6,7 @@ import { FaRegListAlt, FaUserGraduate, FaRegBell, FaClipboardCheck } from "react
 import { PiStudentFill } from "react-icons/pi";
 import { LuArrowLeftFromLine } from "react-icons/lu";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
-import MenuSection from "../menuSection/menuSection";
+import MenuSection from "../../menuSection/menuSection";
 
 function Menu({ userName, userCode }) {
     const [isOpen, setIsOpen] = useState(false);
