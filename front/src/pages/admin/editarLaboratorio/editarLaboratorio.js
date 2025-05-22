@@ -25,34 +25,34 @@ function EditarLaboratorio() {
   // Carregar dados do laboratório ao montar componente
   useEffect(() => {
     async function fetchLaboratorio() {
-      try {
-        const response = await fetch(`/api/laboratorios/${id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setFormData({
-            nome: data.nome || "",
-            codigo: data.codigo || "",
-            bloco: data.bloco || "",
-            numero: data.numero || "",
-            tipo: data.tipo || "",
-            capacidade: data.capacidade || "",
-            quantidadeComputadores: data.quantidadeComputadores || "",
-            equipamentos: data.equipamentos || "",
-            softwares: data.softwares || "",
-            capacidadePCD: data.capacidadePCD || "",
-            responsavel: data.responsavel || "",
-            observacoes: data.observacoes || "",
-          });
-        } else {
-          alert("Erro ao carregar dados do laboratório.");
-          navigate("/admin/laboratorios");
-        }
-      } catch (error) {
-        alert("Erro de conexão ao carregar laboratório.");
-        navigate("/admin/laboratorios");
-      } finally {
-        setLoading(false);
-      }
+      // try {
+      //   const response = await fetch(`/api/laboratorios/${id}`);
+      //   if (response.ok) {
+      //     const data = await response.json();
+      //     setFormData({
+      //       nome: data.nome || "",
+      //       codigo: data.codigo || "",
+      //       bloco: data.bloco || "",
+      //       numero: data.numero || "",
+      //       tipo: data.tipo || "",
+      //       capacidade: data.capacidade || "",
+      //       quantidadeComputadores: data.quantidadeComputadores || "",
+      //       equipamentos: data.equipamentos || "",
+      //       softwares: data.softwares || "",
+      //       capacidadePCD: data.capacidadePCD || "",
+      //       responsavel: data.responsavel || "",
+      //       observacoes: data.observacoes || "",
+      //     });
+      //   } else {
+      //     alert("Erro ao carregar dados do laboratório.");
+      //     navigate("/admin/laboratorios");
+      //   }
+      // } catch (error) {
+      //   alert("Erro de conexão ao carregar laboratório.");
+      //   navigate("/admin/laboratorios");
+      // } finally {
+      //   setLoading(false);
+      // }
     }
     fetchLaboratorio();
   }, [id, navigate]);
@@ -94,16 +94,16 @@ function EditarLaboratorio() {
     setShowModal(false);
   };
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen bg-gray-100">
-        <Menu />
-        <div className="flex flex-col w-full p-8 items-center justify-center">
-          <p>Carregando dados do laboratório...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex min-h-screen bg-gray-100">
+  //       <Menu />
+  //       <div className="flex flex-col w-full p-8 items-center justify-center">
+  //         <p>Carregando dados do laboratório...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="flex min-h-screen bg-gray-100">
