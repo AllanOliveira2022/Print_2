@@ -4,7 +4,7 @@ import { HiMiniComputerDesktop } from "react-icons/hi2";
 import { FaRegListAlt, FaClipboardCheck, FaRegBell } from "react-icons/fa";
 import { LuArrowLeftFromLine } from "react-icons/lu";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
-import MenuSection from "../../../components/tecLab/menuSection/menuSection";
+import MenuSection from "../../menuSection/menuSection";
 
 function MenuProfessor({ userName, userCode }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +13,6 @@ function MenuProfessor({ userName, userCode }) {
 
     return (
         <>
-            {/* Botão de abrir menu - visível apenas em mobile */}
             <button
                 className="fixed top-4 left-4 z-50 bg-green-700 text-white p-2 rounded-md sm:hidden"
                 onClick={() => setIsOpen((prev) => !prev)}
@@ -71,13 +70,12 @@ function MenuProfessor({ userName, userCode }) {
                     />
                 </div>
 
-                {/* Botão de sair */}
                 <div className="mt-6 pt-4 border-t border-gray-300 min-w-[280px]">
                     <MenuSection
                         icon={<LuArrowLeftFromLine />}
                         sectionName="Sair"
                         isActive={false}
-                        customClass="hover:bg-red-700 text-red-700 hover:text-white"
+                        customClass="hover:bg-red-500 text-red-500 hover:text-white"
                         redirectPath="/"
                     />
                 </div>

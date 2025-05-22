@@ -1,4 +1,5 @@
-import MenuProfessor from "../menuProfessor/menuProfessor";
+import MenuProfessor from "../../../components/professor/menu/menu";
+import { FaSearch } from "react-icons/fa";
 
 function SolicitacoesProfessor() {
     const solicitacoes = [
@@ -31,11 +32,11 @@ function SolicitacoesProfessor() {
     const getStatusStyle = (status) => {
         switch (status) {
             case "Aceita":
-                return "bg-green-100 text-green-700";
+                return "bg-green-500 text-green-900";
             case "Pendente":
-                return "bg-gray-100 text-gray-700";
+                return "bg-yellow-500 text-yellow-900";
             case "Recusada":
-                return "bg-red-100 text-red-700";
+                return "bg-red-500 text-red-900";
             default:
                 return "";
         }
@@ -49,6 +50,22 @@ function SolicitacoesProfessor() {
                     <h1 className="text-2xl font-bold text-gray-700 text-center mb-6">
                         Minhas Solicitações de Reserva
                     </h1>
+
+                    <div className="flex flex-col sm:flex-row gap-6 w-full justify-between items-center mb-6">
+                        <div className="w-full sm:w-2/5 relative">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <FaSearch className="h-5 w-5 text-gray-400" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Pesquisar solicitação"
+                                className="w-full pl-12 pr-4 py-3 border border-gray-300 bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
+                            />
+                        </div>
+                        <button className="w-full sm:w-auto px-6 py-2 text-green-600 border-2 border-green-600 uppercase hover:bg-green-100 transition-colors font-bold">
+                            Filtrar
+                        </button>
+                    </div>
 
                     <div className="overflow-x-auto">
                         <table className="min-w-full table-auto border border-gray-300 rounded-lg text-center">

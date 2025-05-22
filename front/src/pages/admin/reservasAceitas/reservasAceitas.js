@@ -6,7 +6,6 @@ function ReservasAceitas() {
   const [reservasAceitas, setReservasAceitas] = useState([]);
 
   useEffect(() => {
-    // Mock de dados
     const mockData = [
       {
         id: 1,
@@ -44,56 +43,64 @@ function ReservasAceitas() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex flex-col md:flex-row w-full min-h-screen">
       <Menu />
-      <div className="flex flex-col w-full p-6 md:p-10">
-        <div className="w-full bg-white rounded shadow-md p-6 md:p-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Histórico de reservas de laboratório</h2>
-
-          {/* Área de busca e filtro */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-            <div className="w-full md:w-1/2 relative">
-              <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-                <FaSearch />
-              </span>
-              <input
-                type="text"
-                placeholder="Pesquisar reserva de laboratório..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md bg-gray-100 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600"
-              />
-            </div>
-            <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-md text-sm">
-              FILTRAR
-            </button>
+      <div className="flex justify-center w-full p-4 md:p-8">
+        <div className="w-full max-w-7xl bg-gray-50 rounded-lg shadow-md p-6 mt-4">
+          <div className="flex flex-col mb-6 gap-4">
+            <h1 className="text-2xl font-bold text-green-800 text-left">
+              Histórico de Reservas de Laboratório
+            </h1>
           </div>
 
-          {/* Tabela */}
+          <div className="flex flex-col sm:flex-row gap-6 w-full justify-between items-center mb-8">
+            <div className="w-full sm:w-2/5 relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <FaSearch className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Pesquisar reserva"
+                className="w-full pl-12 pr-4 py-2 border border-gray-300 bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:text-green-600 focus:ring-green-600 focus:border-none"
+              />
+            </div>
+
+            <div className="w-full sm:w-auto flex flex-col sm:flex-row justify-end items-center gap-6 font-bold mt-6 sm:mt-0 font-medium">
+              <button className="w-full sm:w-auto px-6 py-2 text-green-600 border-2 border-green-600 uppercase hover:bg-green-100 transition-colors">
+                Filtrar
+              </button>
+            </div>
+          </div>
+
           <div className="overflow-x-auto">
-            <table className="min-w-full table-auto border border-gray-300 text-sm">
+            <table className="min-w-full table-auto border border-gray-300 rounded-lg text-center">
               <thead className="bg-green-600 text-white">
                 <tr>
-                  <th className="px-4 py-2 text-left">ID</th>
-                  <th className="px-4 py-2 text-left">Professor</th>
-                  <th className="px-4 py-2 text-left">Laboratório</th>
-                  <th className="px-4 py-2 text-left">Tipo</th>
-                  <th className="px-4 py-2 text-left">Data da reserva</th>
-                  <th className="px-4 py-2 text-left">Turno</th>
-                  <th className="px-4 py-2 text-left">Horário</th>
-                  <th className="px-4 py-2 text-left">RR</th>
+                  <th className="px-4 py-3 text-center">ID</th>
+                  <th className="px-4 py-3 text-center">Professor</th>
+                  <th className="px-4 py-3 text-center">Laboratório</th>
+                  <th className="px-4 py-3 text-center">Tipo</th>
+                  <th className="px-4 py-3 text-center">Data da reserva</th>
+                  <th className="px-4 py-3 text-center">Turno</th>
+                  <th className="px-4 py-3 text-center">Horário</th>
+                  <th className="px-4 py-3 text-center">RR</th>
                 </tr>
               </thead>
               <tbody>
                 {reservasAceitas.length > 0 ? (
                   reservasAceitas.map((reserva, index) => (
-                    <tr key={reserva.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}>
-                      <td className="px-4 py-2">{reserva.id.toString().padStart(2, "0")}</td>
-                      <td className="px-4 py-2">{reserva.usuario.nome}</td>
-                      <td className="px-4 py-2">{reserva.laboratorio.nome}</td>
-                      <td className="px-4 py-2">{reserva.tipo}</td>
-                      <td className="px-4 py-2">{reserva.data}</td>
-                      <td className="px-4 py-2">{reserva.turno}</td>
-                      <td className="px-4 py-2">{reserva.horario}</td>
-                      <td className="px-4 py-2">{reserva.recorrente}</td>
+                    <tr
+                      key={reserva.id}
+                      className={index % 2 === 0 ? "bg-white" : "bg-gray-200"}
+                    >
+                      <td className="px-4 py-3 text-center">{reserva.id.toString().padStart(2, "0")}</td>
+                      <td className="px-4 py-3 text-center">{reserva.usuario.nome}</td>
+                      <td className="px-4 py-3 text-center">{reserva.laboratorio.nome}</td>
+                      <td className="px-4 py-3 text-center">{reserva.tipo}</td>
+                      <td className="px-4 py-3 text-center">{reserva.data}</td>
+                      <td className="px-4 py-3 text-center">{reserva.turno}</td>
+                      <td className="px-4 py-3 text-center">{reserva.horario}</td>
+                      <td className="px-4 py-3 text-center">{reserva.recorrente}</td>
                     </tr>
                   ))
                 ) : (

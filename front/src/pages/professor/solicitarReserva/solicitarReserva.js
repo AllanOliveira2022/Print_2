@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Menu from "../../../pages/professor/menuProfessor/menuProfessor";
+import Menu from "../../../components/professor/menu/menu";
 
 function ReservarLaboratorio() {
   const [formData, setFormData] = useState({

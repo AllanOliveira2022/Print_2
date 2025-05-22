@@ -16,7 +16,7 @@ function MenuSection({ icon, sectionName, isActive, customClass = "", redirectPa
                 w-full text-left font-medium text-base
             ${customClass || (isActive
                 ? "bg-green-600 text-white"
-                : "text-green-700 hover:text-white hover:bg-green-600")}
+                : "text-green-600 hover:bg-green-100")}
             `}
             >
             <span className="text-lg">{icon}</span>
