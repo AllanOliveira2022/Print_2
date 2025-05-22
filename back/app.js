@@ -5,6 +5,7 @@ import alunoRoutes from './routes/alunoRoutes.js';
 import professorRoutes from './routes/professorRoutes.js';
 import admRoutes from './routes/admRoutes.js';
 import usuarioRoutes from './routes/usuarioRoutes.js';
+import laboratorioRoutes from './routes/laboratorioRoutes.js';
 const app = express();
 
 app.use(cors());
@@ -22,6 +23,7 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/alunos', alunoRoutes);
 app.use('/api/professores', professorRoutes);
 app.use('/api/administradores', admRoutes);
+app.use('/api/laboratorios', laboratorioRoutes);
 
 
   export default app;
