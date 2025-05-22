@@ -6,7 +6,6 @@ function ReservasAceitas() {
   const [reservasAceitas, setReservasAceitas] = useState([]);
 
   useEffect(() => {
-    // Mock de dados
     const mockData = [
       {
         id: 1,
@@ -72,28 +71,28 @@ function ReservasAceitas() {
             <table className="min-w-full table-auto border border-gray-300 text-sm">
               <thead className="bg-green-600 text-white">
                 <tr>
-                  <th className="px-4 py-2 text-left">ID</th>
-                  <th className="px-4 py-2 text-left">Professor</th>
-                  <th className="px-4 py-2 text-left">Laboratório</th>
-                  <th className="px-4 py-2 text-left">Tipo</th>
-                  <th className="px-4 py-2 text-left">Data da reserva</th>
-                  <th className="px-4 py-2 text-left">Turno</th>
-                  <th className="px-4 py-2 text-left">Horário</th>
-                  <th className="px-4 py-2 text-left">RR</th>
+                  <th className="px-4 py-2 text-center">ID</th>
+                  <th className="px-4 py-2 text-center">Professor</th>
+                  <th className="px-4 py-2 text-center">Laboratório</th>
+                  <th className="px-4 py-2 text-center">Tipo</th>
+                  <th className="px-4 py-2 text-center">Data da reserva</th>
+                  <th className="px-4 py-2 text-center">Turno</th>
+                  <th className="px-4 py-2 text-center">Horário</th>
+                  <th className="px-4 py-2 text-center">RR</th>
                 </tr>
               </thead>
               <tbody>
                 {reservasAceitas.length > 0 ? (
                   reservasAceitas.map((reserva, index) => (
                     <tr key={reserva.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}>
-                      <td className="px-4 py-2">{reserva.id.toString().padStart(2, "0")}</td>
-                      <td className="px-4 py-2">{reserva.usuario.nome}</td>
-                      <td className="px-4 py-2">{reserva.laboratorio.nome}</td>
-                      <td className="px-4 py-2">{reserva.tipo}</td>
-                      <td className="px-4 py-2">{reserva.data}</td>
-                      <td className="px-4 py-2">{reserva.turno}</td>
-                      <td className="px-4 py-2">{reserva.horario}</td>
-                      <td className="px-4 py-2">{reserva.recorrente}</td>
+                      <td className="py-2 text-center">{reserva.id.toString().padStart(2, "0")}</td>
+                      <td className="text-center py-2">{reserva.usuario.nome}</td>
+                      <td className="py-2  text-center">{reserva.laboratorio.nome}</td>
+                      <td className="py-2 text-center">{reserva.tipo}</td>
+                      <td className="py-2 text-center">{reserva.data}</td>
+                      <td className="py-2 text-center">{reserva.turno}</td>
+                      <td className="py-2 text-center">{reserva.horario}</td>
+                      <td className="py-2 text-center">{reserva.recorrente}</td>
                     </tr>
                   ))
                 ) : (

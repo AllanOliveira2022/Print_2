@@ -26,7 +26,7 @@ function Menu({ userName, userCode }) {
             {/* Menu lateral */}
             <div
                 className={`
-                    fixed top-0 left-0 h-full bg-gray-100 border-r border-gray-300
+                    fixed top-0 left-0 h-full bg-gray-50 border-r border-gray-300
                     z-40 px-6 py-10 pt-20 flex flex-col
                     transition-all duration-300 ease-in-out
                     overflow-hidden
@@ -91,13 +91,12 @@ function Menu({ userName, userCode }) {
                     />
                 </div>
 
-                {/* Botão de sair */}
                 <div className="mt-6 pt-4 border-t border-gray-300 min-w-[280px]">
                     <MenuSection
                         icon={<LuArrowLeftFromLine />}
                         sectionName="Sair"
                         isActive={false}
-                        customClass="hover:bg-red-700 text-red-700 hover:text-white"
+                        customClass="hover:bg-red-500 text-red-500 hover:text-white"
                         redirectPath="/"
                     />
                 </div>
