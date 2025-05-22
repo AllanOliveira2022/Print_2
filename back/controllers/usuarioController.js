@@ -17,7 +17,7 @@ export const cadastrarUsuario = async (req, res) => {
     const novoUsuario = await db.Usuario.create({ nome, email, senha, tipo });
 
     const user = novoUsuario.get({ plain: true });
-    delete user.senha;
+    delete user.senha; 
 
     res.status(201).json({ message: 'Usuário cadastrado com sucesso.', user });
   } catch (error) {
