@@ -1,6 +1,6 @@
 import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import MenuProfessor from "../menuProfessor/menuProfessor";
+import MenuProfessor from "../../../components/professor/menu/menu";
 
 function LaboratoriosProfessor() {
     const navigate = useNavigate();
@@ -21,22 +21,22 @@ function LaboratoriosProfessor() {
             <MenuProfessor />
             <div className="flex justify-center w-full p-4 md:p-8">
                 <div className="w-full max-w-7xl bg-gray-50 rounded-lg shadow-md p-6 mt-4">
-                    <h1 className="text-2xl font-bold text-gray-700 text-center mb-6">
+                    <h1 className="text-2xl font-bold text-green-800 text-left mb-6">
                         Laboratórios Cadastrados
                     </h1>
 
                     <div className="flex flex-col sm:flex-row gap-6 w-full justify-between items-center mb-6">
-                        <div className="w-full sm:w-1/2 relative">
+                        <div className="w-full sm:w-2/5 relative">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <FaSearch className="h-5 w-5 text-gray-400" />
                             </div>
                             <input
                                 type="text"
                                 placeholder="Pesquisar laboratório"
-                                className="w-full pl-12 pr-4 py-3 border border-gray-300 bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-green-700 rounded-lg"
+                                className="w-full pl-12 pr-4 py-3 border border-gray-300 bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
                             />
                         </div>
-                        <button className="w-full sm:w-auto px-6 py-3 text-green-600 border-2 border-green-600 uppercase hover:bg-green-700 hover:text-white hover:border-green-700 rounded-lg transition-colors font-bold">
+                        <button className="w-full sm:w-auto px-6 py-2 text-green-600 border-2 border-green-600 uppercase hover:bg-green-100 transition-colors font-bold">
                             Filtrar
                         </button>
                     </div>
@@ -67,8 +67,8 @@ function LaboratoriosProfessor() {
                                             <span
                                                 className={`px-3 py-1 rounded-full font-semibold text-sm ${
                                                     lab.situacao === "Disponivel"
-                                                        ? "bg-green-100 text-green-700"
-                                                        : "bg-red-100 text-red-700"
+                                                        ? "bg-green-500 text-green-900"
+                                                        : "bg-red-500 text-red-900"
                                                 }`}
                                             >
                                                 {lab.situacao}
@@ -78,7 +78,7 @@ function LaboratoriosProfessor() {
                                             <button
                                                 onClick={handleReservar}
                                                 disabled={lab.situacao !== "Disponivel"}
-                                                className={`px-5 py-2 rounded-md transition font-medium ${
+                                                className={`px-5 py-2 transition font-medium ${
                                                     lab.situacao === "Disponivel"
                                                         ? "bg-green-600 text-white hover:bg-green-700"
                                                         : "bg-gray-400 text-white cursor-not-allowed"
