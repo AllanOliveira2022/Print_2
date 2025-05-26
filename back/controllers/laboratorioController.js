@@ -109,8 +109,10 @@ export const editarLaboratorio = async (req, res) => {
     // Verificar se o código de identificação já existe em outro laboratório
     if (codigoIdentificacao !== laboratorio.codigoIdentificacao) {
       const laboratorioExistente = await db.Laboratorio.findOne({ 
-        where: { codigoIdentificacao },
-        where: { id: { [db.Sequelize.Op.ne]: id } } // Não incluir o próprio laboratório na busca
+        where: { 
+          codigoIdentificacao,
+          id: { [db.Sequelize.Op.ne]: id } // Correção: remover o 'where' duplicado
+        }
       });
 
       if (laboratorioExistente) {
