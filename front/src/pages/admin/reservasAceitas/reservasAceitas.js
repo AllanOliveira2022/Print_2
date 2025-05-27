@@ -49,7 +49,7 @@ function ReservasAceitas() {
         <div className="w-full max-w-7xl bg-gray-50 rounded-lg shadow-md p-6 mt-4">
           <div className="flex flex-col mb-6 gap-4">
             <h1 className="text-2xl font-bold text-green-800 text-left">
-              Histórico de Reservas de Laboratório
+              Histórico de Reservas de Espaços
             </h1>
           </div>
 
@@ -78,7 +78,7 @@ function ReservasAceitas() {
                 <tr>
                   <th className="px-4 py-3 text-center">ID</th>
                   <th className="px-4 py-3 text-center">Professor</th>
-                  <th className="px-4 py-3 text-center">Laboratório</th>
+                  <th className="px-4 py-3 text-center">Espaço</th>
                   <th className="px-4 py-3 text-center">Tipo</th>
                   <th className="px-4 py-3 text-center">Data da reserva</th>
                   <th className="px-4 py-3 text-center">Turno</th>

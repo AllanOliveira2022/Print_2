@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { HiMiniComputerDesktop } from "react-icons/hi2";
-import { FaRegListAlt, FaClipboardCheck, FaRegBell } from "react-icons/fa";
+import { FaChalkboardTeacher, FaRegListAlt, FaClipboardCheck, FaRegBell } from "react-icons/fa";
 import { LuArrowLeftFromLine } from "react-icons/lu";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import MenuSection from "../../menuSection/menuSection";
@@ -45,10 +44,10 @@ function MenuProfessor({ userName, userCode }) {
                 {/* Itens do menu */}
                 <div className="flex flex-col space-y-2 flex-grow min-w-[280px]">
                     <MenuSection
-                        icon={<HiMiniComputerDesktop />}
-                        sectionName="Laboratórios"
-                        redirectPath="/professor/laboratorios"
-                        isActive={currentPath === "/professor/laboratorios"}
+                        icon={<FaChalkboardTeacher />}
+                        sectionName="Espaços"
+                        redirectPath="/professor/espacos"
+                        isActive={currentPath === "/professor/espacos"}
                     />
                     <MenuSection
                         icon={<FaRegListAlt />}

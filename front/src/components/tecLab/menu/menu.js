@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { HiMiniComputerDesktop } from "react-icons/hi2";
 import { GrCubes } from "react-icons/gr";
 import { FaRegListAlt, FaUserGraduate, FaRegBell, FaClipboardCheck } from "react-icons/fa";
-import { PiStudentFill } from "react-icons/pi";
+import { PiBuildingOfficeFill, PiStudentFill } from "react-icons/pi";
 import { LuArrowLeftFromLine } from "react-icons/lu";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import MenuSection from "../../menuSection/menuSection";
@@ -48,10 +47,10 @@ function Menu({ userName, userCode }) {
                 {/* Itens do menu */}
                 <div className="flex flex-col space-y-2 flex-grow min-w-[280px]">
                     <MenuSection
-                        icon={<HiMiniComputerDesktop />}
-                        sectionName="Laboratórios"
-                        redirectPath="/admin/laboratorios"
-                        isActive={currentPath === "/admin/laboratorios"}
+                        icon={<PiBuildingOfficeFill />}
+                        sectionName="Espaços"
+                        redirectPath="/admin/espacos"
+                        isActive={currentPath === "/admin/espacos"}
                     />
                     <MenuSection
                         icon={<FaRegListAlt />}

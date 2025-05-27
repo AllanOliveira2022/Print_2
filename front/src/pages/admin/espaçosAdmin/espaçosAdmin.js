@@ -6,12 +6,11 @@ function MenuLabs() {
     const navigate = useNavigate();
 
     const handleCadastro = () => {
-        navigate("/admin/laboratorios/cadastrar");
+        navigate("/admin/espacos/cadastrar");
     };
 
-    // Função para redirecionar para a página de edição, passando o id
     const handleEditar = (id) => {
-        navigate(`/admin/laboratorios/editar/${id}`);
+        navigate(`/admin/espacos/editar/${id}`);
     };
 
     const laboratorios = [
@@ -28,7 +27,7 @@ function MenuLabs() {
                 <div className="w-full max-w-7xl bg-gray-50 rounded-lg shadow-md p-6 mt-4">
                     <div className="flex flex-col mb-6 gap-4">
                         <h1 className="text-2xl font-bold text-green-800 text-left">
-                            Laboratórios Cadastrados
+                            Espaços Cadastrados
                         </h1>
                     </div>
 
@@ -51,7 +50,7 @@ function MenuLabs() {
                             <button
                                 onClick={handleCadastro}
                                 className="w-full sm:w-auto px-6 py-2 bg-green-600 border-2 border-green-600 text-white hover:bg-green-700 hover:border-green-700 transition-colors uppercase">
-                                Cadastrar Laboratório
+                                Cadastrar Espaço
                             </button>
                         </div>
                     </div>

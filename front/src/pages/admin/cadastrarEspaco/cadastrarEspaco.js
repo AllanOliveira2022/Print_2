@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Menu from "../../../components/tecLab/menu/menu";
 
-function CadastrarLaboratorio() {
+function CadastrarEspaco() {
   const [formData, setFormData] = useState({
     nome: "",
     codigo: "",
@@ -134,7 +134,24 @@ function CadastrarLaboratorio() {
               <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
                 Informações Gerais
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tipo de Espaço
+                  </label>
+                  <select
+                    name="tipo"
+                    value={formData.tipo}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
+                  >
+                    {tiposEspaco.map((opcao) => (
+                      <option key={opcao.value} value={opcao.value}>
+                        {opcao.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Nome do Espaço *
@@ -187,7 +204,7 @@ function CadastrarLaboratorio() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Número
+                    Andar
                   </label>
                   <input
                     name="numero"
@@ -205,35 +222,6 @@ function CadastrarLaboratorio() {
                 Estrutura e Capacidade
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tipo de Espaço
-                  </label>
-                  <select
-                    name="tipo"
-                    value={formData.tipo}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
-                  >
-                    {tiposEspaco.map((opcao) => (
-                      <option key={opcao.value} value={opcao.value}>
-                        {opcao.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Capacidade Total
-                  </label>
-                  <input
-                    name="capacidade"
-                    value={formData.capacidade}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
-                  />
-                </div>
-                
                 {/* Seção de Equipamentos Reformulada */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -313,7 +301,17 @@ function CadastrarLaboratorio() {
                     </div>
                   )}
                 </div>
-              
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Capacidade Total
+                  </label>
+                  <input
+                    name="capacidade"
+                    value={formData.capacidade}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
+                  />
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Capacidade para PCD
@@ -426,4 +424,4 @@ function CadastrarLaboratorio() {
   );
 }
 
-export default CadastrarLaboratorio;
+export default CadastrarEspaco;
