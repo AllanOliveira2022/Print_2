@@ -30,7 +30,7 @@ module.exports = {
           },
       },
       tipo: {
-        type: Sequelize.ENUM('aluno', 'professor', 'tecnico'),
+        type: Sequelize.ENUM('professor', 'tecnico'),
         allowNull: false,
       },
       createdAt: {

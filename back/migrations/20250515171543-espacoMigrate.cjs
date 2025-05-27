@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Laboratorios', {
+    await queryInterface.createTable('Espacos', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -19,15 +19,29 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
-      blocoDidatico: {
+      tipoId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Tipos',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+      },
+      blocoId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Blocos',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+      },
+      andar: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      numero: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      tipoLaboratorio: {
+      tipoEspaco: {
         type: Sequelize.STRING,
         allowNull: false,
       },
@@ -35,15 +49,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      quantidadeComputadores: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
       equipamentosDisponiveis: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
-      softwaresInstalados: {
         type: Sequelize.TEXT,
         allowNull: false,
       },
@@ -53,13 +59,13 @@ module.exports = {
       },
       responsavel: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       observacoes: {
         type: Sequelize.TEXT,
         allowNull: true,
       },
-      situacao: { // se está disponivel ou não
+      situacao: {
         type: Sequelize.STRING,
         allowNull: false,
       },
@@ -77,6 +83,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Laboratorios');
+    await queryInterface.dropTable('Espacos');
   },
 };

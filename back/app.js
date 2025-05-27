@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 
-import alunoRoutes from './routes/alunoRoutes.js';
 import professorRoutes from './routes/professorRoutes.js';
 import admRoutes from './routes/admRoutes.js';
 import usuarioRoutes from './routes/usuarioRoutes.js';
@@ -20,7 +19,6 @@ app.use(cors({
   app.use(express.json());
 
 app.use('/api/usuarios', usuarioRoutes);
-app.use('/api/alunos', alunoRoutes);
 app.use('/api/professores', professorRoutes);
 app.use('/api/administradores', admRoutes);
 app.use('/api/laboratorios', laboratorioRoutes);

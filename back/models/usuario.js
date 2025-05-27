@@ -27,7 +27,7 @@ export default (sequelize) => {
             allowNull: false,
         },
         tipo: {
-            type: DataTypes.ENUM('aluno', 'professor', 'tecnico'),
+            type: DataTypes.ENUM('professor', 'tecnico'),
             allowNull: false,
         },
     });
@@ -42,7 +42,6 @@ export default (sequelize) => {
 
     // Relacionamentos
     Usuario.associate = (models) => {
-        Usuario.hasOne(models.Aluno, { foreignKey: 'id' });
         Usuario.hasOne(models.Professor, { foreignKey: 'id' });
         Usuario.hasOne(models.TecnicoAdministrador, { foreignKey: 'id' });
     };
