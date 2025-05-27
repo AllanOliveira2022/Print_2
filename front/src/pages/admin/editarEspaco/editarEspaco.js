@@ -102,7 +102,7 @@ function EditarLaboratorio() {
 
   const handleConfirmCancel = () => {
     setShowModal(false);
-    navigate("/admin/laboratorios");
+    navigate("/admin/espacos");
   };
 
   const handleCloseModal = () => {
@@ -131,7 +131,7 @@ function EditarLaboratorio() {
           <div className="text-center">
             <p className="text-red-600 mb-4">{error}</p>
             <button
-              onClick={() => navigate("/admin/laboratorios")}
+              onClick={() => navigate("/admin/espacos")}
               className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
             >
               Voltar para Lista
