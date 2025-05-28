@@ -31,16 +31,8 @@ export default (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        tipoEspaco: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
         capacidade: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        equipamentosDisponiveis: {
-            type: DataTypes.TEXT, // Pode ser uma lista em string separada por vírgula
             allowNull: false,
         },
         capacidadePCD: {
@@ -70,6 +62,12 @@ export default (sequelize) => {
         Espaco.belongsTo(models.Tipo, {
             foreignKey: 'tipoId',
             as: 'Tipo'
+        });
+
+        Espaco.belongsToMany(models.Equipamento, {
+            through: models.EspacoEquipamento,
+            foreignKey: 'espacoId',
+            as: 'equipamentos'
         });
         
     }

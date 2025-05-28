@@ -31,3 +31,6 @@ export const autorizarTipo = (tipoPermitido) => {
     next();
   };
 };
+
+
+
