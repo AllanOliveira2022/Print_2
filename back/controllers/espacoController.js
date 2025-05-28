@@ -90,3 +90,126 @@ export const cadastrarEspaco = async (req, res) => {
     }
 };
 
+export const listarEspacos = async (req, res) => {
+    try {
+        const espacos = await db.Espaco.findAll({
+            include: [
+                {
+                    model: db.Bloco,
+                    as: 'bloco', // Usar o 'as' definido na associação do model Espaco
+                    attributes: ['nome'] // Seleciona apenas o nome do bloco
+                },
+                {
+                    model: db.Tipo,
+                    as: 'Tipo', // Usar o 'as' definido na associação do model Espaco
+                    attributes: ['nome'] // Seleciona apenas o nome do tipo
+                },
+                {
+                    model: db.Equipamento,
+                    as: 'equipamentos', // Usar o 'as' definido na associação do model Espaco
+                    through: {
+                        attributes: ['quantidade'] // Seleciona a quantidade da tabela de junção
+                    },
+                    attributes: ['nome'] // Seleciona o nome do equipamento
+                }
+            ],
+            order: [
+                ['nome', 'ASC'] // Ordena os espaços pelo nome
+            ]
+        });
+
+        // Mapeia os resultados para o formato desejado, concatenando os equipamentos
+        const espacosFormatados = espacos.map(espaco => {
+            const dadosEspaco = espaco.get({ plain: true }); // Obtém um objeto JSON simples do modelo
+
+            // Concatena os equipamentos
+            const equipamentosConcatenados = dadosEspaco.equipamentos
+                .map(equipamento => `${equipamento.nome} (${equipamento.EspacoEquipamento.quantidade})`)
+                .join('; '); // Junta com '; ' como separador
+
+            return {
+                id: dadosEspaco.id,
+                nome: dadosEspaco.nome,
+                codigoIdentificacao: dadosEspaco.codigoIdentificacao,
+                nomeBloco: dadosEspaco.bloco ? dadosEspaco.bloco.nome : null, // Verifica se bloco existe
+                nomeTipo: dadosEspaco.Tipo ? dadosEspaco.Tipo.nome : null, // Verifica se tipo existe
+                andar: dadosEspaco.andar,
+                capacidade: dadosEspaco.capacidade,
+                capacidadePCD: dadosEspaco.capacidadePCD,
+                responsavel: dadosEspaco.responsavel,
+                observacoes: dadosEspaco.observacoes,
+                situacao: dadosEspaco.situacao,
+                equipamentos: equipamentosConcatenados || 'Nenhum equipamento associado.' // Mostra uma mensagem se não houver equipamentos
+            };
+        });
+
+        res.status(200).json(espacosFormatados);
+
+    } catch (error) {
+        console.error('Erro ao listar espaços:', error);
+        res.status(500).json({ message: 'Erro interno ao listar espaços.' });
+    }
+};
+
+export const listarEspacosId = async (req, res) => {
+    try {
+        const { id } = req.params; 
+
+        const espaco = await db.Espaco.findByPk(id, { 
+            include: [
+                {
+                    model: db.Bloco,
+                    as: 'bloco',
+                    attributes: ['nome']
+                },
+                {
+                    model: db.Tipo,
+                    as: 'Tipo',
+                    attributes: ['nome']
+                },
+                {
+                    model: db.Equipamento,
+                    as: 'equipamentos',
+                    through: {
+                        attributes: ['quantidade']
+                    },
+                    attributes: ['nome']
+                }
+            ]
+        });
+
+        // Se o espaço não for encontrado
+        if (!espaco) {
+            return res.status(404).json({ message: 'Espaço não encontrado.' });
+        }
+
+        // Formata o resultado para ter os equipamentos concatenados, similar ao listarEspacos
+        const dadosEspaco = espaco.get({ plain: true });
+
+        const equipamentosConcatenados = dadosEspaco.equipamentos
+            .map(equipamento => `${equipamento.nome} (${equipamento.EspacoEquipamento.quantidade})`)
+            .join('; ');
+
+        const espacoFormatado = {
+            id: dadosEspaco.id,
+            nome: dadosEspaco.nome,
+            codigoIdentificacao: dadosEspaco.codigoIdentificacao,
+            nomeBloco: dadosEspaco.bloco ? dadosEspaco.bloco.nome : null,
+            nomeTipo: dadosEspaco.Tipo ? dadosEspaco.Tipo.nome : null,
+            andar: dadosEspaco.andar,
+            capacidade: dadosEspaco.capacidade,
+            capacidadePCD: dadosEspaco.capacidadePCD,
+            responsavel: dadosEspaco.responsavel,
+            observacoes: dadosEspaco.observacoes,
+            situacao: dadosEspaco.situacao,
+            equipamentos: equipamentosConcatenados || 'Nenhum equipamento associado.'
+        };
+
+        res.status(200).json(espacoFormatado);
+
+    } catch (error) {
+        console.error('Erro ao buscar espaço por ID:', error);
+        res.status(500).json({ message: 'Erro interno ao buscar espaço.' });
+    }
+};
+
