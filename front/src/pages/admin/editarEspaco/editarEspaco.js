@@ -86,7 +86,7 @@ function EditarLaboratorio() {
 
       if (response.ok) {
         alert("Laboratório atualizado com sucesso!");
-        navigate("/admin/laboratorios");
+        navigate("/admin/espacos");
       } else {
         setError(data.message || "Erro ao atualizar laboratório.");
       }

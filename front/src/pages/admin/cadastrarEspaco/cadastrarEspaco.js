@@ -77,7 +77,7 @@ function CadastrarEspaco() {
 
       if (response.ok) {
         alert("Laboratório cadastrado com sucesso!");
-        navigate("/admin/laboratorios");
+        navigate("/admin/espacos");
       } else {
         alert("Erro ao cadastrar laboratório.");
       }
@@ -92,7 +92,7 @@ function CadastrarEspaco() {
 
   const handleConfirmCancel = () => {
     setShowModal(false);
-    navigate("/admin/laboratorios");
+    navigate("/admin/espacos");
   };
 
   const handleCloseModal = () => {
