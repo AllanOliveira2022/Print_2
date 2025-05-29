@@ -59,6 +59,16 @@ function Login() {
             </Link>
           </div>
 
+          {/* Link do visitante acima do recuperar senha */}
+          <div className="flex items-center justify-center mt-6">
+            <Link 
+              to="/visitante" 
+              className="text-base font-medium text-green-600 hover:text-green-700 transition-colors duration-200"
+            >
+              Entrar como visitante &rarr;
+            </Link>
+          </div>
+
           <div className="flex items-center justify-center">
             <Link 
               to="/recuperarSenha" 

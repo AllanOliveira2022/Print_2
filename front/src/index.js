@@ -7,7 +7,6 @@ import Login from './pages/login/Login';
 import TypeAccount from './pages/register/typeAccount/typeAccount';
 import RegisterTecLab from './pages/register/registerTecLab/registerTecLab';
 import RegisterProf from './pages/register/registerProf/registerProf';
-import RegisterEstudante from './pages/register/registerEstudante/registerEstudante';
 /* Password */
 import RecuperarSenha from './pages/password/recuperarSenha/recuperarSenha';
 import NovaSenha from './pages/password/novaSenha/novaSenha';
@@ -39,10 +38,6 @@ const router = createBrowserRouter([
   {
     path: "/register/professor",
     element: <RegisterProf />,
-  },
-  {
-    path: "/register/estudante",
-    element: <RegisterEstudante />,
   },
   {
     path: "/recuperarSenha",
