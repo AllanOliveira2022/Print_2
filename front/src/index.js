@@ -11,7 +11,7 @@ import RegisterProf from './pages/register/registerProf/registerProf';
 import RecuperarSenha from './pages/password/recuperarSenha/recuperarSenha';
 import NovaSenha from './pages/password/novaSenha/novaSenha';
 /* Telas Admin */
-import LabsAdmin from './pages/admin/espaçosAdmin/espaçosAdmin';
+import EspacosAdmin from './pages/admin/espaçosAdmin/espaçosAdmin';
 import CadastrarEspaco from './pages/admin/cadastrarEspaco/cadastrarEspaco';
 import SolicitacoesReservaAdmin from "./pages/admin/solicitacoesReservasAdmin/solicitacoesReservasAdmin";
 import DetalhesSolicitacao from './pages/admin/solicitacoesReservasAdmin/detalhesSolicitacao/detalhesSolicitacao';
@@ -49,7 +49,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin/espacos",
-    element: <LabsAdmin/>
+    element: <EspacosAdmin/>
   },
   {
     path: "/admin/espacos/cadastrar",

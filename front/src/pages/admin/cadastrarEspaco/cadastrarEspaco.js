@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Menu from "../../../components/tecLab/menu/menu";
+import espacoService from "../../../services/espacoService"; // Ajuste o caminho conforme sua estrutura
 
 function CadastrarEspaco() {
   const [formData, setFormData] = useState({
@@ -11,7 +12,7 @@ function CadastrarEspaco() {
     tipo: "",
     capacidade: "",
     quantidadeComputadores: "",
-    equipamentos: [], // Agora é um array de objetos
+    equipamentos: [], // Array de objetos
     softwares: "",
     capacidadePCD: "",
     responsavel: "",
@@ -24,7 +25,11 @@ function CadastrarEspaco() {
     quantidade: ""
   });
 
+  // Estados para controle de UI
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -66,23 +71,71 @@ function CadastrarEspaco() {
     });
   };
 
+  // Função para preparar dados para envio
+  const prepararDadosParaEnvio = (dados) => {
+    return {
+      ...dados,
+      capacidade: dados.capacidade ? parseInt(dados.capacidade) : null,
+      quantidadeComputadores: dados.quantidadeComputadores ? parseInt(dados.quantidadeComputadores) : null,
+      numero: dados.numero || null,
+      // Remove o ID temporário dos equipamentos antes de enviar
+      equipamentos: dados.equipamentos.map(({ id, ...eq }) => eq)
+    };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch("/api/laboratorios", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+    
+    // Validações básicas
+    if (!formData.nome.trim()) {
+      setError("Nome do espaço é obrigatório");
+      return;
+    }
+    
+    if (!formData.codigo.trim()) {
+      setError("Código de identificação é obrigatório");
+      return;
+    }
 
-      if (response.ok) {
-        alert("Laboratório cadastrado com sucesso!");
-        navigate("/admin/espacos");
-      } else {
-        alert("Erro ao cadastrar laboratório.");
-      }
+    setLoading(true);
+    setError(null);
+
+    try {
+      const dadosParaEnvio = prepararDadosParaEnvio(formData);
+      
+      await espacoService.cadastrar(dadosParaEnvio);
+      
+      // Sucesso - mostrar mensagem e redirecionar
+      alert("Espaço cadastrado com sucesso!");
+      navigate("/admin/espacos");
+      
     } catch (error) {
-      alert("Erro de conexão.");
+      console.error("Erro ao cadastrar espaço:", error);
+      
+      // Tratamento de diferentes tipos de erro
+      if (error.response) {
+        // Erro da API (4xx, 5xx)
+        const status = error.response.status;
+        const message = error.response.data?.message || error.response.data?.error;
+        
+        if (status === 400) {
+          setError(message || "Dados inválidos. Verifique as informações fornecidas.");
+        } else if (status === 409) {
+          setError("Já existe um espaço com este código. Escolha um código diferente.");
+        } else if (status === 500) {
+          setError("Erro interno do servidor. Tente novamente mais tarde.");
+        } else {
+          setError(message || "Erro ao cadastrar espaço. Tente novamente.");
+        }
+      } else if (error.request) {
+        // Erro de rede
+        setError("Erro de conexão. Verifique sua internet e tente novamente.");
+      } else {
+        // Outros erros
+        setError("Erro inesperado. Tente novamente.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -128,6 +181,32 @@ function CadastrarEspaco() {
             </p>
           </div>
 
+          {/* Exibição de erro */}
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+                <div className="ml-auto pl-3">
+                  <button
+                    onClick={() => setError(null)}
+                    className="text-red-400 hover:text-red-600"
+                  >
+                    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Informações Gerais */}
             <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -135,7 +214,7 @@ function CadastrarEspaco() {
                 Informações Gerais
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Tipo de Espaço
                   </label>
@@ -162,6 +241,7 @@ function CadastrarEspaco() {
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
                     required
+                    disabled={loading}
                   />
                 </div>
                 <div>
@@ -174,6 +254,7 @@ function CadastrarEspaco() {
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
                     required
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -194,6 +275,7 @@ function CadastrarEspaco() {
                     value={formData.bloco}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
+                    disabled={loading}
                   >
                     {blocosDidaticos.map((opcao) => (
                       <option key={opcao.value} value={opcao.value}>
@@ -211,6 +293,7 @@ function CadastrarEspaco() {
                     value={formData.numero}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -222,7 +305,7 @@ function CadastrarEspaco() {
                 Estrutura e Capacidade
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Seção de Equipamentos Reformulada */}
+                {/* Seção de Equipamentos */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Equipamentos Disponíveis
@@ -241,6 +324,7 @@ function CadastrarEspaco() {
                           onChange={(e) => setNovoEquipamento({...novoEquipamento, nome: e.target.value})}
                           placeholder="Ex: Computador, Projetor..."
                           className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-600"
+                          disabled={loading}
                         />
                       </div>
                       <div>
@@ -254,13 +338,15 @@ function CadastrarEspaco() {
                           onChange={(e) => setNovoEquipamento({...novoEquipamento, quantidade: e.target.value})}
                           placeholder="0"
                           className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-600"
+                          disabled={loading}
                         />
                       </div>
                       <div>
                         <button
                           type="button"
                           onClick={adicionarEquipamento}
-                          className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors font-medium"
+                          disabled={loading}
+                          className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           Adicionar
                         </button>
@@ -281,6 +367,7 @@ function CadastrarEspaco() {
                             value={equipamento.nome}
                             onChange={(e) => editarEquipamento(equipamento.id, 'nome', e.target.value)}
                             className="flex-1 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-600"
+                            disabled={loading}
                           />
                           <input
                             type="number"
@@ -288,11 +375,13 @@ function CadastrarEspaco() {
                             value={equipamento.quantidade}
                             onChange={(e) => editarEquipamento(equipamento.id, 'quantidade', e.target.value)}
                             className="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-600"
+                            disabled={loading}
                           />
                           <button
                             type="button"
                             onClick={() => removerEquipamento(equipamento.id)}
-                            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm"
+                            disabled={loading}
+                            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Remover
                           </button>
@@ -301,17 +390,22 @@ function CadastrarEspaco() {
                     </div>
                   )}
                 </div>
+                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Capacidade Total
                   </label>
                   <input
+                    type="number"
+                    min="1"
                     name="capacidade"
                     value={formData.capacidade}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
+                    disabled={loading}
                   />
                 </div>
+                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Capacidade para PCD
@@ -324,6 +418,7 @@ function CadastrarEspaco() {
                         value="Sim"
                         checked={formData.capacidadePCD === "Sim"}
                         onChange={handleChange}
+                        disabled={loading}
                         className="before:content[''] peer relative h-5 w-5 appearance-none rounded-full border border-gray-300 transition-all before:absolute before:h-full before:w-full before:rounded-full before:bg-green-600 before:opacity-0 before:transition-opacity checked:border-green-600 checked:before:opacity-100"
                       />
                       <span className="ml-2 text-gray-700">Sim</span>
@@ -335,6 +430,7 @@ function CadastrarEspaco() {
                         value="Não"
                         checked={formData.capacidadePCD === "Não"}
                         onChange={handleChange}
+                        disabled={loading}
                         className="before:content[''] peer relative h-5 w-5 appearance-none rounded-full border border-gray-300 transition-all before:absolute before:h-full before:w-full before:rounded-full before:bg-green-600 before:opacity-0 before:transition-opacity checked:border-green-600 checked:before:opacity-100"
                       />
                       <span className="ml-2 text-gray-700">Não</span>
@@ -359,6 +455,7 @@ function CadastrarEspaco() {
                     value={formData.responsavel}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
+                    disabled={loading}
                   />
                 </div>
                 <div>
@@ -371,6 +468,7 @@ function CadastrarEspaco() {
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
                     rows="3"
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -380,15 +478,20 @@ function CadastrarEspaco() {
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-6 py-2 text-red-500 border-2 border-red-500 uppercase hover:bg-red-500 hover:text-white transition-colors font-medium"
+                disabled={loading}
+                className="px-6 py-2 text-red-500 border-2 border-red-500 uppercase hover:bg-red-500 hover:text-white transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-6 py-2 bg-green-600 text-white uppercase hover:bg-green-700 transition-colors font-medium"
+                disabled={loading}
+                className="px-6 py-2 bg-green-600 text-white uppercase hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
-                Cadastrar Laboratório
+                {loading && (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                )}
+                {loading ? 'Cadastrando...' : 'Cadastrar Espaço'}
               </button>
             </div>
           </form>
@@ -401,7 +504,7 @@ function CadastrarEspaco() {
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">Cancelar cadastro?</h3>
             <p className="text-gray-600 mb-6">
-              Deseja realmente cancelar o cadastro deste laboratório? Todas as informações não salvas serão perdidas.
+              Deseja realmente cancelar o cadastro deste espaço? Todas as informações não salvas serão perdidas.
             </p>
             <div className="flex justify-end gap-4">
               <button
