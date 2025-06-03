@@ -1,11 +1,11 @@
-import { TipoLab } from '../models/index.js'; // Modelo TipoLab
+import db from '../models/index.js'; 
 import { Op } from 'sequelize';
 
 // Função para listar todos os tipos de laboratório/espaço
 async function listarTodosTiposLab(req, res) {
   try {
-    const tipos = await TipoLab.findAll({
-      order: [['nome', 'ASC']] // Opcional: ordena os tipos por nome
+    const tipos = await db.TipoLab.findAll({ 
+      order: [['nome', 'ASC']] 
     });
     res.status(200).json(tipos);
   } catch (error) {
@@ -23,7 +23,7 @@ async function cadastrarTipo(req, res) {
       return res.status(400).json({ message: 'O nome do tipo é obrigatório.' });
     }
 
-    const tipoExistente = await TipoLab.findOne({
+    const tipoExistente = await db.TipoLab.findOne({ 
       where: {
         nome: {
           [Op.iLike]: nome
@@ -35,7 +35,7 @@ async function cadastrarTipo(req, res) {
       return res.status(409).json({ message: 'Já existe um tipo com este nome.' });
     }
 
-    const novoTipo = await TipoLab.create({ nome });
+    const novoTipo = await db.TipoLab.create({ nome }); 
     res.status(201).json(novoTipo);
   } catch (error) {
     console.error(error);
@@ -47,7 +47,7 @@ async function cadastrarTipo(req, res) {
 async function buscarTipoPorId(req, res) {
   try {
     const { id } = req.params;
-    const tipo = await TipoLab.findByPk(id);
+    const tipo = await db.TipoLab.findByPk(id); 
 
     if (!tipo) {
       return res.status(404).json({ message: 'Tipo não encontrado.' });
@@ -70,15 +70,15 @@ async function editarTipo(req, res) {
       return res.status(400).json({ message: 'O nome do tipo é obrigatório para edição.' });
     }
 
-    const tipo = await TipoLab.findByPk(id);
+    const tipo = await db.TipoLab.findByPk(id); 
     if (!tipo) {
       return res.status(404).json({ message: 'Tipo não encontrado para edição.' });
     }
 
-    const tipoExistenteComMesmoNome = await TipoLab.findOne({
+    const tipoExistenteComMesmoNome = await db.TipoLab.findOne({ 
       where: {
         nome: { [Op.iLike]: nome },
-        id: { [Op.ne]: id }
+        id: { [Op.ne]: id } 
       }
     });
 
@@ -99,10 +99,16 @@ async function editarTipo(req, res) {
 async function excluirTipo(req, res) {
   try {
     const { id } = req.params;
-    const tipo = await TipoLab.findByPk(id);
+    const tipo = await db.TipoLab.findByPk(id); 
 
     if (!tipo) {
       return res.status(404).json({ message: 'Tipo não encontrado para exclusão.' });
+    }
+    
+    // Verificação se o tipo está sendo usado por algum espaço
+    const espacosDoTipo = await db.Espaco.count({ where: { tipo_id: id } }); 
+    if (espacosDoTipo > 0) {
+      return res.status(400).json({ message: 'Não é possível excluir o tipo pois ele está associado a espaços.' });
     }
 
     await tipo.destroy();
@@ -113,9 +119,8 @@ async function excluirTipo(req, res) {
   }
 }
 
-
 export default {
-  listarTodosTiposLab, // Adicionada a nova função
+  listarTodosTiposLab,
   cadastrarTipo,
   buscarTipoPorId,
   editarTipo,

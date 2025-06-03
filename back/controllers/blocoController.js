@@ -1,11 +1,11 @@
-import { Bloco } from '../models/index.js';
+import db from '../models/index.js'; 
 import { Op } from 'sequelize';
 
 // Função para listar todos os blocos
 async function listarTodosBlocos(req, res) {
   try {
-    const blocos = await Bloco.findAll({
-      order: [['nome', 'ASC']] // Opcional: ordena os blocos por nome
+    const blocos = await db.Bloco.findAll({ 
+      order: [['nome', 'ASC']]
     });
     res.status(200).json(blocos);
   } catch (error) {
@@ -23,7 +23,7 @@ async function cadastrarBloco(req, res) {
       return res.status(400).json({ message: 'O nome do bloco é obrigatório' });
     }
 
-    const blocoExistente = await Bloco.findOne({
+    const blocoExistente = await db.Bloco.findOne({ 
       where: {
         nome: {
           [Op.iLike]: nome
@@ -35,7 +35,7 @@ async function cadastrarBloco(req, res) {
       return res.status(409).json({ message: 'Já existe um bloco com este nome.' });
     }
 
-    const novoBloco = await Bloco.create({ nome });
+    const novoBloco = await db.Bloco.create({ nome }); 
     res.status(201).json(novoBloco);
   } catch (error) {
     console.error(error);
@@ -47,7 +47,7 @@ async function cadastrarBloco(req, res) {
 async function buscarBlocoPorId(req, res) {
   try {
     const { id } = req.params;
-    const bloco = await Bloco.findByPk(id);
+    const bloco = await db.Bloco.findByPk(id); 
 
     if (!bloco) {
       return res.status(404).json({ message: 'Bloco não encontrado' });
@@ -70,15 +70,15 @@ async function editarBloco(req, res) {
       return res.status(400).json({ message: 'O nome do bloco é obrigatório para edição.' });
     }
 
-    const bloco = await Bloco.findByPk(id);
+    const bloco = await db.Bloco.findByPk(id); 
     if (!bloco) {
       return res.status(404).json({ message: 'Bloco não encontrado para edição.' });
     }
 
-    const blocoExistenteComMesmoNome = await Bloco.findOne({
+    const blocoExistenteComMesmoNome = await db.Bloco.findOne({ 
       where: {
         nome: { [Op.iLike]: nome },
-        id: { [Op.ne]: id }
+        id: { [Op.ne]: id } 
       }
     });
 
@@ -99,10 +99,16 @@ async function editarBloco(req, res) {
 async function excluirBloco(req, res) {
   try {
     const { id } = req.params;
-    const bloco = await Bloco.findByPk(id);
+    const bloco = await db.Bloco.findByPk(id); 
 
     if (!bloco) {
       return res.status(404).json({ message: 'Bloco não encontrado para exclusão.' });
+    }
+
+    // Verificação se o bloco está sendo usado por algum espaço
+    const espacosNoBloco = await db.Espaco.count({ where: { bloco_id: id } }); 
+    if (espacosNoBloco > 0) {
+      return res.status(400).json({ message: 'Não é possível excluir o bloco pois ele está associado a espaços.' });
     }
 
     await bloco.destroy();
@@ -115,7 +121,7 @@ async function excluirBloco(req, res) {
 
 
 export default {
-  listarTodosBlocos, // Adicionada a nova função
+  listarTodosBlocos,
   cadastrarBloco,
   buscarBlocoPorId,
   editarBloco,
