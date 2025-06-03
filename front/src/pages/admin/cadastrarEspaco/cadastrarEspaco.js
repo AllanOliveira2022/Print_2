@@ -25,8 +25,8 @@ function CadastrarEspaco() {
     quantidade: "",
   });
 
-  const [tipos, setTipos] = useState([{ id: "", nome: "Selecione o tipo" }]);
-  const [blocos, setBlocos] = useState([{ id: "", nome: "Selecione um bloco" }]);
+  const [tipos, setTipos] = useState([]);
+  const [blocos, setBlocos] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -40,7 +40,7 @@ function CadastrarEspaco() {
         console.log("Resposta crua do tipoService.listarTodos:", response);
         const data = Array.isArray(response) ? response : response.data || [];
         console.log("Dados extraídos para tipos:", data);
-        const newTipos = [{ id: "", nome: "Selecione o tipo" }, ...data];
+        const newTipos = [...data];
         setTipos(newTipos);
         console.log("Estado tipos atualizado:", newTipos);
       } catch (err) {
@@ -55,7 +55,7 @@ function CadastrarEspaco() {
         console.log("Resposta crua do blocoService.listarTodos:", response);
         const data = Array.isArray(response) ? response : response.data || [];
         console.log("Dados extraídos para blocos:", data);
-        const newBlocos = [{ id: "", nome: "Selecione um bloco" }, ...data];
+        const newBlocos = [...data];
         setBlocos(newBlocos);
         console.log("Estado blocos atualizado:", newBlocos);
       } catch (err) {
@@ -265,6 +265,9 @@ function CadastrarEspaco() {
                     required
                     disabled={loading}
                   >
+                    <option value="" disabled>
+                      Selecione um tipo
+                    </option>
                     {tipos.map((tipo) => (
                       <option key={tipo.id} value={tipo.id}>
                         {tipo.nome}
@@ -318,7 +321,9 @@ function CadastrarEspaco() {
                     required
                     disabled={loading}
                   >
-                    {console.log("Blocos no momento do render:", blocos)}
+                    <option value="" disabled>
+                      Selecione um bloco
+                    </option>
                     {blocos.map((bloco) => (
                       <option key={bloco.id} value={bloco.id}>
                         {bloco.nome}
@@ -439,34 +444,54 @@ function CadastrarEspaco() {
                     </div>
                   )}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Capacidade Total
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    name="capacidade"
-                    value={formData.capacidade}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
-                    disabled={loading}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Capacidade para PCD
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    name="capacidadePCD"
-                    value={formData.capacidadePCD}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
-                    disabled={loading}
-                  />
-                </div>
+                  <div className="flex col-span-2 gap-5">
+                    <div className="w-2/5 block mb-1">
+                      <label className="text-sm font-medium text-gray-700">
+                        Capacidade Total
+                      </label>
+                      <input
+                        type="number"
+                        name="capacidadeTotal"
+                        value={formData.capacidadeTotal}
+                        onChange={handleChange}
+                        disabled={loading}
+                        className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600"
+                        min="0"
+                      />
+                    </div>
+
+                    <div className="w-3/5 block mb-1">
+                      <label className="text-sm font-medium text-gray-700">
+                        Capacidade para PCD
+                      </label>
+                      <div className="flex gap-4 mt-2">
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            name="capacidadePCD"
+                            value="true"
+                            checked={formData.capacidadePCD === true}
+                            onChange={() => handleChange({ target: { name: "capacidadePCD", value: true } })}
+                            disabled={loading}
+                            className="appearance-none h-5 w-5 border-2 border-green-600 rounded-full checked:bg-green-600 checked:border-green-600 focus:ring-2 focus:ring-green-600 focus:ring-offset-1"
+                          />
+                          <span>Sim</span>
+                        </label>
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            name="capacidadePCD"
+                            value="false"
+                            checked={formData.capacidadePCD === false}
+                            onChange={() => handleChange({ target: { name: "capacidadePCD", value: false } })}
+                            disabled={loading}
+                            className="appearance-none h-5 w-5 border-2 border-green-600 rounded-full checked:bg-green-600 checked:border-green-600 focus:ring-2 focus:ring-green-600 focus:ring-offset-1"
+                          />
+                          <span>Não</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
               </div>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm">
