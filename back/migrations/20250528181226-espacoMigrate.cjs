@@ -46,7 +46,7 @@ module.exports = {
         allowNull: false,
       },
       capacidadePCD: {
-        type: Sequelize.STRING,
+        type: Sequelize.BOOLEAN,
         allowNull: false,
       },
       responsavel: {

@@ -19,7 +19,14 @@ export const cadastrarEspaco = async (req, res) => {
     } = req.body;
 
     // Validação básica dos campos obrigatórios do Espaço
-    if (!nome || !codigoIdentificacao || !tipoId || !blocoId || !andar || !capacidade || !capacidadePCD || !situacao) {
+
+    if (capacidadePCD === null || capacidadePCD === undefined || capacidadePCD === ""){
+        return res.status(400).json({
+            message: 'O campo capacidade PCD é obrigatório!'
+        });
+
+    }
+    if (!nome || !codigoIdentificacao || !tipoId || !blocoId || !andar || !capacidade || !situacao) {
         return res.status(400).json({
             message: 'Todos os campos obrigatórios do espaço (nome, código, tipo, bloco, andar, capacidade, capacidade PCD, situação) devem ser preenchidos.'
         });
@@ -55,11 +62,12 @@ export const cadastrarEspaco = async (req, res) => {
         if (equipamentos && equipamentos.length > 0) {
             for (const itemEquipamento of equipamentos) {
                 const { nome: nomeEquipamento, quantidade } = itemEquipamento;
-
+                
                 if (!nomeEquipamento || !quantidade) {
                     await t.rollback();
                     return res.status(400).json({ message: 'Nome e quantidade são obrigatórios para cada equipamento.' });
                 }
+                
 
                 // Tenta encontrar o equipamento existente pelo nome
                 let equipamento = await db.Equipamento.findOne({ where: { nome: nomeEquipamento } });

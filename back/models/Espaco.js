@@ -36,7 +36,7 @@ export default (sequelize) => {
             allowNull: false,
         },
         capacidadePCD: {
-            type: DataTypes.STRING,
+            type: DataTypes.BOOLEAN,
             allowNull: false,
         },
         responsavel: {
