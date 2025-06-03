@@ -23,20 +23,14 @@ async function cadastrarBloco(req, res) {
       return res.status(400).json({ message: 'O nome do bloco é obrigatório' });
     }
 
-    const blocoExistente = await db.Bloco.findOne({ 
-      where: {
-        nome: {
-          [Op.iLike]: nome
-        }
-      }
-    });
+    const blocoExistente = await db.Bloco.findOne({ where: {nome}});
 
     if (blocoExistente) {
       return res.status(409).json({ message: 'Já existe um bloco com este nome.' });
     }
 
     const novoBloco = await db.Bloco.create({ nome }); 
-    res.status(201).json(novoBloco);
+    res.status(201).json({message: 'Bloco cadastrado com sucesso!',novoBloco});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erro ao cadastrar bloco', error: error.message });

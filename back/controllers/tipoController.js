@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 // Função para listar todos os tipos de laboratório/espaço
 async function listarTodosTiposLab(req, res) {
   try {
-    const tipos = await db.TipoLab.findAll({ 
+    const tipos = await db.Tipo.findAll({ 
       order: [['nome', 'ASC']] 
     });
     res.status(200).json(tipos);
@@ -23,20 +23,14 @@ async function cadastrarTipo(req, res) {
       return res.status(400).json({ message: 'O nome do tipo é obrigatório.' });
     }
 
-    const tipoExistente = await db.TipoLab.findOne({ 
-      where: {
-        nome: {
-          [Op.iLike]: nome
-        }
-      }
-    });
+    const tipoExistente = await db.Tipo.findOne({where: {nome}});
 
     if (tipoExistente) {
       return res.status(409).json({ message: 'Já existe um tipo com este nome.' });
     }
 
-    const novoTipo = await db.TipoLab.create({ nome }); 
-    res.status(201).json(novoTipo);
+    const novoTipo = await db.Tipo.create({ nome }); 
+    res.status(201).json({message: 'Tipo cadastrado com sucesso!',novoTipo});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erro ao cadastrar tipo.', error: error.message });
@@ -47,7 +41,7 @@ async function cadastrarTipo(req, res) {
 async function buscarTipoPorId(req, res) {
   try {
     const { id } = req.params;
-    const tipo = await db.TipoLab.findByPk(id); 
+    const tipo = await db.Tipo.findByPk(id); 
 
     if (!tipo) {
       return res.status(404).json({ message: 'Tipo não encontrado.' });
@@ -70,12 +64,12 @@ async function editarTipo(req, res) {
       return res.status(400).json({ message: 'O nome do tipo é obrigatório para edição.' });
     }
 
-    const tipo = await db.TipoLab.findByPk(id); 
+    const tipo = await db.Tipo.findByPk(id); 
     if (!tipo) {
       return res.status(404).json({ message: 'Tipo não encontrado para edição.' });
     }
 
-    const tipoExistenteComMesmoNome = await db.TipoLab.findOne({ 
+    const tipoExistenteComMesmoNome = await db.Tipo.findOne({ 
       where: {
         nome: { [Op.iLike]: nome },
         id: { [Op.ne]: id } 
@@ -99,7 +93,7 @@ async function editarTipo(req, res) {
 async function excluirTipo(req, res) {
   try {
     const { id } = req.params;
-    const tipo = await db.TipoLab.findByPk(id); 
+    const tipo = await db.Tipo.findByPk(id); 
 
     if (!tipo) {
       return res.status(404).json({ message: 'Tipo não encontrado para exclusão.' });
