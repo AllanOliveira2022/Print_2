@@ -1,7 +1,4 @@
-// src/services/ReservaService.js
-
-// Você pode usar axios, fetch, ou qualquer outra lib para requisições HTTP
-// Aqui vai um exemplo usando fetch para buscar reservas aceitas.
+import api from "../api";
 
 const API_BASE_URL = "http://localhost:3000/api"; // Ajuste para sua API real
 
@@ -13,14 +10,12 @@ const ReservaService = {
         throw new Error("Erro ao buscar reservas aceitas");
       }
       const data = await response.json();
-      return data; // espera-se um array de reservas aceitas
+      return data;
     } catch (error) {
       console.error("ReservaService.getReservasAceitas error:", error);
       throw error;
     }
   },
-
-  // Pode adicionar mais métodos para criar, editar, deletar reservas...
 };
 
 export default ReservaService;
