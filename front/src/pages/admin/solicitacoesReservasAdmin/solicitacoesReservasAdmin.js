@@ -87,7 +87,7 @@ function SolicitacoesReservaAdmin() {
                 <tr>
                   <th className="px-4 py-3">ID</th>
                   <th className="px-4 py-3">Professor</th>
-                  <th className="px-4 py-3">Laboratório</th>
+                  <th className="px-4 py-3">Espaços</th>
                   <th className="px-4 py-3">Data e Hora</th>
                   <th className="px-4 py-3">Situação</th>
                   <th className="px-4 py-3">Ações</th>

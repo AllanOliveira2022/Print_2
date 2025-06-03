@@ -31,14 +31,6 @@ function TypeAccount() {
             <span className="text-lg font-medium">Professor</span>
             <FaArrowRightLong />
           </Link>
-
-          <Link
-            to="/register/estudante"
-            className="w-full gap-2 p-4 flex flex-row items-center border border-green-600 rounded-lg hover:text-white hover:bg-green-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            <span className="text-lg font-medium">Estudante</span>
-            <FaArrowRightLong />
-          </Link>
         </div>
 
         <div className="pt-4">

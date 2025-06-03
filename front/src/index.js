@@ -7,19 +7,18 @@ import Login from './pages/login/Login';
 import TypeAccount from './pages/register/typeAccount/typeAccount';
 import RegisterTecLab from './pages/register/registerTecLab/registerTecLab';
 import RegisterProf from './pages/register/registerProf/registerProf';
-import RegisterEstudante from './pages/register/registerEstudante/registerEstudante';
 /* Password */
 import RecuperarSenha from './pages/password/recuperarSenha/recuperarSenha';
 import NovaSenha from './pages/password/novaSenha/novaSenha';
 /* Telas Admin */
-import LabsAdmin from './pages/admin/labsAdmin/labsAdmin';
-import CadastrarLaboratorio from './pages/admin/cadastrarLaboratorio/cadastrarLaboratorio';
+import EspacosAdmin from './pages/admin/espaçosAdmin/espaçosAdmin';
+import CadastrarEspaco from './pages/admin/cadastrarEspaco/cadastrarEspaco';
 import SolicitacoesReservaAdmin from "./pages/admin/solicitacoesReservasAdmin/solicitacoesReservasAdmin";
 import DetalhesSolicitacao from './pages/admin/solicitacoesReservasAdmin/detalhesSolicitacao/detalhesSolicitacao';
-import EditarLaboratorio from "./pages/admin/editarLaboratorio/editarLaboratorio";
+import EditarLaboratorio from "./pages/admin/editarEspaco/editarEspaco";
 import ReservasAceitas from './pages/admin/reservasAceitas/reservasAceitas';
 /*Telas Professor*/
-import LaboratoriosProfessor from './pages/professor/laboratoriosProfessor/laboratoriosProfessor';
+import EspacosProfessor from './pages/professor/espacosProfessor/espacosProfessor';
 import SolicitarReserva from './pages/professor/solicitarReserva/solicitarReserva';
 import SolicitacoesProfessor from './pages/professor/solicitacoesProfessor/solicitacoesProfessor';
 
@@ -41,10 +40,6 @@ const router = createBrowserRouter([
     element: <RegisterProf />,
   },
   {
-    path: "/register/estudante",
-    element: <RegisterEstudante />,
-  },
-  {
     path: "/recuperarSenha",
     element: <RecuperarSenha />,
   },
@@ -53,16 +48,16 @@ const router = createBrowserRouter([
     element: <NovaSenha />,
   },
   {
-    path: "/admin/laboratorios",
-    element: <LabsAdmin/>
+    path: "/admin/espacos",
+    element: <EspacosAdmin/>
   },
   {
-    path: "/admin/laboratorios/cadastrar",
-    element: <CadastrarLaboratorio />
+    path: "/admin/espacos/cadastrar",
+    element: <CadastrarEspaco />
   },
   {
-    path: "/professor/laboratorios",
-    element: <LaboratoriosProfessor />
+    path: "/professor/espacos",
+    element: <EspacosProfessor />
   },
   {
     path: "/professor/solicitarReserva",
@@ -77,7 +72,7 @@ const router = createBrowserRouter([
     element: <DetalhesSolicitacao />
   },
   {
-    path: "/admin/laboratorios/editar/:id",
+    path: "/admin/espacos/editar/:id",
     element: <EditarLaboratorio />
   },
   {

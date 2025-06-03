@@ -53,7 +53,7 @@ function ExcluirLaboratorio() {
 
             if (response.ok) {
                 // Redirecionar para a lista com mensagem de sucesso
-                navigate('/admin/laboratorios', { 
+                navigate('/admin/espacos', { 
                     state: { 
                         mensagem: 'Laboratório excluído com sucesso!',
                         tipo: 'sucesso'
@@ -71,7 +71,7 @@ function ExcluirLaboratorio() {
     };
 
     const handleCancelar = () => {
-        navigate('/admin/laboratorios');
+        navigate('/admin/espacos');
     };
 
     if (loading) {

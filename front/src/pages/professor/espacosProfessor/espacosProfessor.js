@@ -2,7 +2,7 @@ import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import MenuProfessor from "../../../components/professor/menu/menu";
 
-function LaboratoriosProfessor() {
+function EspaçosProfessor() {
     const navigate = useNavigate();
 
     const laboratorios = [
@@ -98,4 +98,4 @@ function LaboratoriosProfessor() {
     );
 }
 
-export default LaboratoriosProfessor;
+export default EspaçosProfessor;

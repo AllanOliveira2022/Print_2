@@ -1,11 +1,12 @@
 import express from 'express';
 import cors from 'cors';
 
-import alunoRoutes from './routes/alunoRoutes.js';
 import professorRoutes from './routes/professorRoutes.js';
 import admRoutes from './routes/admRoutes.js';
 import usuarioRoutes from './routes/usuarioRoutes.js';
-import laboratorioRoutes from './routes/laboratorioRoutes.js';
+import espacoRoutes from './routes/espacoRoutes.js'
+import blocoRoutes from './routes/blocoRoutes.js'
+import tipoRoutes from './routes/tipoRoutes.js'
 const app = express();
 
 app.use(cors());
@@ -20,11 +21,13 @@ app.use(cors({
   app.use(express.json());
 
 app.use('/api/usuarios', usuarioRoutes);
-app.use('/api/alunos', alunoRoutes);
 app.use('/api/professores', professorRoutes);
 app.use('/api/administradores', admRoutes);
-app.use('/api/laboratorios', laboratorioRoutes);
+app.use('/api/espacos', espacoRoutes);
 
+app.use('/api/blocos', blocoRoutes);
+
+app.use('/api/tipos', tipoRoutes);
 
   export default app;
 

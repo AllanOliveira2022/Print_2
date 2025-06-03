@@ -85,7 +85,7 @@ function DetalhesSolicitacao() {
 
           <div className="space-y-4">
             <p><strong>Professor:</strong> {sol.nomeProfessor}</p>
-            <p><strong>Laboratório:</strong> {sol.laboratorio}</p>
+            <p><strong>Espaços:</strong> {sol.laboratorio}</p>
             <p><strong>Data e Hora:</strong> {sol.dataHora}</p>
             <p><strong>Situação:</strong> {sol.situacao}</p>
             <p><strong>Descrição:</strong> {sol.descricao}</p>

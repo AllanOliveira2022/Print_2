@@ -45,7 +45,7 @@ function Login() {
 
           <div className="space-y-3">
             <Link
-              to="/admin/laboratorios"
+              to="/admin/espacos"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
             >
               Entrar na Conta
@@ -56,6 +56,16 @@ function Login() {
               className="w-full flex justify-center py-2 px-4 border border-green-600 rounded-lg shadow-sm text-sm font-medium text-green-600 bg-white hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
             >
               Criar Conta
+            </Link>
+          </div>
+
+          {/* Link do visitante acima do recuperar senha */}
+          <div className="flex items-center justify-center mt-6">
+            <Link 
+              to="/visitante" 
+              className="text-base font-medium text-green-600 hover:text-green-700 transition-colors duration-200"
+            >
+              Entrar como visitante &rarr;
             </Link>
           </div>
 
