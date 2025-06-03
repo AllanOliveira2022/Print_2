@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Menu from "../../../components/tecLab/menu/menu";
-import espacoService from "../../../services/espacoService"; // Ajuste o caminho conforme sua estrutura
-import tipoService from "../../../services/tipoService"; // Serviço para buscar tipos
-import blocoService from "../../../services/blocoService"; // Serviço para buscar blocos
+import espacoService from "../../../services/espacoService";
+import tipoService from "../../../services/tipoService";
+import blocoService from "../../../services/blocoService";
 
 function CadastrarEspaco() {
   const [formData, setFormData] = useState({
@@ -14,45 +14,52 @@ function CadastrarEspaco() {
     andar: "",
     capacidade: "",
     capacidadePCD: "",
-    situacao: "ativo", // Valor padrão conforme backend
+    situacao: "ativo",
     responsavel: "",
     observacoes: "",
     equipamentos: [],
   });
 
-  // Estados para o formulário de equipamentos
   const [novoEquipamento, setNovoEquipamento] = useState({
     nome: "",
     quantidade: "",
   });
 
-  // Estados para opções dinâmicas
   const [tipos, setTipos] = useState([{ id: "", nome: "Selecione o tipo" }]);
   const [blocos, setBlocos] = useState([{ id: "", nome: "Selecione um bloco" }]);
-
-  // Estados para controle de UI
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
-  // Carregar tipos e blocos do backend
   useEffect(() => {
     const fetchTipos = async () => {
       try {
-        const response = await tipoService.listar(); // Ajuste para o método do seu serviço
-        setTipos([{ id: "", nome: "Selecione o tipo" }, ...response.data]);
+        const response = await tipoService.listarTodos();
+        console.log("Resposta crua do tipoService.listarTodos:", response);
+        const data = Array.isArray(response) ? response : response.data || [];
+        console.log("Dados extraídos para tipos:", data);
+        const newTipos = [{ id: "", nome: "Selecione o tipo" }, ...data];
+        setTipos(newTipos);
+        console.log("Estado tipos atualizado:", newTipos);
       } catch (err) {
+        console.error("Erro ao carregar tipos:", err.message, err.stack);
         setError("Erro ao carregar tipos. Tente novamente.");
       }
     };
 
     const fetchBlocos = async () => {
       try {
-        const response = await blocoService.listar(); // Ajuste para o método do seu serviço
-        setBlocos([{ id: "", nome: "Selecione um bloco" }, ...response.data]);
+        const response = await blocoService.listarTodos();
+        console.log("Resposta crua do blocoService.listarTodos:", response);
+        const data = Array.isArray(response) ? response : response.data || [];
+        console.log("Dados extraídos para blocos:", data);
+        const newBlocos = [{ id: "", nome: "Selecione um bloco" }, ...data];
+        setBlocos(newBlocos);
+        console.log("Estado blocos atualizado:", newBlocos);
       } catch (err) {
+        console.error("Erro ao carregar blocos:", err.message, err.stack);
         setError("Erro ao carregar blocos. Tente novamente.");
       }
     };
@@ -63,10 +70,15 @@ function CadastrarEspaco() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: name === "tipoId" || name === "blocoId" || name === "capacidade" || name === "capacidadePCD" || name === "andar" ? parseInt(value) || "" : value });
+    setFormData({
+      ...formData,
+      [name]:
+        name === "tipoId" || name === "blocoId" || name === "capacidade" || name === "capacidadePCD" || name === "andar"
+          ? parseInt(value) || ""
+          : value,
+    });
   };
 
-  // Função para adicionar equipamento
   const adicionarEquipamento = () => {
     if (novoEquipamento.nome.trim() && novoEquipamento.quantidade.trim()) {
       setFormData({
@@ -74,7 +86,7 @@ function CadastrarEspaco() {
         equipamentos: [
           ...formData.equipamentos,
           {
-            id: Date.now(), // ID temporário para frontend
+            id: Date.now(),
             nome: novoEquipamento.nome.trim(),
             quantidade: parseInt(novoEquipamento.quantidade) || 1,
           },
@@ -84,7 +96,6 @@ function CadastrarEspaco() {
     }
   };
 
-  // Função para remover equipamento
   const removerEquipamento = (id) => {
     setFormData({
       ...formData,
@@ -92,19 +103,15 @@ function CadastrarEspaco() {
     });
   };
 
-  // Função para editar equipamento inline
   const editarEquipamento = (id, campo, valor) => {
     setFormData({
       ...formData,
       equipamentos: formData.equipamentos.map((eq) =>
-        eq.id === id
-          ? { ...eq, [campo]: campo === "quantidade" ? parseInt(valor) || 1 : valor }
-          : eq
+        eq.id === id ? { ...eq, [campo]: campo === "quantidade" ? parseInt(valor) || 1 : valor } : eq
       ),
     });
   };
 
-  // Função para preparar dados para envio
   const prepararDadosParaEnvio = (dados) => {
     return {
       nome: dados.nome,
@@ -117,14 +124,13 @@ function CadastrarEspaco() {
       situacao: dados.situacao,
       responsavel: dados.responsavel || null,
       observacoes: dados.observacoes || null,
-      equipamentos: dados.equipamentos.map(({ id, ...eq }) => eq), // Remove ID temporário
+      equipamentos: dados.equipamentos.map(({ id, ...eq }) => eq),
     };
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validações básicas
     if (!formData.nome.trim()) {
       setError("Nome do espaço é obrigatório");
       return;
@@ -147,6 +153,7 @@ function CadastrarEspaco() {
 
     try {
       const dadosParaEnvio = prepararDadosParaEnvio(formData);
+      console.log("Dados enviados para o backend:", dadosParaEnvio);
       await espacoService.cadastrar(dadosParaEnvio);
       alert("Espaço cadastrado com sucesso!");
       navigate("/admin/espacos");
@@ -207,7 +214,6 @@ function CadastrarEspaco() {
             </p>
           </div>
 
-          {/* Exibição de erro */}
           {error && (
             <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
               <div className="flex">
@@ -242,7 +248,6 @@ function CadastrarEspaco() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Informações Gerais */}
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
                 Informações Gerais
@@ -296,7 +301,6 @@ function CadastrarEspaco() {
               </div>
             </div>
 
-            {/* Localização */}
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
                 Localização
@@ -314,12 +318,18 @@ function CadastrarEspaco() {
                     required
                     disabled={loading}
                   >
+                    {console.log("Blocos no momento do render:", blocos)}
                     {blocos.map((bloco) => (
                       <option key={bloco.id} value={bloco.id}>
                         {bloco.nome}
                       </option>
                     ))}
                   </select>
+                  {blocos.length === 1 && (
+                    <p className="text-sm text-red-500 mt-1">
+                      Nenhum bloco disponível. Verifique se há blocos cadastrados no sistema.
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -338,19 +348,15 @@ function CadastrarEspaco() {
               </div>
             </div>
 
-            {/* Estrutura e Capacidade */}
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
                 Estrutura e Capacidade
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Seção de Equipamentos */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Equipamentos Disponíveis
                   </label>
-
-                  {/* Formulário para adicionar equipamento */}
                   <div className="bg-gray-50 p-4 rounded-lg mb-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                       <div>
@@ -396,8 +402,6 @@ function CadastrarEspaco() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Lista de equipamentos adicionados */}
                   {formData.equipamentos.length > 0 && (
                     <div className="space-y-2">
                       <h4 className="text-sm font-medium text-gray-700 mb-2">
@@ -435,7 +439,6 @@ function CadastrarEspaco() {
                     </div>
                   )}
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Capacidade Total
@@ -450,7 +453,6 @@ function CadastrarEspaco() {
                     disabled={loading}
                   />
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Capacidade para PCD
@@ -467,8 +469,6 @@ function CadastrarEspaco() {
                 </div>
               </div>
             </div>
-
-            {/* Observações */}
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
                 Observações
@@ -494,27 +494,26 @@ function CadastrarEspaco() {
                     name="observacoes"
                     value={formData.observacoes}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
+                    className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-600"
                     rows="3"
                     disabled={loading}
                   />
                 </div>
               </div>
             </div>
-
             <div className="flex justify-between mt-8">
               <button
                 type="button"
                 onClick={handleCancel}
+                className="px-6 py-2 text-red-500 border-2 border-red-500 uppercase hover:bg-red-500 hover:text-white rounded transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={loading}
-                className="px-6 py-2 text-red-500 border-2 border-red-500 uppercase hover:bg-red-500 hover:text-white transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
+                className="px-6 py-2 bg-green-600 text-white uppercase hover:bg-green-700 rounded transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 disabled={loading}
-                className="px-6 py-2 bg-green-600 text-white uppercase hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {loading && (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -526,24 +525,23 @@ function CadastrarEspaco() {
         </div>
       </div>
 
-      {/* Modal de confirmação */}
       {showModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">Cancelar cadastro?</h3>
             <p className="text-gray-600 mb-6">
-              Deseja realmente cancelar o cadastro deste espaço? Todas as informações não salvas serão perdidas.
+              Deseja realmente cancelar o cadastro deste espaço? Todas as alterações não salvas serão perdidas.
             </p>
-            <div className="flex justify-end gap-4">
+            <div className="flex justify-end gap-3">
               <button
                 onClick={handleCloseModal}
-                className="px-4 py-2 text-green-600 border-2 border-green-600 uppercase hover:bg-green-100 transition-colors font-medium"
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-100 transition-colors font-medium"
               >
-                Continuar
+                Voltar
               </button>
               <button
                 onClick={handleConfirmCancel}
-                className="px-4 py-2 bg-red-600 text-white uppercase hover:bg-red-700 transition-colors font-medium"
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors font-medium"
               >
                 Cancelar
               </button>
