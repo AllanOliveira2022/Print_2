@@ -4,6 +4,8 @@ import Menu from "../../../components/tecLab/menu/menu";
 import espacoService from "../../../services/espacoService";
 import tipoService from "../../../services/tipoService";
 import blocoService from "../../../services/blocoService";
+/*Modals*/
+import TipoModal from "../../../components/modals/tipoModal/tipoModal";
 
 function CadastrarEspaco() {
   const [formData, setFormData] = useState({
@@ -19,6 +21,17 @@ function CadastrarEspaco() {
     observacoes: "",
     equipamentos: [],
   });
+
+  const [showTipoModal, setShowTipoModal] = useState(false);
+
+  const handleNovosTiposAdicionados = (novosTipos) => {
+    if (novosTipos.length > 0) {
+      // Aqui você pode adicionar a lógica para atualizar a lista de tipos
+      // Por exemplo, chamar a API para cadastrar os novos tipos
+      // E depois atualizar a lista de tipos disponíveis
+      console.log("Novos tipos a serem cadastrados:", novosTipos);
+    }
+  };
 
   const [novoEquipamento, setNovoEquipamento] = useState({
     nome: "",
@@ -276,12 +289,19 @@ function CadastrarEspaco() {
                   </select>
                   <button
                           type="button"
-                          onClick={adicionarEquipamento}
+                          onClick={() => setShowTipoModal(true)}
                           disabled={loading}
                           className="w-2/5 py-2 ml-5 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
                         >
                           Adicionar
                   </button>
+                  {showTipoModal && (
+                    <TipoModal 
+                      isOpen={showTipoModal}
+                      onClose={() => setShowTipoModal(false)}
+                      onConfirm={handleNovosTiposAdicionados}
+                    />
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
