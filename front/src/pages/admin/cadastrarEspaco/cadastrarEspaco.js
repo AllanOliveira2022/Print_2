@@ -6,6 +6,7 @@ import tipoService from "../../../services/tipoService";
 import blocoService from "../../../services/blocoService";
 /*Modals*/
 import TipoModal from "../../../components/modals/tipoModal/tipoModal";
+import BlocoModal from "../../../components/modals/blocoModal/blocoModal";
 
 function CadastrarEspaco() {
   const [formData, setFormData] = useState({
@@ -23,13 +24,17 @@ function CadastrarEspaco() {
   });
 
   const [showTipoModal, setShowTipoModal] = useState(false);
+  const [showBlocoModal, setShowBlocoModal] = useState(false);
 
   const handleNovosTiposAdicionados = (novosTipos) => {
     if (novosTipos.length > 0) {
-      // Aqui você pode adicionar a lógica para atualizar a lista de tipos
-      // Por exemplo, chamar a API para cadastrar os novos tipos
-      // E depois atualizar a lista de tipos disponíveis
       console.log("Novos tipos a serem cadastrados:", novosTipos);
+    }
+  };
+
+  const handleNovosBlocosAdicionados = (novosBlocos) => {
+    if (novosBlocos.length > 0) {
+      console.log("Novos blocos a serem cadastrados:", novosBlocos);
     }
   };
 

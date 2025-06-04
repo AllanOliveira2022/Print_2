@@ -5,7 +5,7 @@ function TipoModal({ isOpen, onClose, onConfirm }) {
     const [tiposCadastrados, setTiposCadastrados] = useState([]);
   
     const handleCadastrar = () => {
-      if (nomeBloco.trim()) {
+      if (nomeTipo.trim()) {
         setTiposCadastrados([...tiposCadastrados, nomeTipo]);
         setNomeTipo("");
       }
@@ -21,8 +21,8 @@ function TipoModal({ isOpen, onClose, onConfirm }) {
             <div className="flex gap-5">
               <input 
                 type="text" 
-                value={nomeBloco}
-                onChange={(e) => setNomeBloco(e.target.value)}
+                value={nomeTipo}
+                onChange={(e) => setNomeTipo(e.target.value)}
                 placeholder="Nome do Bloco Didático"
                 className="w-3/5 px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600"
               />
