@@ -1,13 +1,13 @@
 import { useState } from "react";
 
 function TipoModal({ isOpen, onClose, onConfirm }) {
-    const [nomeBloco, setNomeBloco] = useState("");
-    const [blocosCadastrados, setBlocosCadastrados] = useState([]);
+    const [nomeTipo, setNomeTipo] = useState("");
+    const [tiposCadastrados, setTiposCadastrados] = useState([]);
   
     const handleCadastrar = () => {
       if (nomeBloco.trim()) {
-        setBlocosCadastrados([...blocosCadastrados, nomeBloco]);
-        setNomeBloco("");
+        setTiposCadastrados([...tiposCadastrados, nomeTipo]);
+        setNomeTipo("");
       }
     };
   
@@ -16,7 +16,7 @@ function TipoModal({ isOpen, onClose, onConfirm }) {
     return (
       <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
         <div className="bg-white p-6 shadow-lg w-full max-w-3xl space-y-5">
-          <h1 className="text-xl font-semibold text-gray-800 mb-4">Cadastrar Bloco Didático</h1>
+          <h1 className="text-xl font-semibold text-gray-800 mb-4">Cadastrar Tipo de Espaço</h1>
           <div className="space-y-4">
             <div className="flex gap-5">
               <input 
@@ -30,16 +30,16 @@ function TipoModal({ isOpen, onClose, onConfirm }) {
                 onClick={handleCadastrar}
                 className="w-2/5 px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium uppercase"
                 >
-                Cadastrar Bloco Didático
+                Cadastrar Tipo de Espaço
               </button>
             </div>
             <div className="mt-4 space-y-2">
-              <h3 className="text-sm font-medium text-gray-700">Blocos Cadastrados</h3>
-              {blocosCadastrados.map((bloco, index) => (
+              <h3 className="text-sm font-medium text-gray-700">Tipos de Espaços Cadastrados</h3>
+              {tiposCadastrados.map((tipo, index) => (
                 <div key={index} className="flex items-center justify-between bg-gray-50 p-3 border">
-                  <span>{bloco}</span>
+                  <span>{tipo}</span>
                   <button 
-                    onClick={() => setBlocosCadastrados(blocosCadastrados.filter((_, i) => i !== index))}
+                    onClick={() => setTiposCadastrados(tiposCadastrados.filter((_, i) => i !== index))}
                     className="px-3 py-1 bg-red-500 text-white hover:bg-red-600 transition-colors text-sm"
                   >
                     Excluir
@@ -57,7 +57,7 @@ function TipoModal({ isOpen, onClose, onConfirm }) {
               </button>
               <button 
                 onClick={() => {
-                  onConfirm(blocosCadastrados);
+                  onConfirm(tiposCadastrados);
                   onClose();
                 }}
                 className="w-2/4 px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium uppercase"
