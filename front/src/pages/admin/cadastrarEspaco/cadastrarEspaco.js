@@ -14,7 +14,7 @@ function CadastrarEspaco() {
     andar: "",
     capacidade: "",
     capacidadePCD: "",
-    situacao: "ativo",
+    situacao: "ATIVO",
     responsavel: "",
     observacoes: "",
     equipamentos: [],
@@ -73,7 +73,7 @@ function CadastrarEspaco() {
     setFormData({
       ...formData,
       [name]:
-        name === "tipoId" || name === "blocoId" || name === "capacidade" || name === "capacidadePCD" || name === "andar"
+        name === "tipoId" || name === "blocoId" || name === "capacidade" || name === "andar"
           ? parseInt(value) || ""
           : value,
     });
@@ -120,7 +120,7 @@ function CadastrarEspaco() {
       blocoId: dados.blocoId || null,
       andar: dados.andar || null,
       capacidade: dados.capacidade ? parseInt(dados.capacidade) : null,
-      capacidadePCD: dados.capacidadePCD ? parseInt(dados.capacidadePCD) : null,
+      capacidadePCD: dados.capacidadePCD,
       situacao: dados.situacao,
       responsavel: dados.responsavel || null,
       observacoes: dados.observacoes || null,
@@ -204,7 +204,7 @@ function CadastrarEspaco() {
     <div className="flex flex-col md:flex-row w-full min-h-screen">
       <Menu />
       <div className="flex justify-center w-full p-4 md:p-8">
-        <div className="w-full max-w-7xl bg-gray-50 rounded-lg shadow-md p-6 mt-4">
+        <div className="w-full max-w-7xl bg-gray-50 shadow-md p-6 mt-4">
           <div className="flex flex-col mb-6 gap-4">
             <h1 className="text-2xl font-bold text-green-800 text-left">
               Cadastrar Espaço
@@ -248,11 +248,11 @@ function CadastrarEspaco() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
                 Informações Gerais
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Tipo de Espaço *
@@ -261,7 +261,7 @@ function CadastrarEspaco() {
                     name="tipoId"
                     value={formData.tipoId}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
+                    className="w-3/6 px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
                     required
                     disabled={loading}
                   >
@@ -274,6 +274,14 @@ function CadastrarEspaco() {
                       </option>
                     ))}
                   </select>
+                  <button
+                          type="button"
+                          onClick={adicionarEquipamento}
+                          disabled={loading}
+                          className="w-2/5 py-2 ml-5 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
+                        >
+                          Adicionar
+                  </button>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -304,7 +312,7 @@ function CadastrarEspaco() {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
                 Localização
               </h3>
@@ -317,7 +325,7 @@ function CadastrarEspaco() {
                     name="blocoId"
                     value={formData.blocoId}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
+                    className="w-3/6 px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
                     required
                     disabled={loading}
                   >
@@ -335,6 +343,14 @@ function CadastrarEspaco() {
                       Nenhum bloco disponível. Verifique se há blocos cadastrados no sistema.
                     </p>
                   )}
+                  <button
+                          type="button"
+                          onClick={adicionarEquipamento}
+                          disabled={loading}
+                          className="w-2/5 py-2 ml-5 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
+                        >
+                          Adicionar
+                  </button>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -353,7 +369,7 @@ function CadastrarEspaco() {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
                 Estrutura e Capacidade
               </h3>
@@ -362,7 +378,7 @@ function CadastrarEspaco() {
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Equipamentos Disponíveis
                   </label>
-                  <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                  <div className="bg-gray-50 p-4 mb-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                       <div>
                         <label className="block text-xs font-medium text-gray-600 mb-1">
@@ -375,7 +391,7 @@ function CadastrarEspaco() {
                             setNovoEquipamento({ ...novoEquipamento, nome: e.target.value })
                           }
                           placeholder="Ex: Computador, Projetor..."
-                          className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-600"
+                          className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600"
                           disabled={loading}
                         />
                       </div>
@@ -391,7 +407,7 @@ function CadastrarEspaco() {
                             setNovoEquipamento({ ...novoEquipamento, quantidade: e.target.value })
                           }
                           placeholder="0"
-                          className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-600"
+                          className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600"
                           disabled={loading}
                         />
                       </div>
@@ -400,9 +416,9 @@ function CadastrarEspaco() {
                           type="button"
                           onClick={adicionarEquipamento}
                           disabled={loading}
-                          className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-full px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
                         >
-                          Adicionar
+                          Cadastrar Equipamento
                         </button>
                       </div>
                     </div>
@@ -413,12 +429,12 @@ function CadastrarEspaco() {
                         Equipamentos Cadastrados ({formData.equipamentos.length})
                       </h4>
                       {formData.equipamentos.map((equipamento) => (
-                        <div key={equipamento.id} className="flex items-center gap-3 bg-white p-3 rounded border">
+                        <div key={equipamento.id} className="flex items-center gap-3 bg-white p-3 border">
                           <input
                             type="text"
                             value={equipamento.nome}
                             onChange={(e) => editarEquipamento(equipamento.id, "nome", e.target.value)}
-                            className="flex-1 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-600"
+                            className="flex-1 px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-600"
                             disabled={loading}
                           />
                           <input
@@ -428,14 +444,14 @@ function CadastrarEspaco() {
                             onChange={(e) =>
                               editarEquipamento(equipamento.id, "quantidade", e.target.value)
                             }
-                            className="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-green-600"
+                            className="w-20 px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-600"
                             disabled={loading}
                           />
                           <button
                             type="button"
                             onClick={() => removerEquipamento(equipamento.id)}
                             disabled={loading}
-                            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-3 py-1 bg-red-500 text-white hover:bg-red-600 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Remover
                           </button>
@@ -444,57 +460,57 @@ function CadastrarEspaco() {
                     </div>
                   )}
                 </div>
-                  <div className="flex col-span-2 gap-5">
-                    <div className="w-2/5 block mb-1">
-                      <label className="text-sm font-medium text-gray-700">
-                        Capacidade Total
-                      </label>
-                      <input
-                        type="number"
-                        name="capacidadeTotal"
-                        value={formData.capacidadeTotal}
-                        onChange={handleChange}
-                        disabled={loading}
-                        className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600"
-                        min="0"
-                      />
-                    </div>
+                <div className="flex col-span-2 gap-5">
+                  <div className="w-2/5 block mb-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      Capacidade Total
+                    </label>
+                    <input
+                      type="number"
+                      name="capacidadeTotal"
+                      value={formData.capacidadeTotal}
+                      onChange={handleChange}
+                      disabled={loading}
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600"
+                      min="0"
+                    />
+                  </div>
 
-                    <div className="w-3/5 block mb-1">
-                      <label className="text-sm font-medium text-gray-700">
-                        Capacidade para PCD
+                  <div className="w-3/5 block mb-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      Capacidade para PCD
+                    </label>
+                    <div className="flex gap-4 mt-2">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          name="capacidadePCD"
+                          value="true"
+                          checked={formData.capacidadePCD === true}
+                          onChange={() => handleChange({ target: { name: "capacidadePCD", value: true } })}
+                          disabled={loading}
+                          className="appearance-none h-5 w-5 border-2 border-green-600 rounded-full checked:bg-green-600 checked:border-green-600 focus:ring-2 focus:ring-green-600 focus:ring-offset-1"
+                        />
+                        <span>Sim</span>
                       </label>
-                      <div className="flex gap-4 mt-2">
-                        <label className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            name="capacidadePCD"
-                            value="true"
-                            checked={formData.capacidadePCD === true}
-                            onChange={() => handleChange({ target: { name: "capacidadePCD", value: true } })}
-                            disabled={loading}
-                            className="appearance-none h-5 w-5 border-2 border-green-600 rounded-full checked:bg-green-600 checked:border-green-600 focus:ring-2 focus:ring-green-600 focus:ring-offset-1"
-                          />
-                          <span>Sim</span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            name="capacidadePCD"
-                            value="false"
-                            checked={formData.capacidadePCD === false}
-                            onChange={() => handleChange({ target: { name: "capacidadePCD", value: false } })}
-                            disabled={loading}
-                            className="appearance-none h-5 w-5 border-2 border-green-600 rounded-full checked:bg-green-600 checked:border-green-600 focus:ring-2 focus:ring-green-600 focus:ring-offset-1"
-                          />
-                          <span>Não</span>
-                        </label>
-                      </div>
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          name="capacidadePCD"
+                          value="false"
+                          checked={formData.capacidadePCD === false}
+                          onChange={() => handleChange({ target: { name: "capacidadePCD", value: false } })}
+                          disabled={loading}
+                          className="appearance-none h-5 w-5 border-2 border-green-600 rounded-full checked:bg-green-600 checked:border-green-600 focus:ring-2 focus:ring-green-600 focus:ring-offset-1"
+                        />
+                        <span>Não</span>
+                      </label>
                     </div>
                   </div>
+                </div>
               </div>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
                 Observações
               </h3>
@@ -519,7 +535,7 @@ function CadastrarEspaco() {
                     name="observacoes"
                     value={formData.observacoes}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-600"
+                    className="w-full px-4 py-2 border focus:outline-none focus:ring-2 focus:ring-green-600"
                     rows="3"
                     disabled={loading}
                   />
@@ -530,18 +546,18 @@ function CadastrarEspaco() {
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-6 py-2 text-red-500 border-2 border-red-500 uppercase hover:bg-red-500 hover:text-white rounded transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 text-red-500 border-2 border-red-500 uppercase hover:bg-red-500 hover:text-white transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={loading}
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-6 py-2 bg-green-600 text-white uppercase hover:bg-green-700 rounded transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-6 py-2 bg-green-600 text-white uppercase hover:bg-green-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 disabled={loading}
               >
                 {loading && (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <div className="animate-spin h-4 w-4 border-b-2 border-white"></div>
                 )}
                 {loading ? "Cadastrando..." : "Cadastrar Espaço"}
               </button>
@@ -552,7 +568,7 @@ function CadastrarEspaco() {
 
       {showModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+          <div className="bg-white p-6 shadow-lg w-full max-w-md">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">Cancelar cadastro?</h3>
             <p className="text-gray-600 mb-6">
               Deseja realmente cancelar o cadastro deste espaço? Todas as alterações não salvas serão perdidas.
@@ -560,13 +576,13 @@ function CadastrarEspaco() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={handleCloseModal}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-100 transition-colors font-medium"
+                className="px-4 py-2 text-gray-600 border border-gray-300 hover:bg-gray-100 transition-colors font-medium"
               >
                 Voltar
               </button>
               <button
                 onClick={handleConfirmCancel}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors font-medium"
+                className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 transition-colors font-medium"
               >
                 Cancelar
               </button>
