@@ -4,6 +4,7 @@ import Menu from "../../../components/tecLab/menu/menu";
 import espacoService from "../../../services/espacoService";
 import tipoService from "../../../services/tipoService";
 import blocoService from "../../../services/blocoService";
+import { MdAdd } from "react-icons/md";
 /*Modals*/
 import TipoModal from "../../../components/modals/tipoModal/tipoModal";
 import BlocoModal from "../../../components/modals/blocoModal/blocoModal";
@@ -304,7 +305,7 @@ function CadastrarEspaco() {
                       disabled={loading}
                     >
                       <option value="" disabled>
-                        Selecione um tipo
+                        Selecione um tipo de espaço
                       </option>
                       {tipos.map((tipo) => (
                         <option key={tipo.id} value={tipo.id}>
@@ -318,9 +319,14 @@ function CadastrarEspaco() {
                       disabled={loading}
                       className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
                     >
-                      +
+                      Adicionar
                     </button>
                   </div>
+                  {tipos.length === 0 && ( // Corrected condition
+                    <p className="text-sm text-red-500 mt-1">
+                      Nenhum tipo de espaço cadastrado.
+                    </p>
+                  )}
 
                   {showTipoModal && (
                     <TipoModal
@@ -366,19 +372,19 @@ function CadastrarEspaco() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Bloco *
+                    Bloco Didático *
                   </label>
                   <div className="flex items-center gap-2">
                     <select
                       name="blocoId"
                       value={formData.blocoId}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
+                      className="w-5/6 px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
                       required
                       disabled={loading}
                     >
                       <option value="" disabled>
-                        Selecione um bloco
+                        Selecione um bloco didático
                       </option>
                       {blocos.map((bloco) => (
                         <option key={bloco.id} value={bloco.id}>
@@ -392,12 +398,12 @@ function CadastrarEspaco() {
                       disabled={loading}
                       className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
                     >
-                      +
+                      Adicionar
                     </button>
                   </div>
                   {blocos.length === 0 && ( // Corrected condition
                     <p className="text-sm text-red-500 mt-1">
-                      Nenhum bloco disponível. Verifique se há blocos cadastrados no sistema.
+                      Nenhum bloco didático cadastrado.
                     </p>
                   )}
                   {showBlocoModal && (
@@ -480,7 +486,7 @@ function CadastrarEspaco() {
                           disabled={loading}
                           className="w-full px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
                         >
-                          Adicionar Equipamento
+                          Cadastrar Equipamento
                         </button>
                       </div>
                     </div>

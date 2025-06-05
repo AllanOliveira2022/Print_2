@@ -100,7 +100,7 @@ async function excluirBloco(req, res) {
     }
 
     // Verificação se o bloco está sendo usado por algum espaço
-    const espacosNoBloco = await db.Espaco.count({ where: { bloco_id: id } }); 
+    const espacosNoBloco = await db.Espaco.count({ where: { blocoId: id } }); 
     if (espacosNoBloco > 0) {
       return res.status(400).json({ message: 'Não é possível excluir o bloco pois ele está associado a espaços.' });
     }

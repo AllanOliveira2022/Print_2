@@ -100,11 +100,10 @@ async function excluirTipo(req, res) {
     }
     
     // Verificação se o tipo está sendo usado por algum espaço
-    const espacosDoTipo = await db.Espaco.count({ where: { tipo_id: id } }); 
+    const espacosDoTipo = await db.Espaco.count({ where: { tipoID: id } }); 
     if (espacosDoTipo > 0) {
       return res.status(400).json({ message: 'Não é possível excluir o tipo pois ele está associado a espaços.' });
     }
-
     await tipo.destroy();
     res.status(200).json({ message: 'Tipo excluído com sucesso.' });
   } catch (error) {
