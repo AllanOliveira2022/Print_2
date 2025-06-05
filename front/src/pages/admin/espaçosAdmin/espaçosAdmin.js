@@ -24,8 +24,8 @@ function EspacosAdmin() {
         } else {
             const filtered = espacos.filter(espaco =>
                 espaco.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                espaco.localizacao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                espaco.tipo.toLowerCase().includes(searchTerm.toLowerCase())
+                (espaco.nomeBloco && espaco.nomeBloco.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (espaco.nomeTipo && espaco.nomeTipo.toLowerCase().includes(searchTerm.toLowerCase()))
             );
             setFilteredEspacos(filtered);
         }
@@ -37,9 +37,25 @@ function EspacosAdmin() {
             setError(null);
             const dados = await espacoService.listarTodos();
             setEspacos(dados);
+            setFilteredEspacos(dados);
         } catch (err) {
-            setError("Erro ao carregar espaços. Tente novamente.");
+            setError(err.message || "Erro ao carregar espaços. Tente novamente.");
             console.error("Erro ao carregar espaços:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const buscarPorNome = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const dados = await espacoService.buscarPorNome(searchTerm);
+            setEspacos(dados);
+            setFilteredEspacos(dados);
+        } catch (err) {
+            setError(err.message || "Erro na busca. Tente novamente.");
+            console.error("Erro na busca:", err);
         } finally {
             setLoading(false);
         }
@@ -60,22 +76,34 @@ function EspacosAdmin() {
     const handleExcluir = async (id, nome) => {
         if (window.confirm(`Tem certeza que deseja excluir o espaço "${nome}"?`)) {
             try {
+                setLoading(true);
                 await espacoService.excluir(id);
-                await carregarEspacos(); // Recarregar a lista
-                alert("Espaço excluído com sucesso!");
+                await carregarEspacos();
             } catch (err) {
-                alert("Erro ao excluir espaço. Tente novamente.");
+                setError(err.message || "Erro ao excluir espaço. Tente novamente.");
                 console.error("Erro ao excluir:", err);
+            } finally {
+                setLoading(false);
             }
         }
     };
 
     const handleFiltrar = async () => {
-        await carregarEspacos();
+        if (searchTerm.trim()) {
+            await buscarPorNome();
+        } else {
+            await carregarEspacos();
+        }
     };
 
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleFiltrar();
+        }
     };
 
     if (loading) {
@@ -129,7 +157,7 @@ function EspacosAdmin() {
                             </div>
                             <input
                                 type="text"
-                                placeholder="Pesquisar espaço"
+                                placeholder="Pesquisar espaço, bloco ou tipo"
                                 value={searchTerm}
                                 onChange={handleSearchChange}
                                 className="w-full pl-12 pr-4 py-2 border border-gray-300 bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:text-green-600 focus:ring-green-600 focus:border-none"
@@ -141,7 +169,7 @@ function EspacosAdmin() {
                                 onClick={handleFiltrar}
                                 className="w-full sm:w-auto px-6 py-2 text-green-600 border-2 border-green-600 uppercase hover:bg-green-100 transition-colors"
                             >
-                                Atualizar
+                                Buscar
                             </button>
                             <button
                                 onClick={handleCadastro}
@@ -173,7 +201,7 @@ function EspacosAdmin() {
                                     <tr>
                                         <th className="px-4 py-3 text-center">Código</th>
                                         <th className="px-4 py-3 text-center">Nome</th>
-                                        <th className="px-4 py-3 text-center">Localização</th>
+                                        <th className="px-4 py-3 text-center">Bloco</th>
                                         <th className="px-4 py-3 text-center">Tipo</th>
                                         <th className="px-4 py-3 text-center">Situação</th>
                                         <th className="px-4 py-3 text-center">Ações</th>
@@ -185,10 +213,10 @@ function EspacosAdmin() {
                                             key={espaco.id}
                                             className={index % 2 === 0 ? "bg-white" : "bg-gray-200"}
                                         >
-                                            <td className="px-4 py-3 text-center">{espaco.id}</td>
+                                            <td className="px-4 py-3 text-center">{espaco.codigoIdentificacao}</td>
                                             <td className="px-4 py-3 text-center">{espaco.nome}</td>
-                                            <td className="px-4 py-3 text-center">{espaco.localizacao}</td>
-                                            <td className="px-4 py-3 text-center">{espaco.tipo}</td>
+                                            <td className="px-4 py-3 text-center">{espaco.nomeBloco || '-'}</td>
+                                            <td className="px-4 py-3 text-center">{espaco.nomeTipo || '-'}</td>
                                             <td className="px-4 py-3 text-center">
                                                 <span className={`px-2 py-1 rounded text-sm ${
                                                     espaco.situacao === 'Disponivel' || espaco.situacao === 'Disponível'

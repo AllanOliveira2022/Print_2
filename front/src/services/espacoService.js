@@ -33,6 +33,16 @@ const espacoService = {
     }
   },
 
+  async buscarPorNome(nome) {
+    try {
+      const response = await api.get(`${API_BASE_URL}/buscar/${nome}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Erro ao buscar espaço por nome ${nome}:`, error);
+      throw this._handleError(error);
+    }
+  },
+
   async editar(id, dadosAtualizados) {
     try {
       const response = await api.put(`${API_BASE_URL}/${id}`, dadosAtualizados);
@@ -53,15 +63,41 @@ const espacoService = {
     }
   },
 
-  async filtrar(filtros) {
+  async filtrar(tipo, valor) {
     try {
-      const response = await api.get(`${API_BASE_URL}/filtrar`, { params: filtros });
+      const response = await api.get(`${API_BASE_URL}/filtrar/${tipo}/${valor}`);
       return response.data;
     } catch (error) {
       console.error('Erro ao filtrar espaços:', error);
       throw this._handleError(error);
     }
   },
+
+  async filtrarPorParametros(filtros) {
+    try {
+      const response = await api.get(`${API_BASE_URL}/filtrar`, { params: filtros });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao filtrar espaços por parâmetros:', error);
+      throw this._handleError(error);
+    }
+  },
+
+  _handleError(error) {
+    if (error.response) {
+      // Erros vindos do servidor (com status code)
+      if (error.response.data && error.response.data.message) {
+        return new Error(error.response.data.message);
+      }
+      return new Error(`Erro ${error.response.status}: ${error.response.statusText}`);
+    } else if (error.request) {
+      // A requisição foi feita mas não houve resposta
+      return new Error('Sem resposta do servidor. Verifique sua conexão.');
+    } else {
+      // Erro ao configurar a requisição
+      return new Error('Erro ao configurar a requisição.');
+    }
+  }
 };
 
 export default espacoService;
