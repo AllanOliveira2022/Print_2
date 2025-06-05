@@ -223,38 +223,61 @@ export const listarEspacosId = async (req, res) => {
 
 export const buscarEspacos = async (req, res) => {
     try {
-        const { nomeEspaco } = req.params; // Pega o nome do espaço dos parâmetros da requisição
+        const { nomeEspaco } = req.params;
 
         const whereClause = {};
 
-        // Se um nome de espaço for fornecido, adicionamos a condição de busca
         if (nomeEspaco) {
             whereClause.nome = {
-                [Op.like]: `%${nomeEspaco}%` // Busca por nomes que contenham a string fornecida (case-insensitive para MySQL)
+                [Op.like]: `%${nomeEspaco}%`  // corrigido para MySQL
             };
         }
 
-        // Realiza a busca no banco de dados apenas pelo modelo Espaco
         const espacos = await db.Espaco.findAll({
-            where: whereClause, // Aplica a condição de busca pelo nome, se existir
-            order: [['nome', 'ASC']] // Mantém a ordenação por nome
+            where: whereClause,
+            include: [
+                {
+                    model: db.Bloco,
+                    as: 'bloco',
+                    attributes: ['nome'],
+                    required: false
+                },
+                {
+                    model: db.Tipo,
+                    as: 'Tipo',
+                    attributes: ['nome'],
+                    required: false
+                },
+                {
+                    model: db.Equipamento,
+                    as: 'equipamentos',
+                    through: {
+                        attributes: ['quantidade']
+                    },
+                    attributes: ['nome'],
+                    required: false
+                }
+            ],
+            order: [['nome', 'ASC']]
         });
 
-        // Formata os resultados para o que você precisa retornar
         const espacosFormatados = espacos.map(espaco => {
             const dados = espaco.get({ plain: true });
+            const equipamentos = dados.equipamentos.map(e => `${e.nome} (${e.EspacoEquipamento.quantidade})`).join('; ');
+
             return {
                 id: dados.id,
                 nome: dados.nome,
                 codigoIdentificacao: dados.codigoIdentificacao,
+                nomeBloco: dados.bloco?.nome || null,
+                nomeTipo: dados.Tipo?.nome || null,
                 andar: dados.andar,
                 capacidade: dados.capacidade,
                 capacidadePCD: dados.capacidadePCD,
                 responsavel: dados.responsavel,
                 observacoes: dados.observacoes,
                 situacao: dados.situacao,
-                // As informações de bloco, tipo e equipamentos não são mais incluídas aqui
-                // já que não estamos buscando nem exibindo essas associações.
+                equipamentos: equipamentos || 'Nenhum equipamento associado.'
             };
         });
 
