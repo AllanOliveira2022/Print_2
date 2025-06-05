@@ -237,25 +237,13 @@ export const buscarEspacos = async (req, res) => {
             where: whereClause,
             include: [
                 {
-                    model: db.Bloco,
-                    as: 'bloco',
-                    attributes: ['nome'],
-                    required: false
+
                 },
                 {
-                    model: db.Tipo,
-                    as: 'Tipo',
-                    attributes: ['nome'],
-                    required: false
+
                 },
                 {
-                    model: db.Equipamento,
-                    as: 'equipamentos',
-                    through: {
-                        attributes: ['quantidade']
-                    },
-                    attributes: ['nome'],
-                    required: false
+
                 }
             ],
             order: [['nome', 'ASC']]
