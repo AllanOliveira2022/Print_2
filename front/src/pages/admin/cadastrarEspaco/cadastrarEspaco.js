@@ -16,8 +16,8 @@ function CadastrarEspaco() {
     blocoId: "",
     andar: "",
     capacidade: "",
-    capacidadePCD: "",
-    situacao: "ATIVO",
+    capacidadePCD: false, // Changed to false for boolean radio buttons
+    situacao: "Disponivel",
     responsavel: "",
     observacoes: "",
     equipamentos: [],
@@ -26,16 +26,14 @@ function CadastrarEspaco() {
   const [showTipoModal, setShowTipoModal] = useState(false);
   const [showBlocoModal, setShowBlocoModal] = useState(false);
 
-  const handleNovosTiposAdicionados = (novosTipos) => {
-    if (novosTipos.length > 0) {
-      console.log("Novos tipos a serem cadastrados:", novosTipos);
-    }
+  const handleNovosTiposAdicionados = async () => {
+    // Re-fetch types after a new one is added
+    await fetchTipos();
   };
 
-  const handleNovosBlocosAdicionados = (novosBlocos) => {
-    if (novosBlocos.length > 0) {
-      console.log("Novos blocos a serem cadastrados:", novosBlocos);
-    }
+  const handleNovosBlocosAdicionados = async () => {
+    // Re-fetch blocks after a new one is added
+    await fetchBlocos();
   };
 
   const [novoEquipamento, setNovoEquipamento] = useState({
@@ -51,83 +49,94 @@ function CadastrarEspaco() {
 
   const navigate = useNavigate();
 
+  const fetchTipos = async () => {
+    try {
+      const response = await tipoService.listarTodos();
+      const data = Array.isArray(response) ? response : response.data || [];
+      setTipos(data);
+    } catch (err) {
+      console.error("Erro ao carregar tipos:", err.message, err.stack);
+      setError("Erro ao carregar tipos. Tente novamente.");
+    }
+  };
+
+  const fetchBlocos = async () => {
+    try {
+      const response = await blocoService.listarTodos();
+      const data = Array.isArray(response) ? response : response.data || [];
+      setBlocos(data);
+    } catch (err) {
+      console.error("Erro ao carregar blocos:", err.message, err.stack);
+      setError("Erro ao carregar blocos. Tente novamente.");
+    }
+  };
+
   useEffect(() => {
-    const fetchTipos = async () => {
-      try {
-        const response = await tipoService.listarTodos();
-        console.log("Resposta crua do tipoService.listarTodos:", response);
-        const data = Array.isArray(response) ? response : response.data || [];
-        console.log("Dados extraídos para tipos:", data);
-        const newTipos = [...data];
-        setTipos(newTipos);
-        console.log("Estado tipos atualizado:", newTipos);
-      } catch (err) {
-        console.error("Erro ao carregar tipos:", err.message, err.stack);
-        setError("Erro ao carregar tipos. Tente novamente.");
-      }
-    };
-
-    const fetchBlocos = async () => {
-      try {
-        const response = await blocoService.listarTodos();
-        console.log("Resposta crua do blocoService.listarTodos:", response);
-        const data = Array.isArray(response) ? response : response.data || [];
-        console.log("Dados extraídos para blocos:", data);
-        const newBlocos = [...data];
-        setBlocos(newBlocos);
-        console.log("Estado blocos atualizado:", newBlocos);
-      } catch (err) {
-        console.error("Erro ao carregar blocos:", err.message, err.stack);
-        setError("Erro ao carregar blocos. Tente novamente.");
-      }
-    };
-
     fetchTipos();
     fetchBlocos();
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]:
-        name === "tipoId" || name === "blocoId" || name === "capacidade" || name === "andar"
-          ? parseInt(value) || ""
-          : value,
+    const { name, value, type, checked } = e.target;
+
+    setFormData((prevFormData) => {
+      if (name === "capacidadePCD") {
+        return {
+          ...prevFormData,
+          [name]: value === "true" ? true : false, // Convert string "true"/"false" to boolean
+        };
+      } else if (
+        name === "tipoId" ||
+        name === "blocoId" ||
+        name === "capacidade" ||
+        name === "andar"
+      ) {
+        return {
+          ...prevFormData,
+          [name]: parseInt(value) || "", // Parse to int, or keep empty if not a number
+        };
+      } else {
+        return {
+          ...prevFormData,
+          [name]: value,
+        };
+      }
     });
   };
 
   const adicionarEquipamento = () => {
     if (novoEquipamento.nome.trim() && novoEquipamento.quantidade.trim()) {
-      setFormData({
-        ...formData,
+      setFormData((prevFormData) => ({
+        ...prevFormData,
         equipamentos: [
-          ...formData.equipamentos,
+          ...prevFormData.equipamentos,
           {
-            id: Date.now(),
+            id: Date.now(), // Unique ID for key prop
             nome: novoEquipamento.nome.trim(),
             quantidade: parseInt(novoEquipamento.quantidade) || 1,
           },
         ],
-      });
+      }));
       setNovoEquipamento({ nome: "", quantidade: "" });
     }
   };
 
   const removerEquipamento = (id) => {
-    setFormData({
-      ...formData,
-      equipamentos: formData.equipamentos.filter((eq) => eq.id !== id),
-    });
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      equipamentos: prevFormData.equipamentos.filter((eq) => eq.id !== id),
+    }));
   };
 
   const editarEquipamento = (id, campo, valor) => {
-    setFormData({
-      ...formData,
-      equipamentos: formData.equipamentos.map((eq) =>
-        eq.id === id ? { ...eq, [campo]: campo === "quantidade" ? parseInt(valor) || 1 : valor } : eq
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      equipamentos: prevFormData.equipamentos.map((eq) =>
+        eq.id === id
+          ? { ...eq, [campo]: campo === "quantidade" ? parseInt(valor) || 1 : valor }
+          : eq
       ),
-    });
+    }));
   };
 
   const prepararDadosParaEnvio = (dados) => {
@@ -136,33 +145,34 @@ function CadastrarEspaco() {
       codigoIdentificacao: dados.codigoIdentificacao,
       tipoId: dados.tipoId || null,
       blocoId: dados.blocoId || null,
-      andar: dados.andar || null,
-      capacidade: dados.capacidade ? parseInt(dados.capacidade) : null,
+      andar: dados.andar === "" ? null : dados.andar, // Send null if empty string
+      capacidade: dados.capacidade === "" ? null : parseInt(dados.capacidade), // Send null if empty string
       capacidadePCD: dados.capacidadePCD,
       situacao: dados.situacao,
       responsavel: dados.responsavel || null,
       observacoes: dados.observacoes || null,
-      equipamentos: dados.equipamentos.map(({ id, ...eq }) => eq),
+      equipamentos: dados.equipamentos.map(({ id, ...eq }) => eq), // Remove the temporary 'id' field
     };
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Basic validation
     if (!formData.nome.trim()) {
-      setError("Nome do espaço é obrigatório");
+      setError("Nome do espaço é obrigatório.");
       return;
     }
     if (!formData.codigoIdentificacao.trim()) {
-      setError("Código de identificação é obrigatório");
+      setError("Código de identificação é obrigatório.");
       return;
     }
     if (!formData.tipoId) {
-      setError("Tipo do espaço é obrigatório");
+      setError("Tipo do espaço é obrigatório.");
       return;
     }
     if (!formData.blocoId) {
-      setError("Bloco é obrigatório");
+      setError("Bloco é obrigatório.");
       return;
     }
 
@@ -179,7 +189,8 @@ function CadastrarEspaco() {
       console.error("Erro ao cadastrar espaço:", error);
       if (error.response) {
         const status = error.response.status;
-        const message = error.response.data?.message || error.response.data?.error;
+        const message =
+          error.response.data?.message || error.response.data?.error;
         if (status === 400) {
           if (message.includes("tipoId")) {
             setError("Tipo inválido. Selecione um tipo válido.");
@@ -236,7 +247,11 @@ function CadastrarEspaco() {
             <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <svg
+                    className="h-5 w-5 text-red-400"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -252,7 +267,11 @@ function CadastrarEspaco() {
                     onClick={() => setError(null)}
                     className="text-red-400 hover:text-red-600"
                   >
-                    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
                       <path
                         fillRule="evenodd"
                         d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -275,33 +294,36 @@ function CadastrarEspaco() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Tipo de Espaço *
                   </label>
-                  <select
-                    name="tipoId"
-                    value={formData.tipoId}
-                    onChange={handleChange}
-                    className="w-3/6 px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
-                    required
-                    disabled={loading}
-                  >
-                    <option value="" disabled>
-                      Selecione um tipo
-                    </option>
-                    {tipos.map((tipo) => (
-                      <option key={tipo.id} value={tipo.id}>
-                        {tipo.nome}
+                  <div className="flex items-center gap-2">
+                    <select
+                      name="tipoId"
+                      value={formData.tipoId}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
+                      required
+                      disabled={loading}
+                    >
+                      <option value="" disabled>
+                        Selecione um tipo
                       </option>
-                    ))}
-                  </select>
-                  <button
-                          type="button"
-                          onClick={() => setShowTipoModal(true)}
-                          disabled={loading}
-                          className="w-2/5 py-2 ml-5 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
-                        >
-                          Adicionar
-                  </button>
+                      {tipos.map((tipo) => (
+                        <option key={tipo.id} value={tipo.id}>
+                          {tipo.nome}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => setShowTipoModal(true)}
+                      disabled={loading}
+                      className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
+                    >
+                      +
+                    </button>
+                  </div>
+
                   {showTipoModal && (
-                    <TipoModal 
+                    <TipoModal
                       isOpen={showTipoModal}
                       onClose={() => setShowTipoModal(false)}
                       onConfirm={handleNovosTiposAdicionados}
@@ -346,36 +368,45 @@ function CadastrarEspaco() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Bloco *
                   </label>
-                  <select
-                    name="blocoId"
-                    value={formData.blocoId}
-                    onChange={handleChange}
-                    className="w-3/6 px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
-                    required
-                    disabled={loading}
-                  >
-                    <option value="" disabled>
-                      Selecione um bloco
-                    </option>
-                    {blocos.map((bloco) => (
-                      <option key={bloco.id} value={bloco.id}>
-                        {bloco.nome}
+                  <div className="flex items-center gap-2">
+                    <select
+                      name="blocoId"
+                      value={formData.blocoId}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600"
+                      required
+                      disabled={loading}
+                    >
+                      <option value="" disabled>
+                        Selecione um bloco
                       </option>
-                    ))}
-                  </select>
-                  {blocos.length === 1 && (
+                      {blocos.map((bloco) => (
+                        <option key={bloco.id} value={bloco.id}>
+                          {bloco.nome}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => setShowBlocoModal(true)} // Corrected onClick handler
+                      disabled={loading}
+                      className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
+                    >
+                      +
+                    </button>
+                  </div>
+                  {blocos.length === 0 && ( // Corrected condition
                     <p className="text-sm text-red-500 mt-1">
                       Nenhum bloco disponível. Verifique se há blocos cadastrados no sistema.
                     </p>
                   )}
-                  <button
-                          type="button"
-                          onClick={adicionarEquipamento}
-                          disabled={loading}
-                          className="w-2/5 py-2 ml-5 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
-                        >
-                          Adicionar
-                  </button>
+                  {showBlocoModal && (
+                    <BlocoModal
+                      isOpen={showBlocoModal}
+                      onClose={() => setShowBlocoModal(false)}
+                      onConfirm={handleNovosBlocosAdicionados}
+                    />
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -413,7 +444,10 @@ function CadastrarEspaco() {
                           type="text"
                           value={novoEquipamento.nome}
                           onChange={(e) =>
-                            setNovoEquipamento({ ...novoEquipamento, nome: e.target.value })
+                            setNovoEquipamento({
+                              ...novoEquipamento,
+                              nome: e.target.value,
+                            })
                           }
                           placeholder="Ex: Computador, Projetor..."
                           className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600"
@@ -429,7 +463,10 @@ function CadastrarEspaco() {
                           min="1"
                           value={novoEquipamento.quantidade}
                           onChange={(e) =>
-                            setNovoEquipamento({ ...novoEquipamento, quantidade: e.target.value })
+                            setNovoEquipamento({
+                              ...novoEquipamento,
+                              quantidade: e.target.value,
+                            })
                           }
                           placeholder="0"
                           className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600"
@@ -443,7 +480,7 @@ function CadastrarEspaco() {
                           disabled={loading}
                           className="w-full px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
                         >
-                          Cadastrar Equipamento
+                          Adicionar Equipamento
                         </button>
                       </div>
                     </div>
@@ -454,11 +491,20 @@ function CadastrarEspaco() {
                         Equipamentos Cadastrados ({formData.equipamentos.length})
                       </h4>
                       {formData.equipamentos.map((equipamento) => (
-                        <div key={equipamento.id} className="flex items-center gap-3 bg-white p-3 border">
+                        <div
+                          key={equipamento.id}
+                          className="flex items-center gap-3 bg-white p-3 border"
+                        >
                           <input
                             type="text"
                             value={equipamento.nome}
-                            onChange={(e) => editarEquipamento(equipamento.id, "nome", e.target.value)}
+                            onChange={(e) =>
+                              editarEquipamento(
+                                equipamento.id,
+                                "nome",
+                                e.target.value
+                              )
+                            }
                             className="flex-1 px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-600"
                             disabled={loading}
                           />
@@ -467,7 +513,11 @@ function CadastrarEspaco() {
                             min="1"
                             value={equipamento.quantidade}
                             onChange={(e) =>
-                              editarEquipamento(equipamento.id, "quantidade", e.target.value)
+                              editarEquipamento(
+                                equipamento.id,
+                                "quantidade",
+                                e.target.value
+                              )
                             }
                             className="w-20 px-2 py-1 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-green-600"
                             disabled={loading}
@@ -492,8 +542,8 @@ function CadastrarEspaco() {
                     </label>
                     <input
                       type="number"
-                      name="capacidadeTotal"
-                      value={formData.capacidadeTotal}
+                      name="capacidade" // Corrected name to 'capacidade'
+                      value={formData.capacidade}
                       onChange={handleChange}
                       disabled={loading}
                       className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600"
@@ -512,7 +562,7 @@ function CadastrarEspaco() {
                           name="capacidadePCD"
                           value="true"
                           checked={formData.capacidadePCD === true}
-                          onChange={() => handleChange({ target: { name: "capacidadePCD", value: true } })}
+                          onChange={handleChange} // Use the general handleChange
                           disabled={loading}
                           className="appearance-none h-5 w-5 border-2 border-green-600 rounded-full checked:bg-green-600 checked:border-green-600 focus:ring-2 focus:ring-green-600 focus:ring-offset-1"
                         />
@@ -524,7 +574,7 @@ function CadastrarEspaco() {
                           name="capacidadePCD"
                           value="false"
                           checked={formData.capacidadePCD === false}
-                          onChange={() => handleChange({ target: { name: "capacidadePCD", value: false } })}
+                          onChange={handleChange} // Use the general handleChange
                           disabled={loading}
                           className="appearance-none h-5 w-5 border-2 border-green-600 rounded-full checked:bg-green-600 checked:border-green-600 focus:ring-2 focus:ring-green-600 focus:ring-offset-1"
                         />
@@ -594,9 +644,12 @@ function CadastrarEspaco() {
       {showModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 shadow-lg w-full max-w-md">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Cancelar cadastro?</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Cancelar cadastro?
+            </h3>
             <p className="text-gray-600 mb-6">
-              Deseja realmente cancelar o cadastro deste espaço? Todas as alterações não salvas serão perdidas.
+              Deseja realmente cancelar o cadastro deste espaço? Todas as alterações
+              não salvas serão perdidas.
             </p>
             <div className="flex justify-end gap-3">
               <button

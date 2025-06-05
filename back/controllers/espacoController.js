@@ -1,7 +1,7 @@
 
 
 import db from '../models/index.js'; // Importa o objeto 'db' que contém todos os seus modelos
-
+import { Op } from 'sequelize';
 export const cadastrarEspaco = async (req, res) => {
     // Extrai os dados do corpo da requisição
     const {
@@ -221,3 +221,148 @@ export const listarEspacosId = async (req, res) => {
     }
 };
 
+export const buscarEspacos = async (req, res) => {
+    try {
+        const { nomeEspaco } = req.params;
+
+        const whereClause = {};
+
+        if (nomeEspaco) {
+            whereClause.nome = {
+                [Op.like]: `%${nomeEspaco}%`  // corrigido para MySQL
+            };
+        }
+
+        const espacos = await db.Espaco.findAll({
+            where: whereClause,
+            include: [
+                {
+                    model: db.Bloco,
+                    as: 'bloco',
+                    attributes: ['nome'],
+                    required: false
+                },
+                {
+                    model: db.Tipo,
+                    as: 'Tipo',
+                    attributes: ['nome'],
+                    required: false
+                },
+                {
+                    model: db.Equipamento,
+                    as: 'equipamentos',
+                    through: {
+                        attributes: ['quantidade']
+                    },
+                    attributes: ['nome'],
+                    required: false
+                }
+            ],
+            order: [['nome', 'ASC']]
+        });
+
+        const espacosFormatados = espacos.map(espaco => {
+            const dados = espaco.get({ plain: true });
+            const equipamentos = dados.equipamentos.map(e => `${e.nome} (${e.EspacoEquipamento.quantidade})`).join('; ');
+
+            return {
+                id: dados.id,
+                nome: dados.nome,
+                codigoIdentificacao: dados.codigoIdentificacao,
+                nomeBloco: dados.bloco?.nome || null,
+                nomeTipo: dados.Tipo?.nome || null,
+                andar: dados.andar,
+                capacidade: dados.capacidade,
+                capacidadePCD: dados.capacidadePCD,
+                responsavel: dados.responsavel,
+                observacoes: dados.observacoes,
+                situacao: dados.situacao,
+                equipamentos: equipamentos || 'Nenhum equipamento associado.'
+            };
+        });
+
+        res.status(200).json(espacosFormatados);
+    } catch (error) {
+        console.error('Erro ao buscar espaços:', error);
+        res.status(500).json({ message: 'Erro interno ao buscar espaços.' });
+    }
+};
+
+
+export const filtrarEspaco = async (req, res) => {
+    try {
+        const { tipo, valor } = req.params;
+
+        let filtro = {};
+
+        switch (tipo) {
+            case 'tipoLaboratorio':
+                filtro['$Tipo.nome$'] = { [Op.like]: `%${valor}%` };
+                break;
+
+            case 'bloco':
+                filtro['$bloco.nome$'] = { [Op.like]: `%${valor}%` };
+                break;
+
+            case 'capacidadeAlunos':
+                filtro.capacidade = parseInt(valor);
+                break;
+
+            case 'capacidadePCD':
+                filtro.capacidadePCD = parseInt(valor);
+                break;
+
+            default:
+                return res.status(400).json({ message: 'Tipo de filtro inválido.' });
+        }
+
+        const espacos = await db.Espaco.findAll({
+            where: filtro,
+            include: [
+                {
+                    model: db.Bloco,
+                    as: 'bloco',
+                    attributes: ['nome']
+                },
+                {
+                    model: db.Tipo,
+                    as: 'Tipo',
+                    attributes: ['nome']
+                },
+                {
+                    model: db.Equipamento,
+                    as: 'equipamentos',
+                    through: { attributes: ['quantidade'] },
+                    attributes: ['nome']
+                }
+            ],
+            order: [['nome', 'ASC']]
+        });
+
+        const espacosFormatados = espacos.map(espaco => {
+            const dados = espaco.get({ plain: true });
+            const equipamentos = dados.equipamentos.map(e => `${e.nome} (${e.EspacoEquipamento.quantidade})`).join('; ');
+
+            return {
+                id: dados.id,
+                nome: dados.nome,
+                codigoIdentificacao: dados.codigoIdentificacao,
+                nomeBloco: dados.bloco?.nome || null,
+                nomeTipo: dados.Tipo?.nome || null,
+                andar: dados.andar,
+                capacidade: dados.capacidade,
+                capacidadePCD: dados.capacidadePCD,
+                responsavel: dados.responsavel,
+                observacoes: dados.observacoes,
+                situacao: dados.situacao,
+                equipamentos: equipamentos || 'Nenhum equipamento associado.'
+            };
+        });
+
+        return res.status(200).json(espacosFormatados);
+
+    } catch (error) {
+        console.error('Erro ao filtrar espaços:', error);
+        return res.status(500).json({ message: 'Erro interno ao filtrar espaços.' });
+    }
+};
