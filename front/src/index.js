@@ -21,6 +21,8 @@ import ReservasAceitas from './pages/admin/reservasAceitas/reservasAceitas';
 import EspacosProfessor from './pages/professor/espacosProfessor/espacosProfessor';
 import SolicitarReserva from './pages/professor/solicitarReserva/solicitarReserva';
 import SolicitacoesProfessor from './pages/professor/solicitacoesProfessor/solicitacoesProfessor';
+/*Telas Gerais*/
+import DetalhesEspaço from './pages/admin/detalhesEspaco/detalhesEspaco';
 
 const router = createBrowserRouter([
   {
@@ -74,6 +76,10 @@ const router = createBrowserRouter([
   {
     path: "/admin/espacos/editar/:id",
     element: <EditarLaboratorio />
+  },
+  {
+    path: "/admin/espacos/detalhes/:id",
+    element: <DetalhesEspaço/>
   },
   {
     path: "/admin/reservas",
