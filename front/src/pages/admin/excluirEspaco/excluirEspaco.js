@@ -42,7 +42,7 @@ function ExcluirLaboratorio() {
         setErro('');
 
         try {
-            const response = await fetch(`/api/laboratorios/${id}`, {
+            const response = await fetch(`/api/espacos/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

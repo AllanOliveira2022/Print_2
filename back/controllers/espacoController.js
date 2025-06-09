@@ -366,3 +366,33 @@ export const filtrarEspaco = async (req, res) => {
         return res.status(500).json({ message: 'Erro interno ao filtrar espaços.' });
     }
 };
+
+export const excluirEspaco = async (req, res) => {
+    const { id } = req.params; 
+
+    const t = await db.sequelize.transaction();
+
+    try {
+        const espaco = await db.Espaco.findByPk(id, { transaction: t });
+
+        if (!espaco) {
+            await t.rollback(); 
+            return res.status(404).json({ message: 'Espaço não encontrado.' });
+        }
+
+        await db.EspacoEquipamento.destroy({
+            where: { espacoId: id },
+            transaction: t
+        });
+
+        await espaco.destroy({ transaction: t });
+
+        await t.commit();
+        res.status(200).json({ message: 'Espaço excluído com sucesso.' });
+
+    } catch (error) {
+        await t.rollback();
+        console.error('Erro ao excluir espaço:', error);
+        res.status(500).json({ message: 'Erro interno ao excluir espaço.' });
+    }
+};

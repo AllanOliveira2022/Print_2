@@ -76,6 +76,7 @@ function EspacosAdmin() {
             try {
                 setLoading(true);
                 await espacoService.excluir(id);
+                
                 await carregarEspacos();
             } catch (err) {
                 setError(err.message || "Erro ao excluir espaço. Tente novamente.");
