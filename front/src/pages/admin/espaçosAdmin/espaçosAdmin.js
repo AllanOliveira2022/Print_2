@@ -23,9 +23,7 @@ function EspacosAdmin() {
             setFilteredEspacos(espacos);
         } else {
             const filtered = espacos.filter(espaco =>
-                espaco.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (espaco.nomeBloco && espaco.nomeBloco.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                (espaco.nomeTipo && espaco.nomeTipo.toLowerCase().includes(searchTerm.toLowerCase()))
+                espaco.nome.toLowerCase().includes(searchTerm.toLowerCase())
             );
             setFilteredEspacos(filtered);
         }
