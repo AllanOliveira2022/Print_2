@@ -396,3 +396,107 @@ export const excluirEspaco = async (req, res) => {
         res.status(500).json({ message: 'Erro interno ao excluir espaço.' });
     }
 };
+
+export const editarEspaco = async (req, res) => {
+    const { id } = req.params; 
+
+    const {
+        nome,
+        codigoIdentificacao,
+        tipoId,
+        blocoId,
+        andar,
+        capacidade,
+        capacidadePCD,
+        responsavel,
+        observacoes,
+        situacao,
+        equipamentos 
+    } = req.body;
+
+    if (capacidadePCD === null || capacidadePCD === undefined || capacidadePCD === "") {
+        return res.status(400).json({
+            message: 'O campo capacidade PCD é obrigatório!'
+        });
+    }
+    if (!nome || !codigoIdentificacao || !tipoId || !blocoId || !andar || !capacidade || !situacao) {
+        return res.status(400).json({
+            message: 'Todos os campos obrigatórios do espaço (nome, código, tipo, bloco, andar, capacidade, capacidade PCD, situação) devem ser preenchidos.'
+        });
+    }
+
+    const t = await db.sequelize.transaction();
+
+    try {
+        const espacoExistente = await db.Espaco.findByPk(id, { transaction: t });
+
+        if (!espacoExistente) {
+            await t.rollback();
+            return res.status(404).json({ message: 'Espaço não encontrado para edição.' });
+        }
+
+        const codigoDuplicado = await db.Espaco.findOne({
+            where: {
+                codigoIdentificacao,
+                id: { [Op.ne]: id } 
+            },
+            transaction: t
+        });
+
+        if (codigoDuplicado) {
+            await t.rollback();
+            return res.status(400).json({ message: 'Já existe outro espaço com este código de identificação.' });
+        }
+
+        await espacoExistente.update({
+            nome,
+            codigoIdentificacao,
+            tipoId,
+            blocoId,
+            andar,
+            capacidade,
+            capacidadePCD,
+            responsavel,
+            observacoes,
+            situacao
+        }, { transaction: t });
+
+        await db.EspacoEquipamento.destroy({
+            where: { espacoId: id },
+            transaction: t
+        });
+
+        if (equipamentos && equipamentos.length > 0) {
+            for (const itemEquipamento of equipamentos) {
+                const { nome: nomeEquipamento, quantidade } = itemEquipamento;
+
+                if (!nomeEquipamento || !quantidade) {
+                    await t.rollback();
+                    return res.status(400).json({ message: 'Nome e quantidade são obrigatórios para cada equipamento na atualização.' });
+                }
+
+                let equipamento = await db.Equipamento.findOne({ where: { nome: nomeEquipamento } });
+                if (!equipamento) {
+                    equipamento = await db.Equipamento.create({ nome: nomeEquipamento }, { transaction: t });
+                }
+
+                // Cria a nova associação EspacoEquipamento
+                await db.EspacoEquipamento.create({
+                    espacoId: espacoExistente.id,
+                    equipamentoId: equipamento.id,
+                    quantidade: quantidade
+                }, { transaction: t });
+            }
+        }
+
+        // Confirma a transação se todas as operações forem bem-sucedidas
+        await t.commit();
+        res.status(200).json({ message: 'Espaço e equipamentos atualizados com sucesso.' });
+
+    } catch (error) {
+        // Reverte a transação em caso de qualquer erro
+        await t.rollback();
+        console.error('Erro ao editar espaço e equipamentos:', error);
+        res.status(500).json({ message: 'Erro interno ao editar espaço e equipamentos.' });
+    }
+};

@@ -1,6 +1,6 @@
 import express from 'express';
 import { 
-    cadastrarEspaco, listarEspacos, listarEspacosId, buscarEspacos, filtrarEspaco, excluirEspaco
+    cadastrarEspaco, listarEspacos, listarEspacosId, buscarEspacos, filtrarEspaco, excluirEspaco, editarEspaco
 } from '../controllers/espacoController.js';
 
 const router = express.Router();
@@ -12,6 +12,7 @@ router.get('/:id', listarEspacosId);
 router.get('/buscar/:nomeEspaco', buscarEspacos);
 router.get('/filtrar/:tipo/:valor', filtrarEspaco);
 router.delete('/:id', excluirEspaco);
+router.put('/:id', editarEspaco)
 /*
 router.get('/', listarLaboratorios);
 router.get('/filtrar', filtrarLaboratorios);
