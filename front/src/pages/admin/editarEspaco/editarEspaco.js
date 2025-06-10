@@ -4,13 +4,11 @@ import Menu from "../../../components/tecLab/menu/menu";
 import espacoService from "../../../services/espacoService";
 import tipoService from "../../../services/tipoService";
 import blocoService from "../../../services/blocoService";
-import { MdAdd } from "react-icons/md";
-/*Modals*/
 import TipoModal from "../../../components/modals/tipoModal/tipoModal";
 import BlocoModal from "../../../components/modals/blocoModal/blocoModal";
 
 function EditarEspaco() {
-  const { id } = useParams(); // Pega o ID do espaço da URL
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -29,35 +27,22 @@ function EditarEspaco() {
 
   const [showTipoModal, setShowTipoModal] = useState(false);
   const [showBlocoModal, setShowBlocoModal] = useState(false);
-
-  const handleNovosTiposAdicionados = async () => {
-    await fetchTipos(); // Re-fetch types after a new one is added
-  };
-
-  const handleNovosBlocosAdicionados = async () => {
-    await fetchBlocos(); // Re-fetch blocks after a new one is added
-  };
-
   const [novoEquipamento, setNovoEquipamento] = useState({
     nome: "",
     quantidade: "",
   });
-
   const [tipos, setTipos] = useState([]);
   const [blocos, setBlocos] = useState([]);
-  const [showCancelModal, setShowCancelModal] = useState(false); // Renamed to avoid confusion with other modals
-  const [loading, setLoading] = useState(true); // Start as true for initial data fetch
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // --- Funções para carregar dados de Tipos e Blocos ---
+  // Carrega tipos e blocos
   const fetchTipos = async () => {
     try {
       const response = await tipoService.listarTodos();
-      // Ensure data is an array
-      const data = Array.isArray(response) ? response : response.data || [];
-      setTipos(data);
+      setTipos(Array.isArray(response) ? response : response.data || []);
     } catch (err) {
-      console.error("Erro ao carregar tipos:", err.message, err.stack);
       setError("Erro ao carregar tipos. Tente novamente.");
     }
   };
@@ -65,102 +50,138 @@ function EditarEspaco() {
   const fetchBlocos = async () => {
     try {
       const response = await blocoService.listarTodos();
-      // Ensure data is an array
-      const data = Array.isArray(response) ? response : response.data || [];
-      setBlocos(data);
+      setBlocos(Array.isArray(response) ? response : response.data || []);
     } catch (err) {
-      console.error("Erro ao carregar blocos:", err.message, err.stack);
       setError("Erro ao carregar blocos. Tente novamente.");
     }
   };
 
-  // --- useEffect para carregar dados do espaço, tipos e blocos ao montar o componente ---
-  useEffect(() => {
-    const fetchEspacoAndDependencies = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        // Fetch dependencies first
-        await Promise.all([fetchTipos(), fetchBlocos()]);
+  // Carrega dados do espaço
+  const fetchEspaco = async () => {
+    setLoading(true);
+    try {
+      const data = await espacoService.buscarPorId(id);
 
-        // Then fetch space data
-        const espacoData = await espacoService.buscarPorId(id);
-        if (espacoData) {
-          setFormData({
-            nome: espacoData.nome || "",
-            codigoIdentificacao: espacoData.codigoIdentificacao || "",
-            // Ensure typeId and blocoId are numbers and match the option values
-            tipoId: espacoData.tipoId ? parseInt(espacoData.tipoId) : "",
-            blocoId: espacoData.blocoId ? parseInt(espacoData.blocoId) : "",
-            andar: espacoData.andar || "",
-            capacidade: espacoData.capacidade || "",
-            capacidadePCD: espacoData.capacidadePCD || false,
-            situacao: espacoData.situacao || "Disponivel",
-            responsavel: espacoData.responsavel || "",
-            observacoes: espacoData.observacoes || "",
-            // Use existing 'id' if present, otherwise generate a temporary one for React keys
-            equipamentos: Array.isArray(espacoData.equipamentos)
-              ? espacoData.equipamentos.map((eq) => ({
-                  ...eq,
-                  // Use existing 'id' if available from backend, else generate a temporary one.
-                  // This is crucial for React's list rendering to be stable.
-                  id: eq.id || Date.now() + Math.random(), // Prefer backend ID
-                }))
-              : [],
-          });
-        } else {
-          setError("Espaço não encontrado.");
-        }
-      } catch (err) {
-        console.error("Erro ao carregar dados do espaço:", err);
-        setError("Erro ao carregar dados do espaço. Verifique o ID e tente novamente.");
-      } finally {
-        setLoading(false);
+      // Aguarda tipos e blocos serem carregados antes de mapear nomes para IDs
+      let tiposData = tipos;
+      let blocosData = blocos;
+      if (tipos.length === 0) {
+        const tiposResp = await tipoService.listarTodos();
+        tiposData = Array.isArray(tiposResp) ? tiposResp : tiposResp.data || [];
+        setTipos(tiposData);
       }
-    };
+      if (blocos.length === 0) {
+        const blocosResp = await blocoService.listarTodos();
+        blocosData = Array.isArray(blocosResp) ? blocosResp : blocosResp.data || [];
+        setBlocos(blocosData);
+      }
 
-    fetchEspacoAndDependencies();
+      // Mapeia nomeTipo/nomeBloco para seus respectivos IDs
+      const tipoId =
+        tiposData.find((t) => t.nome === data.nomeTipo)?.id ||
+        data.tipoId ||
+        "";
+      const blocoId =
+        blocosData.find((b) => b.nome === data.nomeBloco)?.id ||
+        data.blocoId ||
+        "";
+
+      // Se o backend retornar equipamentos como string, parse para array
+      let equipamentos = [];
+      if (
+        data.equipamentos &&
+        typeof data.equipamentos === "string" &&
+        data.equipamentos !== "Nenhum equipamento associado."
+      ) {
+        equipamentos = data.equipamentos
+          .split("; ")
+          .map((item) => {
+            const match = item.match(/(.+)\s\((\d+)\)/);
+            if (match) {
+              return {
+                id: Date.now() + Math.random(),
+                nome: match[1].trim(),
+                quantidade: parseInt(match[2]) || 1,
+              };
+            }
+            return null;
+          })
+          .filter(Boolean);
+      } else if (Array.isArray(data.equipamentos)) {
+        equipamentos = data.equipamentos.map((eq) => ({
+          id: Date.now() + Math.random(),
+          nome: eq.nome,
+          quantidade: eq.quantidade,
+        }));
+      }
+
+      setFormData({
+        nome: data.nome || "",
+        codigoIdentificacao: data.codigoIdentificacao || "",
+        tipoId: tipoId,
+        blocoId: blocoId,
+        andar: data.andar || "",
+        capacidade: data.capacidade || "",
+        capacidadePCD:
+          data.capacidadePCD === true ||
+          data.capacidadePCD === 1 ||
+          data.capacidadePCD === "1" ||
+          data.capacidadePCD === "true"
+            ? true
+            : false,
+        situacao: data.situacao || "Disponivel",
+        responsavel: data.responsavel || "",
+        observacoes: data.observacoes || "",
+        equipamentos,
+      });
+    } catch (err) {
+      setError("Erro ao carregar espaço. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTipos();
+    fetchBlocos();
+    fetchEspaco();
+    // eslint-disable-next-line
   }, [id]);
 
-  // --- Função handleChange para atualizar o formData ---
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleNovosTiposAdicionados = async () => {
+    await fetchTipos();
+  };
 
-    setFormData((prevFormData) => {
+  const handleNovosBlocosAdicionados = async () => {
+    await fetchBlocos();
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => {
       if (name === "capacidadePCD") {
-        return {
-          ...prevFormData,
-          [name]: value === "true" ? true : false,
-        };
+        return { ...prev, [name]: value === "true" };
       } else if (
         name === "tipoId" ||
         name === "blocoId" ||
         name === "capacidade" ||
         name === "andar"
       ) {
-        // Allow empty string for optional numeric fields, otherwise convert to int
-        return {
-          ...prevFormData,
-          [name]: value === "" ? "" : parseInt(value),
-        };
+        return { ...prev, [name]: parseInt(value) || "" };
       } else {
-        return {
-          ...prevFormData,
-          [name]: value,
-        };
+        return { ...prev, [name]: value };
       }
     });
   };
 
-  // --- Funções para gerenciar equipamentos ---
   const adicionarEquipamento = () => {
     if (novoEquipamento.nome.trim() && novoEquipamento.quantidade.trim()) {
-      setFormData((prevFormData) => ({
-        ...prevFormData,
+      setFormData((prev) => ({
+        ...prev,
         equipamentos: [
-          ...prevFormData.equipamentos,
+          ...prev.equipamentos,
           {
-            id: Date.now() + Math.random(), // Still generating a temporary ID for new additions
+            id: Date.now(),
             nome: novoEquipamento.nome.trim(),
             quantidade: parseInt(novoEquipamento.quantidade) || 1,
           },
@@ -170,47 +191,40 @@ function EditarEspaco() {
     }
   };
 
-  const removerEquipamento = (idToRemove) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      equipamentos: prevFormData.equipamentos.filter((eq) => eq.id !== idToRemove),
+  const removerEquipamento = (id) => {
+    setFormData((prev) => ({
+      ...prev,
+      equipamentos: prev.equipamentos.filter((eq) => eq.id !== id),
     }));
   };
 
-  const editarEquipamento = (idToEdit, campo, valor) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      equipamentos: prevFormData.equipamentos.map((eq) =>
-        eq.id === idToEdit
+  const editarEquipamento = (id, campo, valor) => {
+    setFormData((prev) => ({
+      ...prev,
+      equipamentos: prev.equipamentos.map((eq) =>
+        eq.id === id
           ? { ...eq, [campo]: campo === "quantidade" ? parseInt(valor) || 1 : valor }
           : eq
       ),
     }));
   };
 
-  // --- Função para preparar os dados antes do envio (remover IDs temporários, tratar nulos) ---
-  const prepararDadosParaEnvio = (dados) => {
-    return {
-      nome: dados.nome,
-      codigoIdentificacao: dados.codigoIdentificacao,
-      tipoId: dados.tipoId || null,
-      blocoId: dados.blocoId || null,
-      andar: dados.andar === "" ? null : dados.andar,
-      capacidade: dados.capacidade === "" ? null : parseInt(dados.capacidade),
-      capacidadePCD: dados.capacidadePCD,
-      situacao: dados.situacao,
-      responsavel: dados.responsavel || null,
-      observacoes: dados.observacoes || null,
-      // Only send 'nome' and 'quantidade' for equipments
-      equipamentos: dados.equipamentos.map(({ nome, quantidade }) => ({ nome, quantidade })),
-    };
-  };
+  const prepararDadosParaEnvio = (dados) => ({
+    nome: dados.nome,
+    codigoIdentificacao: dados.codigoIdentificacao,
+    tipoId: dados.tipoId || null,
+    blocoId: dados.blocoId || null,
+    andar: dados.andar === "" ? null : dados.andar,
+    capacidade: dados.capacidade === "" ? null : parseInt(dados.capacidade),
+    capacidadePCD: dados.capacidadePCD,
+    situacao: dados.situacao,
+    responsavel: dados.responsavel || null,
+    observacoes: dados.observacoes || null,
+    equipamentos: dados.equipamentos.map(({ id, ...eq }) => eq),
+  });
 
-  // --- Função handleSubmit para enviar os dados atualizados ---
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Basic validation
     if (!formData.nome.trim()) {
       setError("Nome do espaço é obrigatório.");
       return;
@@ -233,12 +247,10 @@ function EditarEspaco() {
 
     try {
       const dadosParaEnvio = prepararDadosParaEnvio(formData);
-      console.log("Dados atualizados enviados para o backend:", dadosParaEnvio);
-      await espacoService.editar(id, dadosParaEnvio); // Chama o serviço de atualização com o ID
+      await espacoService.editar(id, dadosParaEnvio);
       alert("Espaço atualizado com sucesso!");
       navigate("/admin/espacos");
     } catch (error) {
-      console.error("Erro ao atualizar espaço:", error);
       if (error.response) {
         const status = error.response.status;
         const message =
@@ -251,10 +263,7 @@ function EditarEspaco() {
           } else {
             setError(message || "Dados inválidos. Verifique as informações fornecidas.");
           }
-        } else if (status === 404) {
-            setError("Espaço não encontrado. Verifique o ID.");
-        }
-        else if (status === 409) {
+        } else if (status === 409) {
           setError("Já existe um espaço com este código. Escolha um código diferente.");
         } else if (status === 500) {
           setError("Erro interno do servidor. Tente novamente mais tarde.");
@@ -271,53 +280,12 @@ function EditarEspaco() {
     }
   };
 
-  // --- Funções para o modal de cancelamento ---
-  const handleCancel = () => {
-    setShowCancelModal(true);
-  };
-
+  const handleCancel = () => setShowModal(true);
   const handleConfirmCancel = () => {
-    setShowCancelModal(false);
+    setShowModal(false);
     navigate("/admin/espacos");
   };
-
-  const handleCloseCancelModal = () => {
-    setShowCancelModal(false);
-  };
-
-  // --- Renderização condicional para o estado de carregamento e erro inicial ---
-  if (loading && !formData.nome) { // Only show loading spinner if data is not yet loaded
-    return (
-      <div className="flex min-h-screen bg-gray-100">
-        <Menu />
-        <div className="flex flex-col w-full p-8 items-center justify-center">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-            <p className="mt-4 text-gray-600">Carregando dados do espaço...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error && !formData.nome) { // Only show error if data failed to load initially
-    return (
-      <div className="flex min-h-screen bg-gray-100">
-        <Menu />
-        <div className="flex flex-col w-full p-8 items-center justify-center">
-          <div className="text-center">
-            <p className="text-red-600 mb-4">{error}</p>
-            <button
-              onClick={() => navigate("/admin/espacos")}
-              className="px-6 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors font-semibold"
-            >
-              Voltar para Espaços
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const handleCloseModal = () => setShowModal(false);
 
   return (
     <div className="flex flex-col md:flex-row w-full min-h-screen">
@@ -329,44 +297,24 @@ function EditarEspaco() {
               Editar Espaço
             </h1>
             <p className="text-gray-600">
-              Edite as informações do espaço existente.
+              Edite as informações do espaço no sistema. Preencha todas as informações necessárias.
             </p>
           </div>
-
           {error && (
             <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-red-400"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <div className="ml-3">
                   <p className="text-sm text-red-700">{error}</p>
                 </div>
                 <div className="ml-auto pl-3">
-                  <button
-                    onClick={() => setError(null)}
-                    className="text-red-400 hover:text-red-600"
-                  >
-                    <svg
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
+                  <button onClick={() => setError(null)} className="text-red-400 hover:text-red-600">
+                    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
                   </button>
                 </div>
@@ -411,12 +359,11 @@ function EditarEspaco() {
                       Adicionar
                     </button>
                   </div>
-                  {tipos.length === 0 && !loading && (
+                  {tipos.length === 0 && (
                     <p className="text-sm text-red-500 mt-1">
                       Nenhum tipo de espaço cadastrado.
                     </p>
                   )}
-
                   {showTipoModal && (
                     <TipoModal
                       isOpen={showTipoModal}
@@ -473,7 +420,7 @@ function EditarEspaco() {
                       disabled={loading}
                     >
                       <option value="" disabled>
-                        Seleccione um bloco didático
+                        Selecione um bloco didático
                       </option>
                       {blocos.map((bloco) => (
                         <option key={bloco.id} value={bloco.id}>
@@ -490,7 +437,7 @@ function EditarEspaco() {
                       Adicionar
                     </button>
                   </div>
-                  {blocos.length === 0 && !loading && (
+                  {blocos.length === 0 && (
                     <p className="text-sm text-red-500 mt-1">
                       Nenhum bloco didático cadastrado.
                     </p>
@@ -575,7 +522,7 @@ function EditarEspaco() {
                           disabled={loading}
                           className="w-full px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
                         >
-                          Adicionar Equipamento
+                          Cadastrar Equipamento
                         </button>
                       </div>
                     </div>
@@ -587,7 +534,7 @@ function EditarEspaco() {
                       </h4>
                       {formData.equipamentos.map((equipamento) => (
                         <div
-                          key={equipamento.id} // This is the crucial part for stable rendering
+                          key={equipamento.id}
                           className="flex items-center gap-3 bg-white p-3 border"
                         >
                           <input
@@ -645,7 +592,6 @@ function EditarEspaco() {
                       min="0"
                     />
                   </div>
-
                   <div className="w-3/5 block mb-1">
                     <label className="text-sm font-medium text-gray-700">
                       Capacidade para PCD
@@ -735,20 +681,19 @@ function EditarEspaco() {
           </form>
         </div>
       </div>
-
-      {showCancelModal && (
+      {showModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 shadow-lg w-full max-w-md">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">
               Cancelar edição?
             </h3>
             <p className="text-gray-600 mb-6">
-              Deseja realmente cancelar a edição deste espaço? Todas as
-              alterações não salvas serão perdidas.
+              Deseja realmente cancelar a edição deste espaço? Todas as alterações
+              não salvas serão perdidas.
             </p>
             <div className="flex justify-end gap-3">
               <button
-                onClick={handleCloseCancelModal}
+                onClick={handleCloseModal}
                 className="px-4 py-2 text-gray-600 border border-gray-300 hover:bg-gray-100 transition-colors font-medium"
               >
                 Voltar

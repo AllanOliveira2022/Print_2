@@ -1,5 +1,3 @@
-
-
 import db from '../models/index.js'; // Importa o objeto 'db' que contém todos os seus modelos
 import { Op } from 'sequelize';
 export const cadastrarEspaco = async (req, res) => {
