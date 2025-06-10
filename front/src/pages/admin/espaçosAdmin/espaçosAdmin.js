@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Menu from "../../../components/tecLab/menu/menu";
 import espacoService from "../../../services/espacoService";
+import BlocoModal from "../../../components/modals/blocoModal/blocoModal";
+import TipoModal from "../../../components/modals/tipoModal/tipoModal";
 
 function EspacosAdmin() {
     const navigate = useNavigate();
@@ -10,15 +12,14 @@ function EspacosAdmin() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
-    
-    // Removi o filteredEspacos - vamos usar apenas espacos
+    // Estados para controlar os modais
+    const [showTipoModal, setShowTipoModal] = useState(false);
+    const [showBlocoModal, setShowBlocoModal] = useState(false);
 
-    // Carregar espaços ao montar o componente
     useEffect(() => {
         carregarEspacos();
     }, []);
 
-    // Buscar automaticamente quando o termo de pesquisa mudar
     useEffect(() => {
         if (searchTerm.trim() === "") {
             carregarEspacos();
@@ -70,8 +71,7 @@ function EspacosAdmin() {
             try {
                 setLoading(true);
                 await espacoService.excluir(id);
-                
-                // Recarregar com base no estado atual da pesquisa
+
                 if (searchTerm.trim()) {
                     await buscarPorNome();
                 } else {
@@ -102,6 +102,17 @@ function EspacosAdmin() {
         if (e.key === 'Enter') {
             handleFiltrar();
         }
+    };
+
+    // Callbacks para quando os modais forem confirmados (pode customizar conforme sua lógica)
+    const handleNovosTiposAdicionados = () => {
+        setShowTipoModal(false);
+        carregarEspacos();
+    };
+
+    const handleNovosBlocosAdicionados = () => {
+        setShowBlocoModal(false);
+        carregarEspacos();
     };
 
     if (loading) {
@@ -142,13 +153,10 @@ function EspacosAdmin() {
             <Menu />
             <div className="flex justify-center w-full p-4 md:p-8">
                 <div className="w-full max-w-7xl bg-gray-50 rounded-lg shadow-md p-6 mt-4">
-                    <div className="flex flex-col mb-6 gap-4">
+                    <div className="flex flex-row mb-6 gap-4 justify-between items-center">
                         <h1 className="text-2xl font-bold text-green-800 text-left">
                             Espaços Cadastrados ({espacos.length})
                         </h1>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-6 w-full justify-between items-center mb-8">
                         <div className="w-full sm:w-2/5 relative">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <FaSearch className="h-5 w-5 text-gray-400" />
@@ -158,12 +166,35 @@ function EspacosAdmin() {
                                 placeholder="Pesquisar espaço, bloco ou tipo"
                                 value={searchTerm}
                                 onChange={handleSearchChange}
-                                onKeyPress={handleKeyPress}
                                 className="w-full pl-12 pr-4 py-2 border border-gray-300 bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:text-green-600 focus:ring-green-600 focus:border-none"
                             />
                         </div>
+                    </div>
 
-                        <div className="w-full sm:w-auto flex flex-col sm:flex-row justify-end items-center gap-6 font-bold mt-6 sm:mt-0 font-medium">
+                    <div className="flex flex-col sm:flex-row gap-6 w-full justify-between items-center mb-8">
+                        <div className="w-full flex flex-col sm:flex-row justify-between gap-6 font-bold mt-6 sm:mt-0 font-medium">
+                            <button 
+                                onClick={() => setShowTipoModal(true)}
+                                className="w-full sm:w-auto px-6 py-2 text-green-600 uppercase hover:bg-green-100 transition-colors"
+                            >
+                                Tipos de Espaços
+                            </button>
+                            <TipoModal
+                                isOpen={showTipoModal}
+                                onClose={() => setShowTipoModal(false)}
+                                onConfirm={handleNovosTiposAdicionados}
+                            />
+                            <button 
+                                onClick={() => setShowBlocoModal(true)}
+                                className="w-full sm:w-auto px-6 py-2 text-green-600 uppercase hover:bg-green-100 transition-colors"
+                            >
+                                Blocos Didáticos
+                            </button>
+                            <BlocoModal
+                                isOpen={showBlocoModal}
+                                onClose={() => setShowBlocoModal(false)}
+                                onConfirm={handleNovosBlocosAdicionados}
+                            />
                             <button 
                                 onClick={handleFiltrar}
                                 className="w-full sm:w-auto px-6 py-2 text-green-600 border-2 border-green-600 uppercase hover:bg-green-100 transition-colors"

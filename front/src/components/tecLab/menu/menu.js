@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { GrCubes } from "react-icons/gr";
 import { FaRegListAlt, FaUserGraduate, FaRegBell, FaClipboardCheck } from "react-icons/fa";
-import { PiBuildingOfficeFill, PiStudentFill } from "react-icons/pi";
+import { PiBuildingOfficeFill } from "react-icons/pi";
 import { LuArrowLeftFromLine } from "react-icons/lu";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import MenuSection from "../../menuSection/menuSection";
@@ -37,11 +36,8 @@ function Menu({ userName, userCode }) {
                 <div className="mb-10 min-w-[280px]">
                     <h1 className="text-2xl font-bold text-green-800 mb-3">SIGEF</h1>
                     <h2 className="text-sm font-semibold text-gray-700 uppercase">
-                        {userName || "Nome do Admin"}
+                        Olá, Administrador
                     </h2>
-                    <p className="text-xs text-gray-500">
-                        {userCode || "123456789"}
-                    </p>
                 </div>
 
                 {/* Itens do menu */}
@@ -65,22 +61,10 @@ function Menu({ userName, userCode }) {
                         isActive={currentPath === "/admin/solicitacoes"}
                     />
                     <MenuSection
-                        icon={<GrCubes />}
-                        sectionName="Materiais"
-                        redirectPath="/admin/materiais"
-                        isActive={currentPath === "/admin/materiais"}
-                    />
-                    <MenuSection
                         icon={<FaUserGraduate />}
                         sectionName="Professores"
                         redirectPath="/admin/professores"
                         isActive={currentPath === "/admin/professores"}
-                    />
-                    <MenuSection
-                        icon={<PiStudentFill />}
-                        sectionName="Estudantes"
-                        redirectPath="/admin/estudantes"
-                        isActive={currentPath === "/admin/estudantes"}
                     />
                     <MenuSection
                         icon={<FaRegBell />}
