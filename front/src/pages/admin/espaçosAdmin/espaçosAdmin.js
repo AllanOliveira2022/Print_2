@@ -20,15 +20,11 @@ function EspacosAdmin() {
 
     // Buscar automaticamente quando o termo de pesquisa mudar
     useEffect(() => {
-        const delayedSearch = setTimeout(() => {
-            if (searchTerm.trim() === "") {
-                carregarEspacos();
-            } else {
-                buscarPorNome();
-            }
-        }, 500); // Debounce de 500ms
-
-        return () => clearTimeout(delayedSearch);
+        if (searchTerm.trim() === "") {
+            carregarEspacos();
+        } else {
+            buscarPorNome();
+        }
     }, [searchTerm]);
 
     const carregarEspacos = async () => {
@@ -47,15 +43,13 @@ function EspacosAdmin() {
 
     const buscarPorNome = async () => {
         try {
-            setLoading(true);
+            setLoading(false);
             setError(null);
             const dados = await espacoService.buscarPorNome(searchTerm);
             setEspacos(dados);
         } catch (err) {
             setError(err.message || "Erro na busca. Tente novamente.");
             console.error("Erro na busca:", err);
-        } finally {
-            setLoading(false);
         }
     };
 
