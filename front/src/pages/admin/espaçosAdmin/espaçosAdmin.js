@@ -10,24 +10,26 @@ function EspacosAdmin() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
-    const [filteredEspacos, setFilteredEspacos] = useState([]);
+    
+    // Removi o filteredEspacos - vamos usar apenas espacos
 
     // Carregar espaços ao montar o componente
     useEffect(() => {
         carregarEspacos();
     }, []);
 
-    // Filtrar espaços com base na pesquisa
+    // Buscar automaticamente quando o termo de pesquisa mudar
     useEffect(() => {
-        if (searchTerm.trim() === "") {
-            setFilteredEspacos(espacos);
-        } else {
-            const filtered = espacos.filter(espaco =>
-                espaco.nome.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            setFilteredEspacos(filtered);
-        }
-    }, [searchTerm, espacos]);
+        const delayedSearch = setTimeout(() => {
+            if (searchTerm.trim() === "") {
+                carregarEspacos();
+            } else {
+                buscarPorNome();
+            }
+        }, 500); // Debounce de 500ms
+
+        return () => clearTimeout(delayedSearch);
+    }, [searchTerm]);
 
     const carregarEspacos = async () => {
         try {
@@ -35,7 +37,6 @@ function EspacosAdmin() {
             setError(null);
             const dados = await espacoService.listarTodos();
             setEspacos(dados);
-            setFilteredEspacos(dados);
         } catch (err) {
             setError(err.message || "Erro ao carregar espaços. Tente novamente.");
             console.error("Erro ao carregar espaços:", err);
@@ -50,7 +51,6 @@ function EspacosAdmin() {
             setError(null);
             const dados = await espacoService.buscarPorNome(searchTerm);
             setEspacos(dados);
-            setFilteredEspacos(dados);
         } catch (err) {
             setError(err.message || "Erro na busca. Tente novamente.");
             console.error("Erro na busca:", err);
@@ -77,7 +77,12 @@ function EspacosAdmin() {
                 setLoading(true);
                 await espacoService.excluir(id);
                 
-                await carregarEspacos();
+                // Recarregar com base no estado atual da pesquisa
+                if (searchTerm.trim()) {
+                    await buscarPorNome();
+                } else {
+                    await carregarEspacos();
+                }
             } catch (err) {
                 setError(err.message || "Erro ao excluir espaço. Tente novamente.");
                 console.error("Erro ao excluir:", err);
@@ -145,7 +150,7 @@ function EspacosAdmin() {
                 <div className="w-full max-w-7xl bg-gray-50 rounded-lg shadow-md p-6 mt-4">
                     <div className="flex flex-col mb-6 gap-4">
                         <h1 className="text-2xl font-bold text-green-800 text-left">
-                            Espaços Cadastrados ({filteredEspacos.length})
+                            Espaços Cadastrados ({espacos.length})
                         </h1>
                     </div>
 
@@ -159,6 +164,7 @@ function EspacosAdmin() {
                                 placeholder="Pesquisar espaço, bloco ou tipo"
                                 value={searchTerm}
                                 onChange={handleSearchChange}
+                                onKeyPress={handleKeyPress}
                                 className="w-full pl-12 pr-4 py-2 border border-gray-300 bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:text-green-600 focus:ring-green-600 focus:border-none"
                             />
                         </div>
@@ -179,7 +185,7 @@ function EspacosAdmin() {
                         </div>
                     </div>
 
-                    {filteredEspacos.length === 0 ? (
+                    {espacos.length === 0 ? (
                         <div className="text-center py-8">
                             <p className="text-gray-600 text-lg">
                                 {searchTerm ? "Nenhum espaço encontrado para sua pesquisa." : "Nenhum espaço cadastrado."}
@@ -207,7 +213,7 @@ function EspacosAdmin() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredEspacos.map((espaco, index) => (
+                                    {espacos.map((espaco, index) => (
                                         <tr
                                             key={espaco.id}
                                             className={index % 2 === 0 ? "bg-white" : "bg-gray-200"}

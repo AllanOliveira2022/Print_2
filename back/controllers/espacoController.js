@@ -119,9 +119,6 @@ export const listarEspacos = async (req, res) => {
                     attributes: ['nome'] // Seleciona o nome do equipamento
                 }
             ],
-            order: [
-                ['nome', 'ASC'] // Ordena os espaços pelo nome
-            ]
         });
 
         // Mapeia os resultados para o formato desejado, concatenando os equipamentos
@@ -222,15 +219,14 @@ export const listarEspacosId = async (req, res) => {
 export const buscarEspacos = async (req, res) => {
     try {
         const { nomeEspaco } = req.params;
-
         const whereClause = {};
-
+        
         if (nomeEspaco) {
             whereClause.nome = {
-                [Op.like]: `%${nomeEspaco}%`  // corrigido para MySQL
+                [Op.like]: `%${nomeEspaco}%`
             };
         }
-
+        
         const espacos = await db.Espaco.findAll({
             where: whereClause,
             include: [
@@ -255,14 +251,12 @@ export const buscarEspacos = async (req, res) => {
                     attributes: ['nome'],
                     required: false
                 }
-            ],
-            order: [['nome', 'ASC']]
+            ]
         });
-
+        
         const espacosFormatados = espacos.map(espaco => {
             const dados = espaco.get({ plain: true });
             const equipamentos = dados.equipamentos.map(e => `${e.nome} (${e.EspacoEquipamento.quantidade})`).join('; ');
-
             return {
                 id: dados.id,
                 nome: dados.nome,
@@ -278,8 +272,51 @@ export const buscarEspacos = async (req, res) => {
                 equipamentos: equipamentos || 'Nenhum equipamento associado.'
             };
         });
-
-        res.status(200).json(espacosFormatados);
+        
+        // Ordenação personalizada: primeiro os que começam com o termo, depois os demais
+        let espacosOrdenados;
+        if (nomeEspaco) {
+            const termoPesquisa = nomeEspaco.toLowerCase();
+            
+            espacosOrdenados = espacosFormatados.sort((a, b) => {
+                const nomeA = a.nome.toLowerCase();
+                const nomeB = b.nome.toLowerCase();
+                
+                // Prioridade 1: Nome completo ou primeira palavra começa com o termo
+                const aPrioridade1 = nomeA.startsWith(termoPesquisa) || 
+                                     nomeA.split(' ')[0].startsWith(termoPesquisa);
+                const bPrioridade1 = nomeB.startsWith(termoPesquisa) || 
+                                     nomeB.split(' ')[0].startsWith(termoPesquisa);
+                
+                // Prioridade 2: Alguma palavra (não a primeira) começa com o termo
+                const palavrasA = nomeA.split(' ');
+                const palavrasB = nomeB.split(' ');
+                const aPrioridade2 = !aPrioridade1 && palavrasA.slice(1).some(palavra => palavra.startsWith(termoPesquisa));
+                const bPrioridade2 = !bPrioridade1 && palavrasB.slice(1).some(palavra => palavra.startsWith(termoPesquisa));
+                
+                // Prioridade 3: Contém o termo no meio (resto dos casos)
+                const aPrioridade3 = !aPrioridade1 && !aPrioridade2 && nomeA.includes(termoPesquisa);
+                const bPrioridade3 = !bPrioridade1 && !bPrioridade2 && nomeB.includes(termoPesquisa);
+                
+                // Ordenação por prioridade
+                if (aPrioridade1 && !bPrioridade1) return -1;
+                if (!aPrioridade1 && bPrioridade1) return 1;
+                if (aPrioridade2 && !bPrioridade2) return -1;
+                if (!aPrioridade2 && bPrioridade2) return 1;
+                if (aPrioridade3 && !bPrioridade3) return -1;
+                if (!aPrioridade3 && bPrioridade3) return 1;
+                
+                // Se têm a mesma prioridade, ordena alfabeticamente
+                return nomeA.localeCompare(nomeB);
+            });
+        } else {
+            // Se não há termo de pesquisa, ordena apenas alfabeticamente
+            espacosOrdenados = espacosFormatados.sort((a, b) => 
+                a.nome.localeCompare(b.nome)
+            );
+        }
+        
+        res.status(200).json(espacosOrdenados);
     } catch (error) {
         console.error('Erro ao buscar espaços:', error);
         res.status(500).json({ message: 'Erro interno ao buscar espaços.' });
