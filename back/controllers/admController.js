@@ -9,6 +9,13 @@ export const cadastrarAdministrador = async (req, res) => {
       return res.status(400).json({ message: 'Email já cadastrado.' });
     }
 
+    const codigoExistente = await db.TecnicoAdministrador.findOne({ where: { codigo_institucional } });
+    if (codigoExistente) {
+      return res.status(400).json({ message: 'Codigo insttucional já cadastrado já cadastrado.' });
+    }
+
+
+
     const novoUsuario = await db.Usuario.create({
       nome,
       email,
@@ -28,26 +35,27 @@ export const cadastrarAdministrador = async (req, res) => {
   }
 };
 
-// mostra todos os dados dos usuarios, independente do tipo
-export const listarUsuariosCompletos = async (req, res) => {
+// mostra todos os dados dos professores
+export const listarProfessores = async (req, res) => {
   try {
-      const [usuarios, metadata] = await db.sequelize.query(`
+      const [professores, metadata] = await db.sequelize.query(`
           SELECT u.id, u.nome, u.email, u.tipo,
-              a.matricula,
-              COALESCE(p.codigo_institucional, t.codigo_institucional) AS codigo_institucional,
+              p.codigo_institucional,
               p.area_atuacao
           FROM Usuarios u
-          LEFT JOIN Alunos a ON a.id = u.id
-          LEFT JOIN Professores p ON p.id = u.id
-          LEFT JOIN TecnicoAdministradores t ON t.id = u.id
+          INNER JOIN Professores p ON p.id = u.id
+          WHERE u.tipo = 'professor'
       `);
 
-      res.status(200).json(usuarios);
+      res.status(200).json(professores);
   } catch (error) {
-      console.error('Erro ao listar usuários (raw):', error);
-      res.status(500).json({ erro: 'Erro ao buscar usuários', detalhes: error.message });
+      console.error('Erro ao listar professores:', error);
+      res.status(500).json({ erro: 'Erro ao buscar professores', detalhes: error.message });
   }
 };
+
+
+
 
 
 

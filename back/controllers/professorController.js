@@ -6,7 +6,12 @@ export const cadastrarProfessor = async (req, res) => {
   try {
     const usuarioExistente = await db.Usuario.findOne({ where: { email } });
     if (usuarioExistente) {
-      return res.status(400).json({ message: 'Email já cadastrado.' });
+      return res.status(400).json({ message: 'ERRO! - Email já cadastrado.' });
+    }
+
+    const codigoExistente = await db.Professor.findOne({ where: { codigo_institucional } });
+    if (codigoExistente) {
+      return res.status(400).json({ message: 'ERRO! - Codigo insttucional já cadastrado já cadastrado.' });
     }
 
     const novoUsuario = await db.Usuario.create({
@@ -28,3 +33,29 @@ export const cadastrarProfessor = async (req, res) => {
     res.status(500).json({ message: 'Erro interno ao cadastrar professor.' });
   }
 };
+
+export const verPerfil = async (req, res) => {
+  const { id } = req.params; // O ID virá da rota
+
+  try {
+    const professor = await db.Usuario.findOne({
+      where: { id, tipo: 'professor' },
+      include: {
+        model: db.Professor,
+        as: 'Professor', // Pode ser necessário ajustar de acordo com o alias definido nas associações
+        attributes: ['codigo_institucional', 'area_atuacao']
+      },
+      attributes: ['nome', 'email', 'senha']
+    });
+
+    if (!professor) {
+      return res.status(404).json({ message: 'Professor não encontrado.' });
+    }
+
+    res.status(200).json(professor);
+  } catch (error) {
+    console.error('Erro ao buscar perfil do professor:', error);
+    res.status(500).json({ message: 'Erro interno ao buscar perfil do professor.' });
+  }
+};
+
