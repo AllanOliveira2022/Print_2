@@ -21,8 +21,10 @@ import ReservasAceitas from './pages/admin/reservasAceitas/reservasAceitas';
 import EspacosProfessor from './pages/professor/espacosProfessor/espacosProfessor';
 import SolicitarReserva from './pages/professor/solicitarReserva/solicitarReserva';
 import SolicitacoesProfessor from './pages/professor/solicitacoesProfessor/solicitacoesProfessor';
+import PerfilProfessor from './pages/professor/perfilProfessor/perfilProfessor';
 /*Telas Gerais*/
 import DetalhesEspaço from './pages/admin/detalhesEspaco/detalhesEspaco';
+import DetalhesEspacoProf from './pages/professor/detalhesEspaco/detalhesEspaco';
 
 const router = createBrowserRouter([
   {
@@ -62,6 +64,10 @@ const router = createBrowserRouter([
     element: <EspacosProfessor />
   },
   {
+    path: "/professor/perfil",
+    element: <PerfilProfessor />
+  },
+  {
     path: "/professor/solicitarReserva",
     element: <SolicitarReserva />
   },
@@ -80,6 +86,10 @@ const router = createBrowserRouter([
   {
     path: "/admin/espacos/detalhes/:id",
     element: <DetalhesEspaço/>
+  },
+  {
+    path: "/professor/espacos/detalhes/:id",
+    element: <DetalhesEspacoProf/>
   },
   {
     path: "/admin/reservas",

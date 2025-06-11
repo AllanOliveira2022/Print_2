@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { FaChalkboardTeacher, FaRegListAlt, FaClipboardCheck, FaRegBell } from "react-icons/fa";
-import { LuArrowLeftFromLine } from "react-icons/lu";
+import { LuArrowLeftFromLine, LuCircleUserRound} from "react-icons/lu";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import MenuSection from "../../menuSection/menuSection";
 
@@ -66,6 +66,15 @@ function MenuProfessor({ userName, userCode }) {
                         sectionName="Notificações"
                         redirectPath="/professor/notificacoes"
                         isActive={currentPath === "/professor/notificacoes"}
+                    />
+                </div>
+
+                <div className="mt-6 pt-4 min-w-[280px]">
+                    <MenuSection
+                        icon={<LuCircleUserRound />}
+                        sectionName="Perfil"
+                        isActive={false}
+                        redirectPath="/professor/perfil"
                     />
                 </div>
 
