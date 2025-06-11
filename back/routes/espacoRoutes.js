@@ -1,6 +1,6 @@
 import express from 'express';
 import { 
-    cadastrarEspaco, listarEspacos, listarEspacosId, buscarEspacos, filtrarEspaco, excluirEspaco, editarEspaco
+    cadastrarEspaco, listarEspacos, listarEspacosId, buscarEspacos, filtrarEspaco, excluirEspaco, editarEspaco, ordenarEspaco
 } from '../controllers/espacoController.js';
 
 import {autorizarTipo, autenticarToken} from '../middleware/usuarioMiddleware.js'
@@ -11,10 +11,13 @@ const router = express.Router();
 router.post('/cadastrar', cadastrarEspaco);
 router.get('/listar', listarEspacos);
 router.get('/:id', listarEspacosId);
-router.get('/buscar/:nomeEspaco', buscarEspacos);
-router.get('/filtrar/:tipo/:valor', filtrarEspaco);
 router.delete('/:id', excluirEspaco);
 router.put('/:id', editarEspaco)
+
+//busca-filtro-ordena
+router.get('/buscar/:nomeEspaco', buscarEspacos);
+router.get('/filtrar/:tipo/:valor', filtrarEspaco);
+router.get('/ordenar/:ordem', ordenarEspaco);
 /*
 router.get('/', listarLaboratorios);
 router.get('/filtrar', filtrarLaboratorios);

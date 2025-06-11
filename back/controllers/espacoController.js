@@ -535,3 +535,75 @@ export const editarEspaco = async (req, res) => {
         res.status(500).json({ message: 'Erro interno ao editar espaço e equipamentos.' });
     }
 };
+
+export const ordenarEspaco = async (req, res) => {
+    try {
+        const { ordem } = req.params; // 'recente' ou 'antigo'
+
+        // Valida o parâmetro de ordenação
+        if (!['recente', 'antigo'].includes(ordem)) {
+            return res.status(400).json({ 
+                message: 'Parâmetro de ordenação inválido. Use "recente" ou "antigo".' 
+            });
+        }
+
+        // Define a direção da ordenação
+        const orderDirection = ordem === 'recente' ? 'DESC' : 'ASC';
+
+        const espacos = await db.Espaco.findAll({
+            include: [
+                {
+                    model: db.Bloco,
+                    as: 'bloco',
+                    attributes: ['nome']
+                },
+                {
+                    model: db.Tipo,
+                    as: 'Tipo',
+                    attributes: ['nome']
+                },
+                {
+                    model: db.Equipamento,
+                    as: 'equipamentos',
+                    through: {
+                        attributes: ['quantidade']
+                    },
+                    attributes: ['nome']
+                }
+            ],
+            order: [
+                ['createdAt', orderDirection] // Ordena pela data de criação
+            ]
+        });
+
+        // Formata os espaços da mesma forma que nas outras funções
+        const espacosFormatados = espacos.map(espaco => {
+            const dadosEspaco = espaco.get({ plain: true });
+            const equipamentosConcatenados = dadosEspaco.equipamentos
+                .map(equipamento => `${equipamento.nome} (${equipamento.EspacoEquipamento.quantidade})`)
+                .join('; ');
+
+            return {
+                id: dadosEspaco.id,
+                nome: dadosEspaco.nome,
+                codigoIdentificacao: dadosEspaco.codigoIdentificacao,
+                nomeBloco: dadosEspaco.bloco ? dadosEspaco.bloco.nome : null,
+                nomeTipo: dadosEspaco.Tipo ? dadosEspaco.Tipo.nome : null,
+                andar: dadosEspaco.andar,
+                capacidade: dadosEspaco.capacidade,
+                capacidadePCD: dadosEspaco.capacidadePCD,
+                responsavel: dadosEspaco.responsavel,
+                observacoes: dadosEspaco.observacoes,
+                situacao: dadosEspaco.situacao,
+                equipamentos: equipamentosConcatenados || 'Nenhum equipamento associado.',
+                dataCriacao: dadosEspaco.createdAt // Adiciona a data de criação no retorno
+            };
+        });
+
+        res.status(200).json(espacosFormatados);
+
+    } catch (error) {
+        console.error('Erro ao ordenar espaços:', error);
+        res.status(500).json({ message: 'Erro interno ao ordenar espaços.' });
+    }
+};
