@@ -64,4 +64,22 @@ export const cadastrarUsuario = async (req, res) => {
   }
 };
 
+export const excluirUsuario = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const usuario = await db.Usuario.findByPk(id);
+
+    if (!usuario) {
+      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    }
+
+    await usuario.destroy();
+
+    res.status(200).json({ message: 'Usuário excluído com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao excluir usuário:', error);
+    res.status(500).json({ message: 'Erro interno ao excluir usuário.' });
+  }
+};
 
