@@ -8,13 +8,13 @@ import {autorizarTipo, autenticarToken} from '../middleware/usuarioMiddleware.js
 const router = express.Router();
 
 // Rotas principais
-router.post('/cadastrar', autenticarToken, cadastrarEspaco);
+router.post('/cadastrar', cadastrarEspaco);
 router.get('/listar', listarEspacos);
 router.get('/:id', listarEspacosId);
 router.get('/buscar/:nomeEspaco', buscarEspacos);
 router.get('/filtrar/:tipo/:valor', filtrarEspaco);
-router.delete('/:id',autenticarToken, excluirEspaco);
-router.put('/:id', autenticarToken, editarEspaco)
+router.delete('/:id', excluirEspaco);
+router.put('/:id', editarEspaco)
 /*
 router.get('/', listarLaboratorios);
 router.get('/filtrar', filtrarLaboratorios);
