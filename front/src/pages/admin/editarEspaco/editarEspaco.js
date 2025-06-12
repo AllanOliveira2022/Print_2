@@ -694,7 +694,7 @@ function EditarEspaco() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={handleCloseModal}
-                className="px-4 py-2 text-gray-600 border border-gray-300 hover:bg-gray-100 transition-colors font-medium"
+                className="px-4 py-2 text-green-600 border border-green-300 hover:bg-green-700 hover:text-white transition-colors font-medium"
               >
                 Voltar
               </button>

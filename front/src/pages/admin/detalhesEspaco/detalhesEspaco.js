@@ -223,7 +223,7 @@ function DetalhesEspaco() {
           <div className="flex justify-start mt-6">
             <button
               onClick={() => window.history.back()}
-              className="px-6 py-2 text-red-600 border-2 border-gray-300 uppercase hover:bg-gray-100 transition-colors font-semibold"
+              className="px-4 py-2 text-green-600 border border-green-300 hover:bg-green-700 hover:text-white transition-colors font-medium"
             >
               Voltar
             </button>
