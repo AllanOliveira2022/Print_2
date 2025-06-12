@@ -124,12 +124,12 @@ function LoginProf() {
 
           <div className="text-center space-y-2">
             <button
-              onClick={() => navigate("/recuperar-senha")}
+              onClick={() => navigate("/recuperarSenha")}
               type="button"
               disabled={loading}
               className="text-base text-green-600 font-medium hover:underline focus:outline-none"
             >
-              Esqueceu a senha? Recuperar
+              Recuperar a senha?
             </button>
 
             <div>

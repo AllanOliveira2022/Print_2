@@ -25,6 +25,8 @@ import PerfilProfessor from './pages/professor/perfilProfessor/perfilProfessor';
 /*Telas Gerais*/
 import DetalhesEspaço from './pages/admin/detalhesEspaco/detalhesEspaco';
 import DetalhesEspacoProf from './pages/professor/detalhesEspaco/detalhesEspaco';
+/*Telas Visitante*/
+import PagVisitante from './pages/visitante/pagVisitante';
 
 const router = createBrowserRouter([
   {
@@ -98,6 +100,10 @@ const router = createBrowserRouter([
   {
     path: "/professor/solicitacoes",
     element: <SolicitacoesProfessor />
+  },
+  {
+    path: "/visitante",
+    element: <PagVisitante />
   }
 ]);
 
