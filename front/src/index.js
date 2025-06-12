@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 /* Login - Register */
-import Login from './pages/login/Login';
+import LoginAdmin from './pages/login/LoginAdmin';
+import LoginProf from './pages/login/LoginProf';
 import TypeAccount from './pages/register/typeAccount/typeAccount';
-import RegisterTecLab from './pages/register/registerTecLab/registerTecLab';
 import RegisterProf from './pages/register/registerProf/registerProf';
 /* Password */
 import RecuperarSenha from './pages/password/recuperarSenha/recuperarSenha';
@@ -29,18 +29,18 @@ import DetalhesEspacoProf from './pages/professor/detalhesEspaco/detalhesEspaco'
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Login />,
-  },
-  {
-    path: "/select-account",
     element: <TypeAccount />,
   },
   {
-    path: "/register/tecnico",
-    element: <RegisterTecLab />,
+    path: "/login/admin",
+    element: <LoginAdmin />,
   },
   {
-    path: "/register/professor",
+    path: "/login/professor",
+    element: <LoginProf />,
+  },
+  {
+    path: "/register/Professor",
     element: <RegisterProf />,
   },
   {

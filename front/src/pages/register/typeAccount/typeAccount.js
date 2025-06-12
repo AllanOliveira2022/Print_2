@@ -17,28 +17,26 @@ function TypeAccount() {
 
         <div className="space-y-4 text-green-600">
           <Link
-            to="/register/tecnico"
-            className="w-full gap-2 p-4 flex flex-row items-center border border-green-600 rounded-lg hover:text-white hover:bg-green-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+            to="/Login/Admin"
+            className="w-full gap-2 p-4 flex flex-row items-center border border-green-600 rounded-lg hover:text-white hover:bg-green-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <span className="text-lg font-medium">Administrador/Técnico</span>
             <FaArrowRightLong />
           </Link>
 
           <Link
-            to="/register/professor"
-            className="w-full gap-2 p-4 flex flex-row items-center border border-green-600 rounded-lg hover:text-white hover:bg-green-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+            to="/Login/Professor"
+            className="w-full gap-2 p-4 flex flex-row items-center border border-green-600 rounded-lg hover:text-white hover:bg-green-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <span className="text-lg font-medium">Professor</span>
             <FaArrowRightLong />
           </Link>
-        </div>
-
-        <div className="pt-4">
           <Link
-            to="/"
-            className="w-full flex justify-center py-2 px-4 border border-green-600 rounded-lg shadow-sm text-sm font-medium text-green-600 bg-white hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
+            to="/visitante"
+            className="w-full gap-2 p-4 flex flex-row items-center border border-green-600 rounded-lg hover:text-white hover:bg-green-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            Já Tenho Uma Conta
+            <span className="text-lg font-medium">Visitante</span>
+            <FaArrowRightLong />
           </Link>
         </div>
       </div>
