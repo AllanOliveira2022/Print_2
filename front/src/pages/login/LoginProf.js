@@ -29,7 +29,7 @@ function LoginProf() {
       if (email === "prof@exemplo.com" && senha === "123456") {
         setSuccess(true);
         setTimeout(() => {
-          navigate("/professor");
+          navigate("/professor/espacos");
         }, 1500);
       } else {
         setError("Email ou senha incorretos.");
