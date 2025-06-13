@@ -13,6 +13,16 @@ const professorService = {
     }
   },
 
+    async login(professorData) {
+    try {
+      const response = await api.post(`api/usuarios/login`, professorData);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao fazer login como professor:');
+      throw this._handleError(error);
+    }
+  },
+
   async listarTodos() {
     try {
       const response = await api.get(`${API_BASE_URL}/listar`);

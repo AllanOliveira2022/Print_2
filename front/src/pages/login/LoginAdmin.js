@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import adminService from '../../services/adminService';
+
 function LoginAdmin() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -9,7 +11,7 @@ function LoginAdmin() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!email.trim()) {
@@ -25,17 +27,17 @@ function LoginAdmin() {
     setLoading(true);
     setError(null);
 
-    setTimeout(() => {
-      if (email === "admin@exemplo.com" && senha === "123456") {
-        setSuccess(true);
-        setTimeout(() => {
-          navigate("/admin/espacos");
-        }, 1500);
-      } else {
-        setError("Email ou senha incorretos.");
-      }
+    try {
+      const response = await adminService.login({ email, senha });
+      setSuccess(true);
+      setTimeout(() => {
+        navigate("/admin/espacos");
+      }, 1500);
+    } catch (err) {
+      setError(err.message || "Erro ao realizar login.");
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -46,7 +48,6 @@ function LoginAdmin() {
           <p className="mt-1 text-2xl text-gray-700">Login - Administrador</p>
         </div>
 
-        {/* Mensagens de erro e sucesso */}
         {error && (
           <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">
             {error}
@@ -69,8 +70,8 @@ function LoginAdmin() {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                if (error) setError(null);
-                if (success) setSuccess(false);
+                setError(null);
+                setSuccess(false);
               }}
               required
               disabled={loading}
@@ -88,8 +89,8 @@ function LoginAdmin() {
               value={senha}
               onChange={(e) => {
                 setSenha(e.target.value);
-                if (error) setError(null);
-                if (success) setSuccess(false);
+                setError(null);
+                setSuccess(false);
               }}
               required
               disabled={loading}
@@ -102,7 +103,7 @@ function LoginAdmin() {
             type="submit"
             disabled={loading}
             className="w-full flex justify-center items-center min-h-[52px] py-3 px-3 rounded-lg text-lg font-semibold text-white bg-green-600 border border-transparent shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+          >
             {loading ? (
               <div className="flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -112,6 +113,7 @@ function LoginAdmin() {
               "Entrar"
             )}
           </button>
+
           <div className="text-center">
             <button
               onClick={() => navigate("/")}

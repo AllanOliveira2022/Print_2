@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import professorService from '../../services/professorService.js';
+
 function LoginProf() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -9,7 +11,7 @@ function LoginProf() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!email.trim()) {
@@ -24,18 +26,22 @@ function LoginProf() {
 
     setLoading(true);
     setError(null);
+    setSuccess(false);
 
-    setTimeout(() => {
-      if (email === "prof@exemplo.com" && senha === "123456") {
-        setSuccess(true);
-        setTimeout(() => {
-          navigate("/professor/espacos");
-        }, 1500);
-      } else {
-        setError("Email ou senha incorretos.");
-      }
+    try {
+      const response = await professorService.login({ email, senha });
+      // Você pode salvar o token se a API retornar um
+      // localStorage.setItem("token", response.token);
+
+      setSuccess(true);
+      setTimeout(() => {
+        navigate("/professor/espacos");
+      }, 1500);
+    } catch (err) {
+      setError(err.message || "Erro ao fazer login. Tente novamente.");
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
