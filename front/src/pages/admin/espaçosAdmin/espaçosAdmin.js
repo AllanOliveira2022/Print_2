@@ -5,16 +5,15 @@ import Menu from "../../../components/tecLab/menu/menu";
 import espacoService from "../../../services/espacoService";
 import BlocoModal from "../../../components/modals/blocoModal/blocoModal";
 import TipoModal from "../../../components/modals/tipoModal/tipoModal";
+import FiltrosModal from "../../../components/modals/filtrosModal/filtrosModal";
 
 function EspacosAdmin() {
     const navigate = useNavigate();
     const [espacos, setEspacos] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
-    // Estados para controlar os modais
     const [showTipoModal, setShowTipoModal] = useState(false);
     const [showBlocoModal, setShowBlocoModal] = useState(false);
+    const [showFiltrosModal, setShowFiltrosModal] = useState(false);
 
     useEffect(() => {
         carregarEspacos();
@@ -30,26 +29,18 @@ function EspacosAdmin() {
 
     const carregarEspacos = async () => {
         try {
-            setLoading(true);
-            setError(null);
             const dados = await espacoService.listarTodos();
             setEspacos(dados);
         } catch (err) {
-            setError(err.message || "Erro ao carregar espaços. Tente novamente.");
             console.error("Erro ao carregar espaços:", err);
-        } finally {
-            setLoading(false);
         }
     };
 
     const buscarPorNome = async () => {
         try {
-            setLoading(false);
-            setError(null);
             const dados = await espacoService.buscarPorNome(searchTerm);
             setEspacos(dados);
         } catch (err) {
-            setError(err.message || "Erro na busca. Tente novamente.");
             console.error("Erro na busca:", err);
         }
     };
@@ -69,42 +60,30 @@ function EspacosAdmin() {
     const handleExcluir = async (id, nome) => {
         if (window.confirm(`Tem certeza que deseja excluir o espaço "${nome}"?`)) {
             try {
-                setLoading(true);
                 await espacoService.excluir(id);
-
                 if (searchTerm.trim()) {
                     await buscarPorNome();
                 } else {
                     await carregarEspacos();
                 }
             } catch (err) {
-                setError(err.message || "Erro ao excluir espaço. Tente novamente.");
                 console.error("Erro ao excluir:", err);
-            } finally {
-                setLoading(false);
             }
         }
     };
 
-    const handleFiltrar = async () => {
-        if (searchTerm.trim()) {
-            await buscarPorNome();
-        } else {
-            await carregarEspacos();
-        }
+    const handleFiltrar = () => {
+        setShowFiltrosModal(true);
+    };
+
+    const handleAplicarFiltros = (filtros) => {
+        setShowFiltrosModal(false);
     };
 
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
 
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter') {
-            handleFiltrar();
-        }
-    };
-
-    // Callbacks para quando os modais forem confirmados (pode customizar conforme sua lógica)
     const handleNovosTiposAdicionados = () => {
         setShowTipoModal(false);
         carregarEspacos();
@@ -114,39 +93,6 @@ function EspacosAdmin() {
         setShowBlocoModal(false);
         carregarEspacos();
     };
-
-    if (loading) {
-        return (
-            <div className="flex flex-col md:flex-row w-full min-h-screen">
-                <Menu />
-                <div className="flex justify-center items-center w-full p-4 md:p-8">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-600"></div>
-                        <p className="mt-4 text-gray-600">Carregando espaços...</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="flex flex-col md:flex-row w-full min-h-screen">
-                <Menu />
-                <div className="flex justify-center items-center w-full p-4 md:p-8">
-                    <div className="text-center">
-                        <p className="text-red-600 mb-4">{error}</p>
-                        <button
-                            onClick={carregarEspacos}
-                            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                        >
-                            Tentar Novamente
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="flex flex-col md:flex-row w-full min-h-screen">
@@ -199,8 +145,13 @@ function EspacosAdmin() {
                                 onClick={handleFiltrar}
                                 className="w-full sm:w-auto px-6 py-2 text-green-600 border-2 border-green-600 uppercase hover:bg-green-100 transition-colors"
                             >
-                                Buscar
+                                Filtros
                             </button>
+                            <FiltrosModal
+                                isOpen={showFiltrosModal}
+                                onClose={() => setShowFiltrosModal(false)}
+                                onConfirm={handleAplicarFiltros}
+                            />
                             <button
                                 onClick={handleCadastro}
                                 className="w-full sm:w-auto px-6 py-2 bg-green-600 border-2 border-green-600 text-white hover:bg-green-700 hover:border-green-700 transition-colors uppercase"
