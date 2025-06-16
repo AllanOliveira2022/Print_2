@@ -17,6 +17,7 @@ import SolicitacoesReservaAdmin from "./pages/admin/solicitacoesReservasAdmin/so
 import DetalhesSolicitacao from './pages/admin/solicitacoesReservasAdmin/detalhesSolicitacao/detalhesSolicitacao';
 import EditarLaboratorio from "./pages/admin/editarEspaco/editarEspaco";
 import ReservasAceitas from './pages/admin/reservasAceitas/reservasAceitas';
+import ProfessoresAdmin from './pages/admin/professoresAdmin/professoresAdmin';
 /*Telas Professor*/
 import EspacosProfessor from './pages/professor/espacosProfessor/espacosProfessor';
 import SolicitarReserva from './pages/professor/solicitarReserva/solicitarReserva';
@@ -76,6 +77,10 @@ const router = createBrowserRouter([
   {
     path: "/admin/solicitacoes",
     element: <SolicitacoesReservaAdmin />
+  },
+  {
+    path: "/admin/professores",
+    element: <ProfessoresAdmin />
   },
   {
     path: "/admin/solicitacoes/:id",
