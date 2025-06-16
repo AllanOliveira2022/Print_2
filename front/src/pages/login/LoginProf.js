@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { IoArrowBackSharp } from "react-icons/io5";
 import professorService from '../../services/professorService.js';
 
 function LoginProf() {
@@ -47,6 +47,15 @@ function LoginProf() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg">
+        <div className="flex justify-start">
+          <button
+            onClick={() => navigate("/")}
+            className="flex flex-row items-center w-1/4 py-2 text-gray-500 uppercase hover:text-gray-700 transition-colors"
+          >
+            <IoArrowBackSharp className="w-2/6"/>
+            Voltar
+          </button>
+        </div>
         <div className="text-center">
           <h1 className="text-3xl font-bold text-green-700">SIGEF</h1>
           <p className="mt-1 text-2xl text-gray-700">Login - Professor</p>
@@ -120,21 +129,10 @@ function LoginProf() {
               onClick={() => navigate("/recuperarSenha")}
               type="button"
               disabled={loading}
-              className="text-base text-green-600 font-medium hover:underline focus:outline-none"
+              className="text-sm font-semibold text-green-600 hover:text-green-700 focus:outline-none uppercase"
             >
-              Recuperar a senha?
+              Recuperar a senha
             </button>
-
-            <div>
-              <button
-                onClick={() => navigate("/")}
-                type="button"
-                disabled={loading}
-                className="text-sm text-green-600 hover:underline focus:outline-none"
-              >
-                Voltar
-              </button>
-            </div>
           </div>
         </form>
       </div>

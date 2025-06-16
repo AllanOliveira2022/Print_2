@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { IoArrowBackSharp } from "react-icons/io5";
 import adminService from '../../services/adminService';
 
 function LoginAdmin() {
@@ -43,6 +43,15 @@ function LoginAdmin() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg">
+        <div className="flex justify-start">
+          <button
+            onClick={() => navigate("/")}
+            className="flex flex-row items-center w-1/4 py-2 text-gray-500 uppercase hover:text-gray-700 transition-colors"
+          >
+            <IoArrowBackSharp className="w-2/6"/>
+            Voltar
+          </button>
+        </div>
         <div className="text-center">
           <h1 className="text-3xl font-bold text-green-700">SIGEF</h1>
           <p className="mt-1 text-2xl text-gray-700">Login - Administrador</p>
@@ -100,17 +109,6 @@ function LoginAdmin() {
           >
             Entrar
           </button>
-
-          <div className="text-center">
-            <button
-              onClick={() => navigate("/")}
-              type="button"
-              disabled={loading}
-              className="w-full px-6 py-2 text-green-600 border-2 border-green-600 uppercase hover:bg-green-100 transition-colors"
-            >
-              Voltar
-            </button>
-          </div>
         </form>
       </div>
     </div>

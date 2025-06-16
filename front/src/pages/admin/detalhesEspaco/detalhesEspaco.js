@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import espacoService from '../../../services/espacoService';
 import Menu from '../../../components/tecLab/menu/menu';
+import { IoArrowBackSharp } from "react-icons/io5";
 
 function DetalhesEspaco() {
   const { id } = useParams();
@@ -206,6 +207,15 @@ function DetalhesEspaco() {
       <div className="flex justify-center w-full p-4 md:p-8">
         <div className="w-full max-w-7xl bg-gray-50 shadow-md p-6 mt-4">
           <div className="flex flex-col mb-6 gap-4">
+            <div className="flex justify-start mt-6">
+              <button
+                onClick={() => window.history.back()}
+                className="flex items-center justify-between gap-3 w-full sm:w-auto px-6 py-2 text-green-600 border-2 border-green-600 uppercase hover:bg-green-100 transition-colors"
+              >
+                <IoArrowBackSharp/>
+                Voltar
+              </button>
+            </div>
             <h1 className="text-2xl font-bold text-green-800 text-left">
               Detalhes do Espaço
             </h1>
@@ -218,15 +228,6 @@ function DetalhesEspaco() {
             <div>
               {renderizarDados()}
             </div>
-          </div>
-
-          <div className="flex justify-start mt-6">
-            <button
-              onClick={() => window.history.back()}
-              className="px-4 py-2 text-green-600 border border-green-300 hover:bg-green-700 hover:text-white transition-colors font-medium"
-            >
-              Voltar
-            </button>
           </div>
         </div>
       </div>
