@@ -64,7 +64,7 @@ function LoginProf() {
         )}
 
         <form onSubmit={handleLogin} className="space-y-4">
-          <div>
+          <div className="space-y-2">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               E-mail:
             </label>
@@ -74,17 +74,14 @@ function LoginProf() {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                if (error) setError(null);
-                if (success) setSuccess(false);
               }}
               required
-              disabled={loading}
-              placeholder="professor@email.com"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors"
+              placeholder="Email"
+              className="w-full px-2 py-2 border border-gray-200 bg-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
             />
           </div>
 
-          <div>
+          <div className="space-y-2">
             <label htmlFor="senha" className="block text-sm font-medium text-gray-700">
               Senha:
             </label>
@@ -94,36 +91,26 @@ function LoginProf() {
               value={senha}
               onChange={(e) => {
                 setSenha(e.target.value);
-                if (error) setError(null);
-                if (success) setSuccess(false);
               }}
               required
-              disabled={loading}
-              placeholder="••••••••"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors"
+              placeholder="Senha"
+              className="w-full px-2 py-2 border border-gray-200 bg-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center items-center min-h-[52px] py-3 px-3 rounded-lg text-lg font-semibold text-white bg-green-600 border border-transparent shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-6 py-2 bg-green-600 border-2 border-green-600 text-white hover:bg-green-700 hover:border-green-700 transition-colors uppercase"
           >
-            {loading ? (
-              <div className="flex items-center gap-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                Entrando...
-              </div>
-            ) : (
-              "Entrar"
-            )}
+            Entrar
           </button>
 
           <button
             onClick={() => navigate("/register/professor")}
             type="button"
             disabled={loading}
-            className="w-full flex justify-center items-center min-h-[52px] py-3 px-3 rounded-lg text-lg font-semibold text-green-600 bg-white border border-green-600 shadow-sm hover:text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+            className="w-full px-6 py-2 text-green-600 border-2 border-green-600 uppercase hover:bg-green-100 transition-colors"
           >
             Criar Conta
           </button>
