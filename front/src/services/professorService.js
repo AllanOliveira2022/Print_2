@@ -45,7 +45,7 @@ const professorService = {
 
   async editar(id, dadosAtualizados) {
     try {
-      const response = await api.put(`${API_BASE_URL}/${id}`, dadosAtualizados);
+      const response = await api.put(`${API_BASE_URL}/editar/${id}`, dadosAtualizados);
       return response.data;
     } catch (error) {
       console.error(`Erro ao editar professor com ID ${id}:`, error);

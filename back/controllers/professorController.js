@@ -42,7 +42,7 @@ export const verPerfil = async (req, res) => {
       where: { id, tipo: 'professor' },
       include: {
         model: db.Professor,
-        as: 'Professor', // Pode ser necessário ajustar de acordo com o alias definido nas associações
+        as: 'Professor', 
         attributes: ['codigo_institucional', 'area_atuacao']
       },
       attributes: ['nome', 'email', 'senha']
