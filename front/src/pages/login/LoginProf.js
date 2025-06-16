@@ -30,8 +30,11 @@ function LoginProf() {
 
     try {
       const response = await professorService.login({ email, senha });
-      // Você pode salvar o token se a API retornar um
-      // localStorage.setItem("token", response.token);
+      const { token, usuario } = response;
+
+        // Armazena os dados no localStorage
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(usuario)); // agora você pode recuperar o nome e o código
 
       setSuccess(true);
       setTimeout(() => {

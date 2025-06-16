@@ -21,12 +21,26 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: 'Senha inválida.' });
     }
 
+    // Token JWT
     const token = jwt.sign(
       { id: usuario.id, tipo: usuario.tipo },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
 
+    // Monta os dados adicionais conforme o tipo
+    let dadosExtras = {};
+    if (usuario.tipo === 'professor') {
+      const professor = await db.Professor.findOne({ where: { id: usuario.id } });
+      if (professor) {
+        dadosExtras = {
+          codigo_institucional: professor.codigo_institucional,
+          area_atuacao: professor.area_atuacao
+        };
+      }
+    }
+
+    // Resposta
     res.status(200).json({
       message: 'Login realizado com sucesso.',
       token,
@@ -34,7 +48,8 @@ export const login = async (req, res) => {
         id: usuario.id,
         nome: usuario.nome,
         email: usuario.email,
-        tipo: usuario.tipo
+        tipo: usuario.tipo,
+        ...dadosExtras
       }
     });
   } catch (error) {
@@ -42,6 +57,7 @@ export const login = async (req, res) => {
     res.status(500).json({ message: 'Erro interno ao fazer login.' });
   }
 };
+
 
 export const cadastrarUsuario = async (req, res) => {
   const { nome, email, senha, tipo } = req.body;
