@@ -1,32 +1,44 @@
 'use strict';
 
+/*
+ADMINISTRADOR
+EMAIL:admin@gmail.com
+SENHA: admin1234
+
+
+*/
+
+
 const bcrypt = require('bcrypt');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const senhaHash = await bcrypt.hash('admin1234', 10);
 
-    await queryInterface.bulkInsert(
-      'Usuarios',
-      [
-        {
-          nome: 'Administrador Padrão',
-          email: 'admin@gmail.com',
-          senha: senhaHash,
-          tipo: 'tecnico',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      ]
-    );
+    // 1. Inserir o usuário
+    await queryInterface.bulkInsert('Usuarios', [
+      {
+        nome: 'Administrador Padrão',
+        email: 'admin@gmail.com',
+        senha: senhaHash,
+        tipo: 'tecnico',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]);
 
-    // Busca o ID do usuário recém-criado
-    const [results] = await queryInterface.sequelize.query(
+    // 2. Buscar o ID do usuário recém-inserido
+    const [usuarios] = await queryInterface.sequelize.query(
       `SELECT id FROM Usuarios WHERE email = 'admin@gmail.com' LIMIT 1;`
     );
 
-    const usuarioId = results[0].id;
+    if (!usuarios || usuarios.length === 0) {
+      throw new Error('Usuário admin não encontrado para vincular ao Técnico Administrador.');
+    }
 
+    const usuarioId = usuarios[0].id;
+
+    // 3. Inserir o TécnicoAdministrador com o ID correto
     await queryInterface.bulkInsert('TecnicoAdministradores', [
       {
         id: usuarioId,
