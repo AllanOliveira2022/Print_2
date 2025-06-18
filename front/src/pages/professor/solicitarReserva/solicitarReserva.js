@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Menu from "../../../components/professor/menu/menu";
-import { buscarPorId } from "../../../services/espacoService";
+import buscarPorId  from "../../../services/espacoService.js";
 
 function ReservarLaboratorio() {
   const { idEspaco } = useParams();

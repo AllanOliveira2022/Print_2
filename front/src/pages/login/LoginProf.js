@@ -32,9 +32,6 @@ function LoginProf() {
       const response = await professorService.login({ email, senha });
       const { token, usuario } = response;
 
-        // Armazena os dados no localStorage
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(usuario)); // agora você pode recuperar o nome e o código
 
       setSuccess(true);
       setTimeout(() => {
