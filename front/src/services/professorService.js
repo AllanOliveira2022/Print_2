@@ -88,6 +88,9 @@ const professorService = {
       if (status === 500) {
         return new Error('Erro interno do servidor. Tente novamente mais tarde.');
       }
+      if (status === 401) {
+        return new Error('Email ou Senha incorretos!');
+      }
     }
     return new Error('Erro de conexão ou inesperado. Tente novamente.');
   },
