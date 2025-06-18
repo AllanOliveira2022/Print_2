@@ -166,14 +166,6 @@ function EspacosAdmin() {
                             <p className="text-gray-600 text-lg">
                                 {searchTerm ? "Nenhum espaço encontrado para sua pesquisa." : "Nenhum espaço cadastrado."}
                             </p>
-                            {!searchTerm && (
-                                <button
-                                    onClick={handleCadastro}
-                                    className="mt-4 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                                >
-                                    Cadastrar Primeiro Espaço
-                                </button>
-                            )}
                         </div>
                     ) : (
                         <div className="overflow-x-auto">

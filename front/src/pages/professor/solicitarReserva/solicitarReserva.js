@@ -1,8 +1,12 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Menu from "../../../components/professor/menu/menu";
+import { buscarPorId } from "../../../services/espacoService";
 
 function ReservarLaboratorio() {
+  const { idEspaco } = useParams();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     usuario: "",
     laboratorio: "",
@@ -12,36 +16,108 @@ function ReservarLaboratorio() {
     infoAdicionais: "",
   });
 
+  const [espacoInfo, setEspacoInfo] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingEspaco, setLoadingEspaco] = useState(true);
+  const [errorEspaco, setErrorEspaco] = useState(null);
+  const [errors, setErrors] = useState({});
+
+  // Busca as informações do espaço
+  useEffect(() => {
+    const fetchEspacoInfo = async () => {
+      try {
+        setLoadingEspaco(true);
+        const espaco = await buscarPorId(idEspaco);
+        
+        setEspacoInfo(espaco);
+        setFormData(prev => ({ 
+          ...prev, 
+          laboratorio: espaco.nome 
+        }));
+      } catch (error) {
+        console.error("Erro ao buscar informações do espaço:", error);
+        setErrorEspaco("Não foi possível carregar as informações do espaço");
+      } finally {
+        setLoadingEspaco(false);
+      }
+    };
+    
+    if (idEspaco) {
+      fetchEspacoInfo();
+    }
+  }, [idEspaco]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: null });
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.usuario.trim()) newErrors.usuario = "Identificação é obrigatória";
+    if (!formData.dataReserva) newErrors.dataReserva = "Data é obrigatória";
+    if (!formData.turno) newErrors.turno = "Turno é obrigatório";
+    if (!formData.horario) newErrors.horario = "Horário é obrigatório";
+    
+    if (formData.dataReserva) {
+      const selectedDate = new Date(formData.dataReserva);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (selectedDate < today) {
+        newErrors.dataReserva = "A data deve ser futura";
+      }
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
+    if (!validateForm()) return;
+    
+    setIsLoading(true);
+    
     try {
       const response = await fetch("/api/reservas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          espacoId: idEspaco,
+          espacoInfo: espacoInfo
+        }),
       });
 
       if (response.ok) {
         alert("Reserva solicitada com sucesso!");
         navigate("/professor/minhasReservas");
       } else {
-        alert("Erro ao solicitar reserva.");
+        const errorData = await response.json();
+        alert(errorData.message || "Erro ao solicitar reserva");
       }
     } catch (error) {
-      alert("Erro de conexão.");
+      alert("Erro de conexão. Por favor, tente novamente.");
+      console.error("Erro:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleCancel = () => {
-    setShowModal(true);
+    if (Object.values(formData).some(value => value !== "")) {
+      setShowModal(true);
+    } else {
+      navigate("/professor/espacos");
+    }
   };
 
   const handleConfirmCancel = () => {
@@ -65,74 +141,120 @@ function ReservarLaboratorio() {
             Preencha os dados abaixo para solicitar a reserva.
           </p>
 
+          {loadingEspaco ? (
+            <div className="mb-6 p-4 bg-blue-50 border-l-4 border-blue-600">
+              <p className="font-medium text-blue-800">Carregando informações do espaço...</p>
+            </div>
+          ) : errorEspaco ? (
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-600">
+              <p className="font-medium text-red-800">{errorEspaco}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="mt-2 text-sm text-red-600 underline"
+              >
+                Tentar novamente
+              </button>
+            </div>
+          ) : espacoInfo ? (
+            <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-600">
+              <p className="font-medium text-green-800">
+                Reservando: <span className="font-bold">{espacoInfo.nome}</span>
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Bloco:</span> {espacoInfo.nomeBloco || 'Não informado'}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Tipo:</span> {espacoInfo.nomeTipo}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Capacidade:</span> {espacoInfo.capacidade} pessoas
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Equipamentos:</span> {espacoInfo.equipamentos}
+                </p>
+              </div>
+            </div>
+          ) : null}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Identificação do usuário:
+                Identificação do usuário: *
               </label>
               <input
                 name="usuario"
                 value={formData.usuario}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 bg-gray-200 placeholder-gray-400 text-green-600 focus:outline-none focus:ring-2 focus:ring-green-600"
+                className={`w-full px-4 py-3 border ${errors.usuario ? "border-red-500" : "border-gray-300"} bg-gray-200 placeholder-gray-400 text-green-600 focus:outline-none focus:ring-2 focus:ring-green-600`}
+                placeholder="Seu ID ou matrícula"
                 required
               />
+              {errors.usuario && <p className="mt-1 text-sm text-red-600">{errors.usuario}</p>}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Espaço:
+                Espaço: *
               </label>
               <input
                 name="laboratorio"
                 value={formData.laboratorio}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 bg-gray-200 placeholder-gray-400 text-green-600 focus:outline-none focus:ring-2 focus:ring-green-600"
-                required
+                readOnly
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Data da Reserva:
+                  Data da Reserva: *
                 </label>
                 <input
                   name="dataReserva"
                   type="date"
                   value={formData.dataReserva}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-600"
+                  min={new Date().toISOString().split('T')[0]}
+                  className={`w-full px-4 py-3 border ${errors.dataReserva ? "border-red-500" : "border-gray-300"} bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-600`}
                   required
                 />
+                {errors.dataReserva && <p className="mt-1 text-sm text-red-600">{errors.dataReserva}</p>}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Turno:
+                  Turno: *
                 </label>
-                <input
+                <select
                   name="turno"
                   value={formData.turno}
                   onChange={handleChange}
-                  placeholder="Manhã, Tarde ou Noite"
-                  className="w-full px-4 py-3 border border-gray-300 bg-gray-200 placeholder-gray-400 text-green-600 focus:outline-none focus:ring-2 focus:ring-green-600"
+                  className={`w-full px-4 py-3 border ${errors.turno ? "border-red-500" : "border-gray-300"} bg-gray-200 text-green-600 focus:outline-none focus:ring-2 focus:ring-green-600`}
                   required
-                />
+                >
+                  <option value="">Selecione...</option>
+                  <option value="Manhã">Manhã</option>
+                  <option value="Tarde">Tarde</option>
+                  <option value="Noite">Noite</option>
+                </select>
+                {errors.turno && <p className="mt-1 text-sm text-red-600">{errors.turno}</p>}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Horário:
+                  Horário: *
                 </label>
                 <input
                   name="horario"
                   type="time"
                   value={formData.horario}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-600"
+                  className={`w-full px-4 py-3 border ${errors.horario ? "border-red-500" : "border-gray-300"} bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-600`}
                   required
                 />
+                {errors.horario && <p className="mt-1 text-sm text-red-600">{errors.horario}</p>}
               </div>
             </div>
 
@@ -146,22 +268,25 @@ function ReservarLaboratorio() {
                 onChange={handleChange}
                 rows={3}
                 className="w-full px-4 py-3 border border-gray-300 bg-gray-200 placeholder-gray-400 text-green-600 focus:outline-none focus:ring-2 focus:ring-green-600 resize-none"
+                placeholder="Descreva o propósito da reserva (opcional)"
               />
             </div>
 
-            <div className="flex justify-between mt-10">
+            <div className="w-full flex justify-between mt-10 gap-5">
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-6 py-2 text-red-500 border-2 border-red-500 uppercase hover:bg-red-500 hover:text-white transition-colors font-bold"
+                className="w-1/2 px-6 py-2 text-red-500 border-2 border-red-500 uppercase hover:bg-red-500 hover:text-white transition-colors font-bold"
+                disabled={isLoading}
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-6 py-2 bg-green-600 text-white uppercase hover:bg-green-700 transition-colors font-bold"
+                className="w-1/2 px-6 py-2 bg-green-600 text-white uppercase hover:bg-green-700 transition-colors font-bold disabled:opacity-50"
+                disabled={isLoading || loadingEspaco || errorEspaco}
               >
-                Solicitar Reserva
+                {isLoading ? "Enviando..." : "Confirmar Solicitação"}
               </button>
             </div>
           </form>

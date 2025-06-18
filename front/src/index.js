@@ -23,6 +23,7 @@ import EspacosProfessor from './pages/professor/espacosProfessor/espacosProfesso
 import SolicitarReserva from './pages/professor/solicitarReserva/solicitarReserva';
 import SolicitacoesProfessor from './pages/professor/solicitacoesProfessor/solicitacoesProfessor';
 import PerfilProfessor from './pages/professor/perfilProfessor/perfilProfessor';
+import ReservasProfessor from './pages/professor/reservasProfessor/reservasProfessor';
 /*Telas Gerais*/
 import DetalhesEspaço from './pages/admin/detalhesEspaco/detalhesEspaco';
 import DetalhesEspacoProf from './pages/professor/detalhesEspaco/detalhesEspaco';
@@ -71,8 +72,12 @@ const router = createBrowserRouter([
     element: <PerfilProfessor />
   },
   {
-    path: "/professor/solicitarReserva",
+    path: "/professor/solicitarReserva/:id",
     element: <SolicitarReserva />
+  },
+  {
+    path: "/professor/reservas",
+    element: <ReservasProfessor />
   },
   {
     path: "/admin/solicitacoes",
