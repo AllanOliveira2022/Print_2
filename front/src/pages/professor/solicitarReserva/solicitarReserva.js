@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Menu from "../../../components/professor/menu/menu";
-import buscarPorId  from "../../../services/espacoService.js";
+import buscarPorId from "../../../services/espacoService.js";
+import Message from "../../../components/Message/Message";
 
 function ReservarLaboratorio() {
   const { idEspaco } = useParams();
@@ -22,27 +23,32 @@ function ReservarLaboratorio() {
   const [loadingEspaco, setLoadingEspaco] = useState(true);
   const [errorEspaco, setErrorEspaco] = useState(null);
   const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState(null); // Novo estado para mensagens
 
   // Busca as informações do espaço
   useEffect(() => {
     const fetchEspacoInfo = async () => {
       try {
         setLoadingEspaco(true);
+        setErrorEspaco(null);
+        setMessage({ type: "loading", message: "Carregando informações do espaço..." });
         const espaco = await buscarPorId(idEspaco);
-        
+
         setEspacoInfo(espaco);
-        setFormData(prev => ({ 
-          ...prev, 
-          laboratorio: espaco.nome 
+        setFormData((prev) => ({
+          ...prev,
+          laboratorio: espaco.nome,
         }));
+        setMessage(null);
       } catch (error) {
         console.error("Erro ao buscar informações do espaço:", error);
         setErrorEspaco("Não foi possível carregar as informações do espaço");
+        setMessage({ type: "error", message: "Não foi possível carregar as informações do espaço" });
       } finally {
         setLoadingEspaco(false);
       }
     };
-    
+
     if (idEspaco) {
       fetchEspacoInfo();
     }
@@ -51,7 +57,7 @@ function ReservarLaboratorio() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    
+
     if (errors[name]) {
       setErrors({ ...errors, [name]: null });
     }
@@ -59,33 +65,34 @@ function ReservarLaboratorio() {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.usuario.trim()) newErrors.usuario = "Identificação é obrigatória";
     if (!formData.dataReserva) newErrors.dataReserva = "Data é obrigatória";
     if (!formData.turno) newErrors.turno = "Turno é obrigatório";
     if (!formData.horario) newErrors.horario = "Horário é obrigatório";
-    
+
     if (formData.dataReserva) {
       const selectedDate = new Date(formData.dataReserva);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
+
       if (selectedDate < today) {
         newErrors.dataReserva = "A data deve ser futura";
       }
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setIsLoading(true);
-    
+    setMessage(null);
+
     try {
       const response = await fetch("/api/reservas", {
         method: "POST",
@@ -93,19 +100,21 @@ function ReservarLaboratorio() {
         body: JSON.stringify({
           ...formData,
           espacoId: idEspaco,
-          espacoInfo: espacoInfo
+          espacoInfo: espacoInfo,
         }),
       });
 
       if (response.ok) {
-        alert("Reserva solicitada com sucesso!");
-        navigate("/professor/minhasReservas");
+        setMessage({ type: "success", message: "Reserva solicitada com sucesso!" });
+        setTimeout(() => {
+          navigate("/professor/minhasReservas");
+        }, 1500);
       } else {
         const errorData = await response.json();
-        alert(errorData.message || "Erro ao solicitar reserva");
+        setMessage({ type: "error", message: errorData.message || "Erro ao solicitar reserva" });
       }
     } catch (error) {
-      alert("Erro de conexão. Por favor, tente novamente.");
+      setMessage({ type: "error", message: "Erro de conexão. Por favor, tente novamente." });
       console.error("Erro:", error);
     } finally {
       setIsLoading(false);
@@ -113,7 +122,7 @@ function ReservarLaboratorio() {
   };
 
   const handleCancel = () => {
-    if (Object.values(formData).some(value => value !== "")) {
+    if (Object.values(formData).some((value) => value !== "")) {
       setShowModal(true);
     } else {
       navigate("/professor/espacos");
@@ -141,21 +150,21 @@ function ReservarLaboratorio() {
             Preencha os dados abaixo para solicitar a reserva.
           </p>
 
-          {loadingEspaco ? (
-            <div className="mb-6 p-4 bg-blue-50 border-l-4 border-blue-600">
-              <p className="font-medium text-blue-800">Carregando informações do espaço...</p>
-            </div>
-          ) : errorEspaco ? (
-            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-600">
-              <p className="font-medium text-red-800">{errorEspaco}</p>
-              <button 
-                onClick={() => window.location.reload()}
-                className="mt-2 text-sm text-red-600 underline"
-              >
-                Tentar novamente
-              </button>
-            </div>
-          ) : espacoInfo ? (
+          {/* Mensagem global */}
+          {message && <Message type={message.type} message={message.message} />}
+
+          {/* Mensagem de carregando espaço */}
+          {loadingEspaco && !message && (
+            <Message type="loading" message="Carregando informações do espaço..." />
+          )}
+
+          {/* Mensagem de erro ao carregar espaço */}
+          {errorEspaco && !message && (
+            <Message type="error" message={errorEspaco} />
+          )}
+
+          {/* Informações do espaço */}
+          {!loadingEspaco && !errorEspaco && espacoInfo && (
             <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-600">
               <p className="font-medium text-green-800">
                 Reservando: <span className="font-bold">{espacoInfo.nome}</span>
@@ -175,7 +184,7 @@ function ReservarLaboratorio() {
                 </p>
               </div>
             </div>
-          ) : null}
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>

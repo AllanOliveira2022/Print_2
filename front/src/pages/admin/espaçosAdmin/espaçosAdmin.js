@@ -154,7 +154,7 @@ function EspacosAdmin() {
                             />
                             <button
                                 onClick={handleCadastro}
-                                className="w-full sm:w-auto px-6 py-2 bg-green-600 border-2 border-green-600 text-white hover:bg-green-700 hover:border-green-700 transition-colors uppercase"
+                                className="w-auto px-6 py-2 bg-green-600 border-2 border-green-600 text-white hover:bg-green-700 hover:border-green-700 transition-colors uppercase"
                             >
                                 Cadastrar Espaço
                             </button>
@@ -205,19 +205,19 @@ function EspacosAdmin() {
                                                 <div className="flex justify-center gap-2 flex-wrap">
                                                     <button 
                                                         onClick={() => handleDetalhes(espaco.id)}
-                                                        className="px-4 py-1 bg-gray-500 text-white hover:bg-gray-600 transition-colors font-medium"
+                                                        className="px-4 py-1.5 bg-gray-500 text-white hover:bg-gray-600 transition-colors text-sm font-medium uppercase"
                                                     >
                                                         Detalhes
                                                     </button>
                                                     <button
                                                         onClick={() => handleEditar(espaco.id)}
-                                                        className="px-4 py-1 bg-green-600 text-white hover:bg-green-700 transition-colors font-medium"
+                                                        className="px-5 py-1.5 bg-green-600 text-white hover:bg-green-700 transition-colors text-sm font-medium uppercase"
                                                     >
                                                         Editar
                                                     </button>
                                                     <button 
                                                         onClick={() => handleExcluir(espaco.id, espaco.nome)}
-                                                        className="px-4 py-1 bg-red-600 text-white hover:bg-red-700 transition-colors font-medium"
+                                                        className="px-4 py-1.5 bg-red-600 text-white hover:bg-red-700 transition-colors text-sm font-medium uppercase"
                                                     >
                                                         Excluir
                                                     </button>

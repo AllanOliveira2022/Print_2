@@ -121,7 +121,7 @@ function EspacosProfessor() {
                       <td className="px-4 py-3 text-center">
                         <button
                           onClick={() => handleDetalhes(espaco.id)}
-                          className="px-4 py-1 bg-gray-500 text-white hover:bg-gray-600 transition-colors font-medium"
+                          className="px-4 py-1.5 bg-gray-500 text-white hover:bg-gray-600 transition-colors text-sm font-medium uppercase"
                         >
                           Detalhes
                         </button>
