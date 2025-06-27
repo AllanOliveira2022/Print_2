@@ -44,7 +44,9 @@ export default (sequelize) => {
     Usuario.associate = (models) => {
         Usuario.hasOne(models.Professor, { foreignKey: 'id' });
         Usuario.hasOne(models.TecnicoAdministrador, { foreignKey: 'id' });
+        Usuario.hasMany(models.SolicitacaoReserva, {foreignKey: 'professorId',as: 'solicitacoes'});
     };
+    
 
     return Usuario;
 };

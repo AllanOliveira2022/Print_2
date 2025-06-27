@@ -7,6 +7,7 @@ import usuarioRoutes from './routes/usuarioRoutes.js';
 import espacoRoutes from './routes/espacoRoutes.js'
 import blocoRoutes from './routes/blocoRoutes.js'
 import tipoRoutes from './routes/tipoRoutes.js'
+import solicitacaoRoutes from './routes/solicitacaoRoutes.js'
 const app = express();
 
 app.use(cors());
@@ -28,6 +29,9 @@ app.use('/api/espacos', espacoRoutes);
 app.use('/api/blocos', blocoRoutes);
 
 app.use('/api/tipos', tipoRoutes);
+
+//reservas
+app.use('/api/solicitacao', solicitacaoRoutes)
 
   export default app;
 
