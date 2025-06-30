@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import MenuProfessor from "../../../components/professor/menu/menu";
-import professorService from "../../../services/professorService";
+import professorService from "../../../services/professorService"; // Importe o serviço de professor
+import { useNavigate } from "react-router-dom"; // Importe o useNavigate
 
 function PerfilProfessor() {
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
+  const navigate = useNavigate(); // Hook para navegação
 
   const [perfil, setPerfil] = useState({
     nome: "",
@@ -18,6 +20,7 @@ function PerfilProfessor() {
   const [loading, setLoading] = useState(false);
   const [mensagem, setMensagem] = useState(null);
   const [erro, setErro] = useState(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); // Estado para controlar o modal de confirmação
 
   useEffect(() => {
     async function carregarPerfil() {
@@ -48,46 +51,62 @@ function PerfilProfessor() {
   }
 
   async function handleSubmit(e) {
-  e.preventDefault();
-  setMensagem(null);
-  setErro(null);
+    e.preventDefault();
+    setMensagem(null);
+    setErro(null);
 
-  if (perfil.senha !== "" && perfil.senha !== confirmaSenha) {
-    setErro("As senhas não conferem.");
-    return;
+    if (perfil.senha !== "" && perfil.senha !== confirmaSenha) {
+      setErro("As senhas não conferem.");
+      return;
+    }
+
+    const dadosParaEnviar = {
+      nome: perfil.nome,
+      email: perfil.email,
+      codigo_institucional: perfil.codigo_institucional,
+      area_atuacao: perfil.area_atuacao,
+    };
+    if (perfil.senha !== "") {
+      dadosParaEnviar.senha = perfil.senha;
+    }
+
+    setLoading(true);
+    try {
+      await professorService.editar(userId, dadosParaEnviar);
+      setMensagem("Perfil atualizado com sucesso!");
+      setPerfil((prev) => ({ ...prev, senha: "" }));
+      setConfirmaSenha("");
+
+      // Atualiza o localStorage com os novos dados
+      const usuarioAtual = JSON.parse(localStorage.getItem("user")) || {};
+      usuarioAtual.nome = dadosParaEnviar.nome || usuarioAtual.nome;
+      usuarioAtual.email = dadosParaEnviar.email || usuarioAtual.email;
+      usuarioAtual.codigo_institucional = dadosParaEnviar.codigo_institucional || usuarioAtual.codigo_institucional;
+      localStorage.setItem("user", JSON.stringify(usuarioAtual));
+    } catch (error) {
+      setErro(error.message || "Erro ao atualizar perfil.");
+    } finally {
+      setLoading(false);
+    }
   }
 
-  const dadosParaEnviar = {
-    nome: perfil.nome,
-    email: perfil.email,
-    codigo_institucional: perfil.codigo_institucional,
-    area_atuacao: perfil.area_atuacao,
+  // Função para lidar com a exclusão da conta
+  const handleDeleteAccount = async () => {
+    try {
+      setLoading(true);
+      await professorService.excluir(userId);
+      
+      // Limpa o localStorage e redireciona para a página inicial
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      navigate("/"); // Redireciona para a página inicial
+    } catch (error) {
+      setErro(error.message || "Erro ao excluir conta.");
+    } finally {
+      setLoading(false);
+      setShowDeleteConfirmation(false);
+    }
   };
-  if (perfil.senha !== "") {
-    dadosParaEnviar.senha = perfil.senha;
-  }
-
-  setLoading(true);
-  try {
-    await professorService.editar(userId, dadosParaEnviar);
-    setMensagem("Perfil atualizado com sucesso!");
-    setPerfil((prev) => ({ ...prev, senha: "" }));
-    setConfirmaSenha("");
-
-    // Atualiza o localStorage com os novos dados
-    const usuarioAtual = JSON.parse(localStorage.getItem("user")) || {};
-    usuarioAtual.nome = dadosParaEnviar.nome || usuarioAtual.nome;
-    usuarioAtual.email = dadosParaEnviar.email || usuarioAtual.email;
-    usuarioAtual.codigo_institucional = dadosParaEnviar.codigo_institucional || usuarioAtual.codigo_institucional;
-    // atualize outros campos se quiser
-
-    localStorage.setItem("user", JSON.stringify(usuarioAtual));
-  } catch (error) {
-    setErro(error.message || "Erro ao atualizar perfil.");
-  } finally {
-    setLoading(false);
-  }
-}
 
   return (
     <div className="flex flex-row w-full min-h-screen bg-white items-center">
@@ -189,8 +208,8 @@ function PerfilProfessor() {
             <div className="flex justify-between">
               <button
                 type="button"
+                onClick={() => setShowDeleteConfirmation(true)}
                 className="px-6 py-2 text-red-500 border-2 border-red-500 uppercase hover:bg-red-500 hover:text-white transition-colors font-semibold"
-                // implementar exclusão se quiser
               >
                 Excluir Conta
               </button>
@@ -207,6 +226,33 @@ function PerfilProfessor() {
           </form>
         </div>
       </div>
+
+      {/* Modal de confirmação de exclusão */}
+      {showDeleteConfirmation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+            <h2 className="text-xl font-bold mb-4">Confirmar Exclusão</h2>
+            <p className="mb-6">Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.</p>
+            
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowDeleteConfirmation(false)}
+                className="px-4 py-2 border border-gray-300 hover:bg-gray-100"
+                disabled={loading}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                className="px-4 py-2 bg-red-600 text-white hover:bg-red-700"
+                disabled={loading}
+              >
+                {loading ? "Excluindo..." : "Confirmar Exclusão"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

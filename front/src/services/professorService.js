@@ -55,7 +55,7 @@ const professorService = {
 
   async excluir(id) {
     try {
-      const response = await api.delete(`${API_BASE_URL}/${id}`);
+      const response = await api.delete(`api/usuarios/deletar/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Erro ao excluir professor com ID ${id}:`, error);
