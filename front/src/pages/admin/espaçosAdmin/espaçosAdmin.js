@@ -76,8 +76,9 @@ function EspacosAdmin() {
         setShowFiltrosModal(true);
     };
 
-    const handleAplicarFiltros = (filtros) => {
+    const handleAplicarFiltros = (espacosFiltrados) => {
         setShowFiltrosModal(false);
+        setEspacos(espacosFiltrados);
     };
 
     const handleSearchChange = (e) => {
