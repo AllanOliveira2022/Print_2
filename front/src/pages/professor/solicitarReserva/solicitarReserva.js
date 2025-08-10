@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Menu from "../../../components/professor/menu/menu";
-import buscarPorId from "../../../services/espacoService.js";
+import espacoService from "../../../services/espacoService.js";
+import reservaService from "../../../services/reservaService.js";
 import Message from "../../../components/Message/Message";
 
 function ReservarLaboratorio() {
@@ -32,7 +33,7 @@ function ReservarLaboratorio() {
         setLoadingEspaco(true);
         setErrorEspaco(null);
         setMessage({ type: "loading", message: "Carregando informações do espaço..." });
-        const espaco = await buscarPorId(idEspaco);
+        const espaco = await espacoService.buscarPorId(idEspaco);
 
         setEspacoInfo(espaco);
         setFormData((prev) => ({
@@ -94,27 +95,26 @@ function ReservarLaboratorio() {
     setMessage(null);
 
     try {
-      const response = await fetch("/api/reservas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          espacoId: idEspaco,
-          espacoInfo: espacoInfo,
-        }),
-      });
+      // Preparar dados para o service
+      const solicitacaoData = {
+        tipo: "unica", // ou "semestral" baseado no formData
+        data_inicio: formData.dataReserva,
+        data_fim: formData.dataReserva,
+        dias_semana: "Segunda", // Pode ser dinâmico baseado no formData
+        turno: formData.turno,
+        horario: formData.horario,
+        observacoes: formData.infoAdicionais,
+        espacoId: parseInt(idEspaco),
+        professorId: 1 // Deve vir do contexto de autenticação
+      };
 
-      if (response.ok) {
-        setMessage({ type: "success", message: "Reserva solicitada com sucesso!" });
-        setTimeout(() => {
-          navigate("/professor/minhasReservas");
-        }, 1500);
-      } else {
-        const errorData = await response.json();
-        setMessage({ type: "error", message: errorData.message || "Erro ao solicitar reserva" });
-      }
+      await reservaService.fazerSolicitacao(solicitacaoData);
+      setMessage({ type: "success", message: "Reserva solicitada com sucesso!" });
+      setTimeout(() => {
+        navigate("/professor/minhasReservas");
+      }, 1500);
     } catch (error) {
-      setMessage({ type: "error", message: "Erro de conexão. Por favor, tente novamente." });
+      setMessage({ type: "error", message: error.message || "Erro ao solicitar reserva" });
       console.error("Erro:", error);
     } finally {
       setIsLoading(false);
