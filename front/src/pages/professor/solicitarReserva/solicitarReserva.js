@@ -6,7 +6,7 @@ import reservaService from "../../../services/reservaService.js";
 import Message from "../../../components/Message/Message";
 
 function ReservarLaboratorio() {
-  const { idEspaco } = useParams();
+  const { professorId, espacoId } = useParams();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -26,42 +26,39 @@ function ReservarLaboratorio() {
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState(null); // Novo estado para mensagens
 
-  // Busca as informações do espaço
   useEffect(() => {
-    const fetchEspacoInfo = async () => {
-      try {
-        setLoadingEspaco(true);
-        setErrorEspaco(null);
-        setMessage({ type: "loading", message: "Carregando informações do espaço..." });
-        const espaco = await espacoService.buscarPorId(idEspaco);
+  const fetchEspaco = async () => {
+    try {
+      const espaco = await espacoService.buscarPorId(espacoId);
+      setEspacoInfo(espaco);
 
-        setEspacoInfo(espaco);
-        setFormData((prev) => ({
-          ...prev,
-          laboratorio: espaco.nome,
-        }));
-        setMessage(null);
-      } catch (error) {
-        console.error("Erro ao buscar informações do espaço:", error);
-        setErrorEspaco("Não foi possível carregar as informações do espaço");
-        setMessage({ type: "error", message: "Não foi possível carregar as informações do espaço" });
-      } finally {
-        setLoadingEspaco(false);
-      }
-    };
-
-    if (idEspaco) {
-      fetchEspacoInfo();
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        usuario: professorId, // ID do professor vindo da URL
+        laboratorio: espaco.nome, // Nome do laboratório
+      }));
+    } catch (err) {
+      setErrorEspaco(err.message || "Erro ao carregar informações do espaço.");
+      console.error(err);
+    } finally {
+      setLoadingEspaco(false);
     }
-  }, [idEspaco]);
+  };
+
+  if (espacoId && professorId) {
+    fetchEspaco();
+  } else {
+    setErrorEspaco("IDs do professor ou do espaço não encontrados na URL.");
+    setLoadingEspaco(false);
+  }
+}, [professorId, espacoId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-
-    if (errors[name]) {
-      setErrors({ ...errors, [name]: null });
-    }
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
   };
 
   const validateForm = () => {
@@ -104,14 +101,14 @@ function ReservarLaboratorio() {
         turno: formData.turno,
         horario: formData.horario,
         observacoes: formData.infoAdicionais,
-        espacoId: parseInt(idEspaco),
-        professorId: 1 // Deve vir do contexto de autenticação
+        espacoId: parseInt(espacoId),
+        professorId: parseInt(professorId), // Deve vir do contexto de autenticação
       };
 
       await reservaService.fazerSolicitacao(solicitacaoData);
       setMessage({ type: "success", message: "Reserva solicitada com sucesso!" });
       setTimeout(() => {
-        navigate("/professor/minhasReservas");
+        navigate("/professor/espacos");
       }, 1500);
     } catch (error) {
       setMessage({ type: "error", message: error.message || "Erro ao solicitar reserva" });

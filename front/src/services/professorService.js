@@ -16,6 +16,7 @@ const professorService = {
     async login(professorData) {
     try {
       const response = await api.post(`api/usuarios/login`, professorData);
+      localStorage.setItem("professorCodigo", response.data.usuario.id);
       return response.data;
     } catch (error) {
       console.error('Erro ao fazer login como professor:');

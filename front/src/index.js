@@ -73,7 +73,7 @@ const router = createBrowserRouter([
     element: <PerfilProfessor />
   },
   {
-    path: "/professor/solicitarReserva/:id",
+    path: "/professor/solicitarReserva/:professorId/:espacoId",
     element: <SolicitarReserva />
   },
   {

@@ -7,6 +7,7 @@ function DetalhesEspacoProf() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [espaco, setEspaco] = useState(null);
+  const professorId = localStorage.getItem("professorCodigo");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -46,8 +47,13 @@ function DetalhesEspacoProf() {
     return map[chave] || chave;
   };
 
+  const handleSolicitarReserva = () => {
+    navigate(`/professor/solicitarReserva/${professorId}/${id}`);
+  };
+
   const renderizarDados = () => {
     if (!espaco) return null;
+
 
     return (
       <div className="space-y-6">
@@ -195,7 +201,7 @@ function DetalhesEspacoProf() {
               Cancelar
             </button>
             <button
-              onClick={navigate(`/professor/solicitarReserva/${id}`)}
+              onClick={handleSolicitarReserva}
               className="w-1/2 px-6 py-2 bg-green-600 border-2 border-green-600 text-white hover:bg-green-700 hover:border-green-700 transition-colors uppercase"
             >
               Solicitar Reserva
