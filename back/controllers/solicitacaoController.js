@@ -14,36 +14,60 @@ export const fazerSolicitacao = async (req, res) => {
         professorId
     } = req.body;
 
-    // Validação dos campos obrigatórios
+    // Validação de campos
     if (!tipo || !data_inicio || !data_fim || !dias_semana || !turno || !horario || !espacoId || !professorId) {
-        return res.status(400).json({
-            message: 'Todos os campos obrigatórios devem ser preenchidos.'
-        });
+        return res.status(400).json({ message: 'Todos os campos obrigatórios devem ser preenchidos.' });
     }
 
+    // Garante que 'dias_semana' seja um array para a lógica de verificação
+    let diasSemanaArray = dias_semana;
+    if (typeof dias_semana === 'string') {
+        diasSemanaArray = dias_semana.split(',').map(dia => dia.trim());
+    } else if (!Array.isArray(dias_semana)) {
+        return res.status(400).json({ message: "O formato de 'dias_semana' é inválido." });
+    }
+    
     const t = await db.sequelize.transaction();
 
     try {
-        // Verifica se o espaço existe
         const espaco = await db.Espaco.findByPk(espacoId);
         if (!espaco) {
             await t.rollback();
             return res.status(404).json({ message: 'Espaço solicitado não encontrado.' });
         }
 
-        // Verifica se o professor existe
         const professor = await db.Usuario.findByPk(professorId);
         if (!professor) {
             await t.rollback();
             return res.status(404).json({ message: 'Professor solicitante não encontrado.' });
         }
+        
+        const condicaoDiasSemana = diasSemanaArray.map(dia => ({
+            dias_semana: { [Op.like]: `%${dia}%` }
+        }));
 
-        // Cria a solicitação
+        const conflitoEncontrado = await db.SolicitacaoReserva.findOne({
+            where: {
+                espacoId: espacoId,
+                status: 'aceita', // << PONTO DE CORREÇÃO 1
+                turno: turno,
+                horario: horario,
+                data_inicio: { [Op.lte]: data_fim },
+                data_fim: { [Op.gte]: data_inicio },
+                [Op.or]: condicaoDiasSemana,
+            }
+        });
+
+        if (conflitoEncontrado) {
+            await t.rollback();
+            return res.status(409).json({ message: 'Conflito de agendamento. O espaço já está reservado.' });
+        }
+        
         const solicitacao = await db.SolicitacaoReserva.create({
             tipo,
             data_inicio,
             data_fim,
-            dias_semana,
+            dias_semana: diasSemanaArray.join(', '), // << PONTO DE CORREÇÃO 2
             turno,
             horario,
             observacoes,
@@ -60,9 +84,7 @@ export const fazerSolicitacao = async (req, res) => {
     } catch (error) {
         await t.rollback();
         console.error('Erro ao fazer solicitação:', error);
-        return res.status(500).json({
-            message: 'Erro interno ao realizar solicitação.'
-        });
+        return res.status(500).json({ message: 'Erro interno ao realizar solicitação.' });
     }
 };
 
