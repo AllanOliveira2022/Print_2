@@ -73,10 +73,6 @@ function ReservarLaboratorio() {
       const selectedDate = new Date(formData.dataReserva);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-
-      if (selectedDate < today) {
-        newErrors.dataReserva = "A data deve ser futura";
-      }
     }
 
     setErrors(newErrors);
