@@ -67,12 +67,6 @@ function MenuProfessor() {
             isActive={currentPath === "/professor/reservas"}
           />
           <MenuSection
-            icon={<FaClipboardCheck />}
-            sectionName="Solicitações"
-            redirectPath="/professor/solicitacoes"
-            isActive={currentPath === "/professor/solicitacoes"}
-          />
-          <MenuSection
             icon={<FaRegBell />}
             sectionName="Notificações"
             redirectPath="/professor/notificacoes"

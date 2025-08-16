@@ -21,7 +21,6 @@ import ProfessoresAdmin from './pages/admin/professoresAdmin/professoresAdmin';
 /*Telas Professor*/
 import EspacosProfessor from './pages/professor/espacosProfessor/espacosProfessor';
 import SolicitarReserva from './pages/professor/solicitarReserva/solicitarReserva';
-import SolicitacoesProfessor from './pages/professor/solicitacoesProfessor/solicitacoesProfessor';
 import PerfilProfessor from './pages/professor/perfilProfessor/perfilProfessor';
 import ReservasProfessor from './pages/professor/reservasProfessor/reservasProfessor';
 import DetalhesReserva from './pages/professor/detalhesReserva/detalhesReserva';
@@ -111,10 +110,6 @@ const router = createBrowserRouter([
   {
     path: "/admin/reservas",
     element: <ReservasAceitas />
-  },
-  {
-    path: "/professor/solicitacoes",
-    element: <SolicitacoesProfessor />
   },
   {
     path: "/visitante",

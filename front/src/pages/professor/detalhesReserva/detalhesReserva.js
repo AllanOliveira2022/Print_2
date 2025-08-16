@@ -19,8 +19,27 @@ function DetalhesReserva() {
     try {
       setLoading(true);
       setError(null);
-      const dados = await reservaService.getDetalhesReserva(id);
-      setReserva(dados);
+      // Tenta buscar pelo endpoint de detalhes
+      try {
+        const dados = await reservaService.getDetalhesReserva(id);
+        setReserva(dados);
+      } catch (err) {
+        // Se der 404, busca todas as reservas do professor logado e filtra pelo id
+        if (err.message && err.message.includes("404")) {
+          const user = JSON.parse(localStorage.getItem("user"));
+          const professorId = user?.id;
+          if (professorId) {
+            const todas = await reservaService.getReservasProfessor(professorId);
+            const encontrada = todas.find(r => String(r.id) === String(id));
+            if (encontrada) {
+              setReserva(encontrada);
+              setLoading(false);
+              return;
+            }
+          }
+        }
+        throw err;
+      }
     } catch (err) {
       console.error("Erro ao carregar detalhes da reserva:", err);
       setError("Erro ao carregar detalhes da reserva. Tente novamente.");
@@ -46,17 +65,17 @@ function DetalhesReserva() {
     switch (status?.toLowerCase()) {
       case "aceita":
       case "aceito":
-        return "bg-green-100 text-green-800 border-green-300";
+        return "bg-green-100 text-green-800 border-green-300 uppercase rounded-none";
       case "pendente":
-        return "bg-yellow-100 text-yellow-800 border-yellow-300";
+        return "bg-yellow-100 text-yellow-800 border-yellow-300 uppercase rounded-none";
       case "recusada":
       case "recusado":
-        return "bg-red-100 text-red-800 border-red-300";
+        return "bg-red-100 text-red-800 border-red-300 uppercase rounded-none";
       case "cancelada":
       case "cancelado":
-        return "bg-gray-100 text-gray-800 border-gray-300";
+        return "bg-gray-100 text-gray-800 border-gray-300 uppercase rounded-none";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-300";
+        return "bg-gray-100 text-gray-800 border-gray-300 uppercase rounded-none";
     }
   };
 
@@ -133,16 +152,6 @@ function DetalhesReserva() {
               >
                 {reserva.status}
               </span>
-              {(reserva.status?.toLowerCase() === "pendente" || 
-                reserva.status?.toLowerCase() === "aceita") && (
-                <button
-                  onClick={handleCancelar}
-                  className="px-3 py-1 bg-red-500 text-white hover:bg-red-600 transition-colors text-sm font-medium flex items-center gap-1"
-                >
-                  <FaTimes size={12} />
-                  Cancelar
-                </button>
-              )}
             </div>
           </div>
 
@@ -157,23 +166,48 @@ function DetalhesReserva() {
               <div className="space-y-3">
                 <div>
                   <label className="text-sm font-medium text-gray-600">Código:</label>
-                  <p className="text-gray-800">{reserva.espaco?.codigoIdentificacao || "-"}</p>
+                  <p className="text-gray-800">
+                    {reserva.espaco?.codigoIdentificacao ||
+                     reserva.Espaco?.codigoIdentificacao ||
+                     reserva.codigoIdentificacao ||
+                     "-"}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-600">Nome:</label>
-                  <p className="text-gray-800">{reserva.espaco?.nome || "-"}</p>
+                  <p className="text-gray-800">
+                    {reserva.espaco?.nome ||
+                     reserva.Espaco?.nome ||
+                     reserva.nomeEspaco ||
+                     "-"}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-600">Bloco:</label>
-                  <p className="text-gray-800">{reserva.espaco?.nomeBloco || "-"}</p>
+                  <p className="text-gray-800">
+                    {reserva.espaco?.bloco?.nome ||
+                     reserva.Espaco?.bloco?.nome ||
+                     reserva.nomeBloco ||
+                     "-"}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-600">Tipo:</label>
-                  <p className="text-gray-800">{reserva.espaco?.nomeTipo || "-"}</p>
+                  <p className="text-gray-800">
+                    {reserva.espaco?.Tipo?.nome ||
+                     reserva.Espaco?.Tipo?.nome ||
+                     reserva.nomeTipo ||
+                     "-"}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-600">Capacidade:</label>
-                  <p className="text-gray-800">{reserva.espaco?.capacidade || "-"} pessoas</p>
+                  <p className="text-gray-800">
+                    {reserva.espaco?.capacidade ||
+                     reserva.Espaco?.capacidade ||
+                     reserva.capacidade ||
+                     "-"} pessoas
+                  </p>
                 </div>
               </div>
             </div>
@@ -187,12 +221,12 @@ function DetalhesReserva() {
               <div className="space-y-3">
                 <div>
                   <label className="text-sm font-medium text-gray-600">Data:</label>
-                  <p className="text-gray-800">{formatarData(reserva.data)}</p>
+                  <p className="text-gray-800">{formatarData(reserva.data || reserva.data_inicio)}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-600">Horário:</label>
                   <p className="text-gray-800">
-                    {formatarHorario(reserva.horarioInicio)} - {formatarHorario(reserva.horarioFim)}
+                    {formatarHorario(reserva.horarioInicio || reserva.horario_inicio || reserva.horario)} - {formatarHorario(reserva.horarioFim || reserva.horario_fim)}
                   </p>
                 </div>
                 <div>
@@ -203,7 +237,7 @@ function DetalhesReserva() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-600">Data de Solicitação:</label>
-                  <p className="text-gray-800">{formatarData(reserva.dataSolicitacao)}</p>
+                  <p className="text-gray-800">{formatarData(reserva.dataSolicitacao || reserva.createdAt)}</p>
                 </div>
               </div>
             </div>
@@ -265,4 +299,4 @@ function DetalhesReserva() {
   );
 }
 
-export default DetalhesReserva; 
+export default DetalhesReserva;

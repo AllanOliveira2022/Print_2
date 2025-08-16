@@ -7,6 +7,8 @@ import reservaService from "../../../services/reservaService";
 function ReservasProfessor() {
   const navigate = useNavigate();
   const [reservas, setReservas] = useState([]);
+  const [pendentes, setPendentes] = useState([]);
+  const [outras, setOutras] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("todos");
   const [loading, setLoading] = useState(true);
@@ -35,7 +37,7 @@ function ReservasProfessor() {
       setLoading(true);
       setError(null);
       const dados = await reservaService.getReservasProfessor(professorId);
-      setReservas(dados);
+      separarReservas(dados);
     } catch (err) {
       console.error("Erro ao carregar reservas:", err);
       setError("Erro ao carregar reservas. Tente novamente.");
@@ -65,7 +67,7 @@ function ReservasProfessor() {
         );
       }
 
-      setReservas(dados);
+      separarReservas(dados);
     } catch (err) {
       console.error("Erro ao filtrar reservas:", err);
       setError("Erro ao filtrar reservas. Tente novamente.");
@@ -74,38 +76,32 @@ function ReservasProfessor() {
     }
   };
 
-  const handleDetalhes = (id) => {
-    navigate(`/professor/reservas/detalhes/${id}`);
+  // Nova função para separar pendentes e outras
+  const separarReservas = (dados) => {
+    setPendentes(dados.filter(r => r.status?.toLowerCase() === "pendente"));
+    setOutras(dados.filter(r => r.status?.toLowerCase() !== "pendente"));
+    setReservas(dados); // mantém compatibilidade se necessário
   };
 
-  const handleCancelar = async (id) => {
-    if (window.confirm("Tem certeza que deseja cancelar esta reserva?")) {
-      try {
-        await reservaService.cancelarReserva(id);
-        alert("Reserva cancelada com sucesso!");
-        carregarReservas();
-      } catch (err) {
-        console.error("Erro ao cancelar reserva:", err);
-        alert("Erro ao cancelar reserva. Tente novamente.");
-      }
-    }
+  const handleDetalhes = (id) => {
+    navigate(`/professor/reservas/detalhes/${id}`);
   };
 
   const getStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
       case "aceita":
       case "aceito":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 uppercase rounded-none";
       case "pendente":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 text-yellow-800 uppercase rounded-none";
       case "recusada":
       case "recusado":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800 uppercase rounded-none";
       case "cancelada":
       case "cancelado":
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 uppercase rounded-none";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 uppercase rounded-none";
     }
   };
 
@@ -120,9 +116,37 @@ function ReservasProfessor() {
     return horario.substring(0, 5); // Remove segundos se houver
   };
 
-  const limparFiltros = () => {
-    setSearchTerm("");
-    setStatusFilter("todos");
+  // Ajuste para pegar o nome correto do campo de status
+  const getStatus = (reserva) => reserva.status || reserva.status_solicitacao || "-";
+
+  // Mostra o nome do espaço corretamente, mesmo se vier aninhado em outros objetos
+  const getEspacoNome = (reserva) => {
+    // Tenta pegar o nome do espaço em diferentes formatos possíveis
+    if (reserva.espaco && reserva.espaco.nome) return reserva.espaco.nome;
+    if (reserva.Espaco && reserva.Espaco.nome) return reserva.Espaco.nome;
+    if (reserva.nomeEspaco) return reserva.nomeEspaco;
+    return "-";
+  };
+  const getEspacoCodigo = (reserva) => {
+    if (reserva.espaco && reserva.espaco.codigoIdentificacao) return reserva.espaco.codigoIdentificacao;
+    if (reserva.Espaco && reserva.Espaco.codigoIdentificacao) return reserva.Espaco.codigoIdentificacao;
+    if (reserva.codigoIdentificacao) return reserva.codigoIdentificacao;
+    return "-";
+  };
+
+  // Ajuste para pegar a data de início (data da reserva)
+  const getData = (reserva) => reserva.data || reserva.data_inicio || "-";
+
+  // Ajuste para pegar o horário corretamente
+  const getHorario = (reserva) => {
+    // Se existir horarioInicio/horarioFim, usa eles, senão usa horario único
+    if (reserva.horarioInicio && reserva.horarioFim) {
+      return `${formatarHorario(reserva.horarioInicio)} - ${formatarHorario(reserva.horarioFim)}`;
+    }
+    if (reserva.horario) {
+      return reserva.horario;
+    }
+    return "-";
   };
 
   return (
@@ -136,126 +160,141 @@ function ReservasProfessor() {
             </h1>
           </div>
 
-          {/* Filtros */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="w-full sm:w-2/5 relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <FaSearch className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Pesquisar por espaço, código ou data"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-2 border border-gray-300 bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-600 focus:text-green-600 focus:border-none"
-              />
-            </div>
-            
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full sm:w-1/4 px-4 py-2 border border-gray-300 bg-gray-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-none"
-            >
-              <option value="todos">Todos os Status</option>
-              <option value="pendente">Pendente</option>
-              <option value="aceita">Aceita</option>
-              <option value="recusada">Recusada</option>
-              <option value="cancelada">Cancelada</option>
-            </select>
-
-            <button
-              onClick={limparFiltros}
-              className="w-full sm:w-auto px-4 py-2 text-gray-600 border border-gray-300 hover:bg-gray-100 transition-colors text-sm font-medium"
-            >
-              Limpar Filtros
-            </button>
-          </div>
-
           {error && (
             <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
               {error}
             </div>
           )}
 
-          {loading ? (
-            <div className="text-center py-8">
-              <p className="text-gray-600 text-lg">Carregando reservas...</p>
-            </div>
-          ) : reservas.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-600 text-lg">
-                {searchTerm || statusFilter !== "todos"
-                  ? "Nenhuma reserva encontrada com os filtros aplicados."
-                  : "Você ainda não possui reservas."}
-              </p>
-            </div>
-          ) : (
+          {/* Seção Solicitações Pendentes */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-green-700 mb-2">Solicitações Pendentes ({pendentes.length})</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full table-auto border border-gray-300 rounded-lg text-center">
                 <thead className="bg-green-600 text-white">
                   <tr>
                     <th className="px-4 py-3 text-center">Código</th>
                     <th className="px-4 py-3 text-center">Espaço</th>
-                    <th className="px-4 py-3 text-center">Data</th>
+                    <th className="px-4 py-3 text-center">Data Início</th>
                     <th className="px-4 py-3 text-center">Horário</th>
                     <th className="px-4 py-3 text-center">Status</th>
                     <th className="px-4 py-3 text-center">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {reservas.map((reserva, index) => (
-                    <tr
-                      key={reserva.id}
-                      className={index % 2 === 0 ? "bg-white" : "bg-gray-200"}
-                    >
-                      <td className="px-4 py-3 text-center">
-                        {reserva.espaco?.codigoIdentificacao || "-"}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        {reserva.espaco?.nome || "-"}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        {formatarData(reserva.data)}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        {formatarHorario(reserva.horarioInicio)} - {formatarHorario(reserva.horarioFim)}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <span
-                          className={`px-2 py-1 rounded text-sm font-medium ${getStatusStyle(
-                            reserva.status
-                          )}`}
-                        >
-                          {reserva.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <div className="flex justify-center gap-2">
-                          <button
-                            onClick={() => handleDetalhes(reserva.id)}
-                            className="px-3 py-1 bg-blue-500 text-white hover:bg-blue-600 transition-colors text-sm font-medium"
-                            title="Ver detalhes"
-                          >
-                            <FaEye />
-                          </button>
-                          {(reserva.status?.toLowerCase() === "pendente" || 
-                            reserva.status?.toLowerCase() === "aceita") && (
-                            <button
-                              onClick={() => handleCancelar(reserva.id)}
-                              className="px-3 py-1 bg-red-500 text-white hover:bg-red-600 transition-colors text-sm font-medium"
-                              title="Cancelar reserva"
-                            >
-                              <FaTimes />
-                            </button>
-                          )}
-                        </div>
-                      </td>
+                  {pendentes.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-4 text-gray-500">Nenhuma solicitação pendente.</td>
                     </tr>
-                  ))}
+                  ) : (
+                    pendentes.map((reserva, index) => (
+                      <tr
+                        key={reserva.id}
+                        className={index % 2 === 0 ? "bg-white" : "bg-gray-200"}
+                      >
+                        <td className="px-4 py-3 text-center">
+                          {getEspacoCodigo(reserva)}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {getEspacoNome(reserva)}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {formatarData(getData(reserva))}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {getHorario(reserva)}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span
+                            className={`px-2 py-1 rounded text-sm font-medium ${getStatusStyle(
+                              getStatus(reserva)
+                            )}`}
+                          >
+                            {getStatus(reserva)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <div className="flex justify-center gap-2">
+                            <button
+                              onClick={() => handleDetalhes(reserva.id)}
+                              className="px-4 py-1.5 bg-gray-500 text-white hover:bg-gray-600 transition-colors text-sm font-medium uppercase"
+                            >
+                              Detalhes
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
-          )}
+          </div>
+
+          {/* Seção Todas Solicitações */}
+          <div>
+            <h2 className="text-xl font-semibold text-green-700 mb-2">Todas Solicitações ({outras.length})</h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full table-auto border border-gray-300 rounded-lg text-center">
+                <thead className="bg-green-600 text-white">
+                  <tr>
+                    <th className="px-4 py-3 text-center">Código</th>
+                    <th className="px-4 py-3 text-center">Espaço</th>
+                    <th className="px-4 py-3 text-center">Data Início</th>
+                    <th className="px-4 py-3 text-center">Horário</th>
+                    <th className="px-4 py-3 text-center">Status</th>
+                    <th className="px-4 py-3 text-center">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {outras.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-4 text-gray-500">Nenhuma solicitação encontrada.</td>
+                    </tr>
+                  ) : (
+                    outras.map((reserva, index) => (
+                      <tr
+                        key={reserva.id}
+                        className={index % 2 === 0 ? "bg-white" : "bg-gray-200"}
+                      >
+                        <td className="px-4 py-3 text-center">
+                          {getEspacoCodigo(reserva)}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {getEspacoNome(reserva)}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {formatarData(getData(reserva))}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {getHorario(reserva)}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span
+                            className={`px-2 py-1 rounded text-sm font-medium ${getStatusStyle(
+                              getStatus(reserva)
+                            )}`}
+                          >
+                            {getStatus(reserva)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <div className="flex justify-center gap-2">
+                            <button
+                              onClick={() => handleDetalhes(reserva.id)}
+                              className="px-4 py-1.5 bg-gray-500 text-white hover:bg-gray-600 transition-colors text-sm font-medium uppercase"
+                            >
+                              Detalhes
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
