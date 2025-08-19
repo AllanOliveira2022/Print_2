@@ -44,6 +44,12 @@ export default (sequelize) => {
             type: DataTypes.TEXT,
             allowNull: true,
         },
+        justificativa:{
+            type:DataTypes.TEXT,
+            allowNull:true,
+            defaultValue: 'Nenhuma justificativa',
+
+        },
 
         status: {
             type: DataTypes.ENUM('pendente', 'aceita', 'recusada', 'redirecionada'),

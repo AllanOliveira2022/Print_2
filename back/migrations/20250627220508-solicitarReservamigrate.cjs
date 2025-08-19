@@ -51,6 +51,11 @@ module.exports = {
         allowNull: false,
         defaultValue: 'pendente',
       },
+      justificativa:{
+        type:Sequelize.TEXT,
+        allowNull:true,
+        defaultValue:'Nenhuma justificativa',
+      },
 
       professorId: {
         type: Sequelize.BIGINT.UNSIGNED,
