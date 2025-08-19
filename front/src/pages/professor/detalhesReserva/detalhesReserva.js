@@ -3,43 +3,74 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaTimes, FaCalendar, FaClock, FaMapMarkerAlt, FaUser, FaInfoCircle } from "react-icons/fa";
 import MenuProfessor from "../../../components/professor/menu/menu";
 import reservaService from "../../../services/reservaService";
+import professorService from "../../../services/professorService";
 
 function DetalhesReserva() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [reserva, setReserva] = useState(null);
+  const [professor, setProfessor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     carregarDetalhesReserva();
+    // eslint-disable-next-line
   }, [id]);
 
   const carregarDetalhesReserva = async () => {
     try {
       setLoading(true);
       setError(null);
-      // Tenta buscar pelo endpoint de detalhes
+      let dados;
       try {
-        const dados = await reservaService.getDetalhesReserva(id);
-        setReserva(dados);
+        dados = await reservaService.getDetalhesReserva(id);
       } catch (err) {
-        // Se der 404, busca todas as reservas do professor logado e filtra pelo id
-        if (err.message && err.message.includes("404")) {
+        // fallback busca local
+        if (
+          (err.message && err.message.includes("404")) ||
+          (err.response && err.response.status === 404) ||
+          (err.message && err.message.toLowerCase().includes("not found"))
+        ) {
           const user = JSON.parse(localStorage.getItem("user"));
           const professorId = user?.id;
           if (professorId) {
             const todas = await reservaService.getReservasProfessor(professorId);
-            const encontrada = todas.find(r => String(r.id) === String(id));
-            if (encontrada) {
-              setReserva(encontrada);
-              setLoading(false);
-              return;
-            }
+            dados = todas.find(r => String(r.id) === String(id));
           }
         }
-        throw err;
+        if (!dados) throw err;
       }
+      setReserva(dados);
+
+      // Busca informações do professor se não vierem completas
+      let profObj = null;
+      if (dados.professor && dados.professor.nome && dados.professor.codigoInstitucional) {
+        profObj = dados.professor;
+      } else if (dados.Usuario && dados.Usuario.id) {
+        // Sequelize pode retornar como Usuario
+        try {
+          const profDetalhes = await professorService.buscarPorId(dados.Usuario.id);
+          profObj = {
+            nome: profDetalhes.nome,
+            codigoInstitucional: profDetalhes.Professor?.codigo_institucional || "-"
+          };
+        } catch {
+          profObj = { nome: "-", codigoInstitucional: "-" };
+        }
+      } else if (dados.professorId) {
+        try {
+          const profDetalhes = await professorService.buscarPorId(dados.professorId);
+          profObj = {
+            nome: profDetalhes.nome,
+            codigoInstitucional: profDetalhes.Professor?.codigo_institucional || "-"
+          };
+        } catch {
+          profObj = { nome: "-", codigoInstitucional: "-" };
+        }
+      }
+      setProfessor(profObj);
+
     } catch (err) {
       console.error("Erro ao carregar detalhes da reserva:", err);
       setError("Erro ao carregar detalhes da reserva. Tente novamente.");
@@ -81,12 +112,27 @@ function DetalhesReserva() {
 
   const formatarData = (data) => {
     if (!data) return "-";
-    const [ano, mes, dia] = data.split("-");
-    return `${dia}/${mes}/${ano}`;
+    // Suporta formatos ISO e yyyy-mm-dd
+    if (data.includes("T")) {
+      // ISO: "2024-05-30T17:41:23.000Z"
+      const d = new Date(data);
+      if (!isNaN(d)) {
+        const dia = String(d.getDate()).padStart(2, "0");
+        const mes = String(d.getMonth() + 1).padStart(2, "0");
+        const ano = d.getFullYear();
+        return `${dia}/${mes}/${ano}`;
+      }
+    }
+    // yyyy-mm-dd
+    const [ano, mes, dia] = data.split("-").map(Number);
+    if (ano && mes && dia) {
+      return `${String(dia).padStart(2, "0")}/${String(mes).padStart(2, "0")}/${ano}`;
+    }
+    return data;
   };
 
   const formatarHorario = (horario) => {
-    if (!horario) return "-";
+    if (!horario) return "";
     return horario.substring(0, 5);
   };
 
@@ -252,11 +298,22 @@ function DetalhesReserva() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="text-sm font-medium text-gray-600">Professor:</label>
-                <p className="text-gray-800">{reserva.professor?.nome || "-"}</p>
+                <p className="text-gray-800">
+                  {professor?.nome ||
+                    reserva.professor?.nome ||
+                    reserva.Usuario?.nome ||
+                    "-"}
+                </p>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-600">Código Institucional:</label>
-                <p className="text-gray-800">{reserva.professor?.codigoInstitucional || "-"}</p>
+                <p className="text-gray-800">
+                  {professor?.codigoInstitucional ||
+                    reserva.professor?.codigoInstitucional ||
+                    reserva.professor?.codigo_institucional ||
+                    reserva.Usuario?.Professor?.codigo_institucional ||
+                    "-"}
+                </p>
               </div>
               <div className="md:col-span-2">
                 <label className="text-sm font-medium text-gray-600">Justificativa:</label>
