@@ -306,7 +306,7 @@ function DetalhesReserva() {
                     {formatarHorario(reserva.horarioInicio || reserva.horario_inicio || reserva.horario)} - {formatarHorario(reserva.horarioFim || reserva.horario_fim)}
                   </p>
                 </div>
-                <div>
+                <div className="hidden">
                   <label className="text-sm font-medium text-gray-600">Duração:</label>
                   <p className="text-gray-800">
                     {reserva.duracao || "Calculada automaticamente"}
