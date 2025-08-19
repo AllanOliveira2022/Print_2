@@ -180,7 +180,7 @@ function ReservarLaboratorio() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
+            <div className="hidden">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Identificação do usuário: *
               </label>
@@ -195,7 +195,7 @@ function ReservarLaboratorio() {
               {errors.usuario && <p className="mt-1 text-sm text-red-600">{errors.usuario}</p>}
             </div>
 
-            <div>
+            <div className="hidden">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Espaço: *
               </label>
