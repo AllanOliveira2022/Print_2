@@ -136,6 +136,13 @@ function DetalhesReserva() {
     return horario.substring(0, 5);
   };
 
+  const formatarDiasSemana = (dias) => {
+    if (!dias) return "-";
+    if (Array.isArray(dias)) return dias.join(", ");
+    if (typeof dias === "string") return dias.split(",").map(d => d.trim()).join(", ");
+    return dias;
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col md:flex-row w-full min-h-screen">
@@ -266,8 +273,32 @@ function DetalhesReserva() {
               </h2>
               <div className="space-y-3">
                 <div>
-                  <label className="text-sm font-medium text-gray-600">Data:</label>
-                  <p className="text-gray-800">{formatarData(reserva.data || reserva.data_inicio)}</p>
+                  <label className="text-sm font-medium text-gray-600">Tipo de Reserva:</label>
+                  <p className="text-gray-800">{reserva.tipo === "recorrente" ? "Recorrente" : "Única"}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Data de Início:</label>
+                  <p className="text-gray-800">{formatarData(reserva.data_inicio || reserva.data || reserva.dataInicio)}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Data de Fim:</label>
+                  <p className="text-gray-800">
+                    {reserva.tipo === "recorrente"
+                      ? formatarData(reserva.data_fim || reserva.dataFim)
+                      : formatarData(reserva.data_inicio || reserva.data || reserva.dataInicio)}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Dias da Semana:</label>
+                  <p className="text-gray-800">
+                    {reserva.tipo === "recorrente"
+                      ? formatarDiasSemana(reserva.dias_semana || reserva.diasSemana)
+                      : formatarDiasSemana(reserva.dias_semana || reserva.diasSemana)}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Turno:</label>
+                  <p className="text-gray-800">{reserva.turno || "-"}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-600">Horário:</label>

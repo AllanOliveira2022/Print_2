@@ -12,6 +12,10 @@ function ReservarLaboratorio() {
   const [formData, setFormData] = useState({
     usuario: "",
     laboratorio: "",
+    tipo: "unica",
+    dataInicio: "",
+    dataFim: "",
+    diasSemana: [],
     dataReserva: "",
     turno: "",
     horario: "",
@@ -25,6 +29,10 @@ function ReservarLaboratorio() {
   const [errorEspaco, setErrorEspaco] = useState(null);
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState(null); // Novo estado para mensagens
+
+  const diasSemanaOpcoes = [
+    "Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"
+  ];
 
   useEffect(() => {
   const fetchEspaco = async () => {
@@ -54,26 +62,35 @@ function ReservarLaboratorio() {
 }, [professorId, espacoId]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
+    const { name, value, type, checked } = e.target;
+    if (name === "diasSemana") {
+      setFormData((prevFormData) => {
+        let diasSemana = prevFormData.diasSemana || [];
+        if (checked) {
+          diasSemana = [...diasSemana, value];
+        } else {
+          diasSemana = diasSemana.filter((dia) => dia !== value);
+        }
+        return { ...prevFormData, diasSemana };
+      });
+    } else {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        [name]: value,
+      }));
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
 
     if (!formData.usuario.trim()) newErrors.usuario = "Identificação é obrigatória";
-    if (!formData.dataReserva) newErrors.dataReserva = "Data é obrigatória";
+    if (!formData.tipo) newErrors.tipo = "Tipo de reserva é obrigatório";
+    if (!formData.dataInicio) newErrors.dataInicio = "Data de início é obrigatória";
+    if (formData.tipo === "recorrente" && !formData.dataFim) newErrors.dataFim = "Data de fim é obrigatória";
+    if (formData.tipo === "recorrente" && (!formData.diasSemana || formData.diasSemana.length === 0)) newErrors.diasSemana = "Selecione pelo menos um dia da semana";
     if (!formData.turno) newErrors.turno = "Turno é obrigatório";
     if (!formData.horario) newErrors.horario = "Horário é obrigatório";
-
-    if (formData.dataReserva) {
-      const selectedDate = new Date(formData.dataReserva);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -90,15 +107,15 @@ function ReservarLaboratorio() {
     try {
       // Preparar dados para o service
       const solicitacaoData = {
-        tipo: "unica", // ou "semestral" baseado no formData
-        data_inicio: formData.dataReserva,
-        data_fim: formData.dataReserva,
-        dias_semana: "Segunda", // Pode ser dinâmico baseado no formData
+        tipo: formData.tipo,
+        data_inicio: formData.tipo === "unica" ? formData.dataInicio : formData.dataInicio,
+        data_fim: formData.tipo === "unica" ? formData.dataInicio : formData.dataFim,
+        dias_semana: formData.tipo === "unica" ? [diasSemanaOpcoes[new Date(formData.dataInicio).getDay()]] : formData.diasSemana,
         turno: formData.turno,
         horario: formData.horario,
         observacoes: formData.infoAdicionais,
         espacoId: parseInt(espacoId),
-        professorId: parseInt(professorId), // Deve vir do contexto de autenticação
+        professorId: parseInt(professorId),
       };
 
       await reservaService.fazerSolicitacao(solicitacaoData);
@@ -208,23 +225,87 @@ function ReservarLaboratorio() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Data da Reserva: *
+                  Tipo de Reserva: *
+                </label>
+                <select
+                  name="tipo"
+                  value={formData.tipo}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 border border-gray-300 bg-gray-200 text-green-600 focus:outline-none focus:ring-2 focus:ring-green-600`}
+                  required
+                >
+                  <option value="unica">Única</option>
+                  <option value="recorrente">Recorrente</option>
+                </select>
+                {errors.tipo && <p className="mt-1 text-sm text-red-600">{errors.tipo}</p>}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Data de Início: *
                 </label>
                 <input
-                  name="dataReserva"
+                  name="dataInicio"
                   type="date"
-                  value={formData.dataReserva}
+                  value={formData.dataInicio}
                   onChange={handleChange}
                   min={new Date().toISOString().split('T')[0]}
-                  className={`w-full px-4 py-3 border ${errors.dataReserva ? "border-red-500" : "border-gray-300"} bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-600`}
+                  className={`w-full px-4 py-3 border ${errors.dataInicio ? "border-red-500" : "border-gray-300"} bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-600`}
                   required
                 />
-                {errors.dataReserva && <p className="mt-1 text-sm text-red-600">{errors.dataReserva}</p>}
+                {errors.dataInicio && <p className="mt-1 text-sm text-red-600">{errors.dataInicio}</p>}
               </div>
+              {/* Data de Fim só aparece se for recorrente */}
+              {formData.tipo === "recorrente" && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Data de Fim: *
+                  </label>
+                  <input
+                    name="dataFim"
+                    type="date"
+                    value={formData.dataFim}
+                    onChange={handleChange}
+                    min={formData.dataInicio}
+                    className={`w-full px-4 py-3 border ${errors.dataFim ? "border-red-500" : "border-gray-300"} bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-600`}
+                    required={formData.tipo === "recorrente"}
+                  />
+                  {errors.dataFim && <p className="mt-1 text-sm text-red-600">{errors.dataFim}</p>}
+                </div>
+              )}
+            </div>
 
+            {/* Dias da Semana só aparece se for recorrente */}
+            {formData.tipo === "recorrente" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Dias da Semana: *
+                </label>
+                <div className="flex flex-wrap gap-3">
+                  {diasSemanaOpcoes.map((dia) => (
+                    <label key={dia} className="flex items-center gap-1 text-green-800 font-medium">
+                      <input
+                        type="checkbox"
+                        name="diasSemana"
+                        value={dia}
+                        checked={formData.diasSemana.includes(dia)}
+                        onChange={handleChange}
+                        className="accent-green-600"
+                      />
+                      {dia}
+                    </label>
+                  ))}
+                </div>
+                {errors.diasSemana && <p className="mt-1 text-sm text-red-600">{errors.diasSemana}</p>}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Turno: *
@@ -262,7 +343,7 @@ function ReservarLaboratorio() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Informações adicionais:
+                Observações:
               </label>
               <textarea
                 name="infoAdicionais"

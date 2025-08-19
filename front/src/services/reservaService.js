@@ -5,6 +5,10 @@ const API_BASE_URL = "/api/solicitacao";
 const ReservaService = {
   async fazerSolicitacao(solicitacaoData) {
     try {
+      // Garante que dias_semana seja array
+      if (solicitacaoData.dias_semana && typeof solicitacaoData.dias_semana === "string") {
+        solicitacaoData.dias_semana = solicitacaoData.dias_semana.split(",").map(d => d.trim());
+      }
       const response = await api.post(`${API_BASE_URL}/fazersolicitacao`, solicitacaoData);
       return response.data;
     } catch (error) {
