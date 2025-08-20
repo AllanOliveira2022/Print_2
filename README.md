@@ -5,10 +5,8 @@ Figma: https://www.figma.com/design/9yCLVIV0oi6JOJIOqM7z3D/PRINTII---SIGEF <br>
 Kanban Flow: https://kanbanflow.com/board/7XzwW3Z
 
 Seeders:
-Professor
-Email: professor@gmail.com
-Senha: professor123
+Professor<br>
+Email: professor@gmail.com<br>Senha: professor123<br>
 
-Administrador
-Email: admin@gmail.com
-Senha: admin1234
+Administrador<br>
+Email: admin@gmail.com<br>Senha: admin1234
