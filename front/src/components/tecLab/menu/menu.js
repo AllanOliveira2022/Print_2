@@ -55,12 +55,6 @@ function Menu({ userName, userCode }) {
                         isActive={currentPath === "/admin/reservas"}
                     />
                     <MenuSection
-                        icon={<FaClipboardCheck />}
-                        sectionName="Solicitações"
-                        redirectPath="/admin/solicitacoes"
-                        isActive={currentPath === "/admin/solicitacoes"}
-                    />
-                    <MenuSection
                         icon={<FaUserGraduate />}
                         sectionName="Professores"
                         redirectPath="/admin/professores"

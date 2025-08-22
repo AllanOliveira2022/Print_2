@@ -13,11 +13,10 @@ import NovaSenha from './pages/password/novaSenha/novaSenha';
 /* Telas Admin */
 import EspacosAdmin from './pages/admin/espaçosAdmin/espaçosAdmin';
 import CadastrarEspaco from './pages/admin/cadastrarEspaco/cadastrarEspaco';
-import SolicitacoesReservaAdmin from "./pages/admin/solicitacoesReservasAdmin/solicitacoesReservasAdmin";
-import DetalhesSolicitacao from './pages/admin/solicitacoesReservasAdmin/detalhesSolicitacao/detalhesSolicitacao';
 import EditarLaboratorio from "./pages/admin/editarEspaco/editarEspaco";
-import ReservasAceitas from './pages/admin/reservasAceitas/reservasAceitas';
+import ReservasAdmin from './pages/admin/reservasAdmin/reservasAdmin';
 import ProfessoresAdmin from './pages/admin/professoresAdmin/professoresAdmin';
+import DetalhesReservaAdmin from "./pages/admin/detalhesReserva/detalhesReserva";
 /*Telas Professor*/
 import EspacosProfessor from './pages/professor/espacosProfessor/espacosProfessor';
 import SolicitarReserva from './pages/professor/solicitarReserva/solicitarReserva';
@@ -84,16 +83,8 @@ const router = createBrowserRouter([
     element: <DetalhesReserva />
   },
   {
-    path: "/admin/solicitacoes",
-    element: <SolicitacoesReservaAdmin />
-  },
-  {
     path: "/admin/professores",
     element: <ProfessoresAdmin />
-  },
-  {
-    path: "/admin/solicitacoes/:id",
-    element: <DetalhesSolicitacao />
   },
   {
     path: "/admin/espacos/editar/:id",
@@ -109,11 +100,15 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin/reservas",
-    element: <ReservasAceitas />
+    element: <ReservasAdmin />
   },
   {
     path: "/visitante",
     element: <PagVisitante />
+  },
+  {
+    path: "/admin/reservas/detalhes/:id",
+    element: <DetalhesReservaAdmin />
   }
 ]);
 

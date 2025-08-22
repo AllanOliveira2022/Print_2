@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaSearch, FaEye, FaTimes } from "react-icons/fa";
-import MenuProfessor from "../../../components/professor/menu/menu";
+import { FaSearch } from "react-icons/fa";
+import Menu from "../../../components/tecLab/menu/menu";
 import reservaService from "../../../services/reservaService";
 
-function ReservasProfessor() {
+function ReservasAdmin() {
   const navigate = useNavigate();
   const [reservas, setReservas] = useState([]);
   const [pendentes, setPendentes] = useState([]);
@@ -14,15 +14,9 @@ function ReservasProfessor() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Recupera o usuário logado do localStorage
-  const user = JSON.parse(localStorage.getItem("user"));
-  const professorId = user?.id;
-
   useEffect(() => {
-    if (professorId) {
-      carregarReservas();
-    }
-  }, [professorId]);
+    carregarReservas();
+  }, []);
 
   useEffect(() => {
     if (searchTerm.trim() === "" && statusFilter === "todos") {
@@ -30,6 +24,7 @@ function ReservasProfessor() {
     } else {
       filtrarReservas();
     }
+    // eslint-disable-next-line
   }, [searchTerm, statusFilter]);
 
   // Carrega todas as reservas e divide em pendentes e outras
@@ -37,16 +32,9 @@ function ReservasProfessor() {
     try {
       setLoading(true);
       setError(null);
-      // Busca todas as reservas (não filtra por professorId)
       const dados = await reservaService.listarSolicitacoes();
-      // Filtra localmente apenas as reservas do professor logado
-      const minhasReservas = dados.filter(r =>
-        String(r.professorId) === String(professorId) ||
-        (r.Usuario && String(r.Usuario.id) === String(professorId))
-      );
-      separarReservas(minhasReservas);
+      separarReservas(dados);
     } catch (err) {
-      console.error("Erro ao carregar reservas:", err);
       setError("Erro ao carregar reservas. Tente novamente.");
     } finally {
       setLoading(false);
@@ -58,48 +46,39 @@ function ReservasProfessor() {
     try {
       setLoading(true);
       setError(null);
-      // Busca todas as reservas (não filtra por professorId)
       const dados = await reservaService.listarSolicitacoes();
-      // Filtra localmente apenas as reservas do professor logado
-      let minhasReservas = dados.filter(r =>
-        String(r.professorId) === String(professorId) ||
-        (r.Usuario && String(r.Usuario.id) === String(professorId))
-      );
-
-      // Filtro por status
+      let filtradas = dados;
       if (statusFilter !== "todos") {
-        minhasReservas = minhasReservas.filter(r =>
-          r.status?.toLowerCase() === statusFilter?.toLowerCase()
+        filtradas = filtradas.filter(
+          (r) => r.status?.toLowerCase() === statusFilter?.toLowerCase()
         );
       }
-
-      // Filtro local por termo de busca
       if (searchTerm.trim() !== "") {
-        minhasReservas = minhasReservas.filter(reserva =>
-          (reserva.espaco?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          reserva.espaco?.codigoIdentificacao?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          reserva.data?.includes(searchTerm))
+        const term = searchTerm.toLowerCase();
+        filtradas = filtradas.filter((reserva) =>
+          reserva.espaco?.nome?.toLowerCase().includes(term) ||
+          reserva.espaco?.codigoIdentificacao?.toLowerCase().includes(term) ||
+          reserva.data?.includes(term) ||
+          reserva.usuario?.nome?.toLowerCase().includes(term)
         );
       }
-
-      separarReservas(minhasReservas);
+      separarReservas(filtradas);
     } catch (err) {
-      console.error("Erro ao filtrar reservas:", err);
       setError("Erro ao filtrar reservas. Tente novamente.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Nova função para separar pendentes e outras
+  // Separa pendentes e outras
   const separarReservas = (dados) => {
-    setPendentes(dados.filter(r => r.status?.toLowerCase() === "pendente"));
-    setOutras(dados.filter(r => r.status?.toLowerCase() !== "pendente"));
-    setReservas(dados); // mantém compatibilidade se necessário
+    setPendentes(dados.filter((r) => r.status?.toLowerCase() === "pendente"));
+    setOutras(dados.filter((r) => r.status?.toLowerCase() !== "pendente"));
+    setReservas(dados);
   };
 
   const handleDetalhes = (id) => {
-    navigate(`/professor/reservas/detalhes/${id}`);
+    navigate(`/admin/reservas/detalhes/${id}`);
   };
 
   const getStatusStyle = (status) => {
@@ -115,6 +94,9 @@ function ReservasProfessor() {
       case "cancelada":
       case "cancelado":
         return "bg-gray-100 text-gray-800 uppercase rounded-none";
+      case "redirecionada":
+      case "redirecionado":
+        return "bg-blue-100 text-blue-800 uppercase rounded-none";
       default:
         return "bg-gray-100 text-gray-800 uppercase rounded-none";
     }
@@ -122,41 +104,41 @@ function ReservasProfessor() {
 
   const formatarData = (data) => {
     if (!data) return "-";
+    if (data.includes("/")) return data;
     const [ano, mes, dia] = data.split("-");
     return `${dia}/${mes}/${ano}`;
   };
 
   const formatarHorario = (horario) => {
     if (!horario) return "-";
-    return horario.substring(0, 5); // Remove segundos se houver
+    return horario.substring(0, 5);
   };
 
-  // Ajuste para pegar o nome correto do campo de status
-  const getStatus = (reserva) => reserva.status || reserva.status_solicitacao || "-";
+  const getStatus = (reserva) =>
+    reserva.status || reserva.status_solicitacao || "-";
 
-  // Mostra o nome do espaço corretamente, mesmo se vier aninhado em outros objetos
   const getEspacoNome = (reserva) => {
-    // Tenta pegar o nome do espaço em diferentes formatos possíveis
     if (reserva.espaco && reserva.espaco.nome) return reserva.espaco.nome;
     if (reserva.Espaco && reserva.Espaco.nome) return reserva.Espaco.nome;
     if (reserva.nomeEspaco) return reserva.nomeEspaco;
     return "-";
   };
   const getEspacoCodigo = (reserva) => {
-    if (reserva.espaco && reserva.espaco.codigoIdentificacao) return reserva.espaco.codigoIdentificacao;
-    if (reserva.Espaco && reserva.Espaco.codigoIdentificacao) return reserva.Espaco.codigoIdentificacao;
+    if (reserva.espaco && reserva.espaco.codigoIdentificacao)
+      return reserva.espaco.codigoIdentificacao;
+    if (reserva.Espaco && reserva.Espaco.codigoIdentificacao)
+      return reserva.Espaco.codigoIdentificacao;
     if (reserva.codigoIdentificacao) return reserva.codigoIdentificacao;
     return "-";
   };
 
-  // Ajuste para pegar a data de início (data da reserva)
   const getData = (reserva) => reserva.data || reserva.data_inicio || "-";
 
-  // Ajuste para pegar o horário corretamente
   const getHorario = (reserva) => {
-    // Se existir horarioInicio/horarioFim, usa eles, senão usa horario único
     if (reserva.horarioInicio && reserva.horarioFim) {
-      return `${formatarHorario(reserva.horarioInicio)} - ${formatarHorario(reserva.horarioFim)}`;
+      return `${formatarHorario(reserva.horarioInicio)} - ${formatarHorario(
+        reserva.horarioFim
+      )}`;
     }
     if (reserva.horario) {
       return reserva.horario;
@@ -166,12 +148,12 @@ function ReservasProfessor() {
 
   return (
     <div className="flex flex-col md:flex-row w-full min-h-screen">
-      <MenuProfessor />
+      <Menu />
       <div className="flex justify-center w-full p-4 md:p-8">
         <div className="w-full max-w-7xl bg-gray-50 rounded-lg shadow-md p-6 mt-4">
           <div className="flex flex-row mb-6 gap-4 justify-between items-center">
             <h1 className="text-2xl font-bold text-green-800 text-left">
-              Minhas Reservas ({reservas.length})
+              Reservas ({reservas.length})
             </h1>
           </div>
 
@@ -181,15 +163,53 @@ function ReservasProfessor() {
             </div>
           )}
 
+          <div className="flex flex-col sm:flex-row gap-6 w-full justify-between items-center mb-8">
+            <div className="w-full sm:w-2/5 relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <FaSearch className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Pesquisar reservas..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-12 pr-4 py-2 border border-gray-300 bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:text-green-600 focus:ring-green-600 focus:border-none"
+              />
+            </div>
+            <div className="w-full sm:w-auto flex flex-col sm:flex-row justify-end items-center gap-6 font-bold mt-6 sm:mt-0 font-medium">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-2 border border-gray-300 bg-gray-200 text-gray-700 focus:outline-none"
+              >
+                <option value="todos">Todos os Status</option>
+                <option value="pendente">Pendente</option>
+                <option value="aceita">Aceita</option>
+                <option value="recusada">Recusada</option>
+                <option value="cancelada">Cancelada</option>
+                <option value="redirecionada">Redirecionada</option>
+              </select>
+              <button
+                onClick={() => setSearchTerm("")}
+                className="w-full sm:w-auto px-6 py-2 text-green-600 border-2 border-green-600 uppercase hover:bg-green-100 transition-colors"
+              >
+                Limpar
+              </button>
+            </div>
+          </div>
+
           {/* Seção Solicitações Pendentes */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-green-700 mb-2">Solicitações Pendentes ({pendentes.length})</h2>
+            <h2 className="text-xl font-semibold text-green-700 mb-2">
+              Solicitações Pendentes ({pendentes.length})
+            </h2>
             <div className="overflow-x-auto">
               <table className="min-w-full table-auto border border-gray-300 rounded-lg text-center">
                 <thead className="bg-green-600 text-white">
                   <tr>
                     <th className="px-4 py-3 text-center">Código</th>
                     <th className="px-4 py-3 text-center">Espaço</th>
+                    <th className="px-4 py-3 text-center">Professor</th>
                     <th className="px-4 py-3 text-center">Data Início</th>
                     <th className="px-4 py-3 text-center">Horário</th>
                     <th className="px-4 py-3 text-center">Status</th>
@@ -197,9 +217,17 @@ function ReservasProfessor() {
                   </tr>
                 </thead>
                 <tbody>
-                  {pendentes.length === 0 ? (
+                  {loading ? (
                     <tr>
-                      <td colSpan={6} className="py-4 text-gray-500">Nenhuma solicitação pendente.</td>
+                      <td colSpan={7} className="py-4 text-gray-500">
+                        Carregando...
+                      </td>
+                    </tr>
+                  ) : pendentes.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="py-4 text-gray-500">
+                        Nenhuma solicitação pendente.
+                      </td>
                     </tr>
                   ) : (
                     pendentes.map((reserva, index) => (
@@ -212,6 +240,9 @@ function ReservasProfessor() {
                         </td>
                         <td className="px-4 py-3 text-center">
                           {getEspacoNome(reserva)}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {reserva.usuario?.nome || "-"}
                         </td>
                         <td className="px-4 py-3 text-center">
                           {formatarData(getData(reserva))}
@@ -248,13 +279,16 @@ function ReservasProfessor() {
 
           {/* Seção Todas Solicitações */}
           <div>
-            <h2 className="text-xl font-semibold text-green-700 mb-2">Todas Solicitações ({outras.length})</h2>
+            <h2 className="text-xl font-semibold text-green-700 mb-2">
+              Todas Solicitações ({outras.length})
+            </h2>
             <div className="overflow-x-auto">
               <table className="min-w-full table-auto border border-gray-300 rounded-lg text-center">
                 <thead className="bg-green-600 text-white">
                   <tr>
                     <th className="px-4 py-3 text-center">Código</th>
                     <th className="px-4 py-3 text-center">Espaço</th>
+                    <th className="px-4 py-3 text-center">Professor</th>
                     <th className="px-4 py-3 text-center">Data Início</th>
                     <th className="px-4 py-3 text-center">Horário</th>
                     <th className="px-4 py-3 text-center">Status</th>
@@ -262,9 +296,17 @@ function ReservasProfessor() {
                   </tr>
                 </thead>
                 <tbody>
-                  {outras.length === 0 ? (
+                  {loading ? (
                     <tr>
-                      <td colSpan={6} className="py-4 text-gray-500">Nenhuma solicitação encontrada.</td>
+                      <td colSpan={7} className="py-4 text-gray-500">
+                        Carregando...
+                      </td>
+                    </tr>
+                  ) : outras.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="py-4 text-gray-500">
+                        Nenhuma solicitação encontrada.
+                      </td>
                     </tr>
                   ) : (
                     outras.map((reserva, index) => (
@@ -277,6 +319,9 @@ function ReservasProfessor() {
                         </td>
                         <td className="px-4 py-3 text-center">
                           {getEspacoNome(reserva)}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {reserva.usuario?.nome || "-"}
                         </td>
                         <td className="px-4 py-3 text-center">
                           {formatarData(getData(reserva))}
@@ -316,4 +361,4 @@ function ReservasProfessor() {
   );
 }
 
-export default ReservasProfessor;
+export default ReservasAdmin;
