@@ -36,6 +36,7 @@ function ReservasProfessor() {
     try {
       setLoading(true);
       setError(null);
+      // Busca todas as reservas e filtra localmente pelo professorId
       const dados = await reservaService.getReservasProfessor(professorId);
       separarReservas(dados);
     } catch (err) {
@@ -53,6 +54,7 @@ function ReservasProfessor() {
       let dados;
 
       if (statusFilter !== "todos") {
+        // Busca todas e filtra localmente por professorId e status
         dados = await reservaService.getReservasProfessorPorStatus(professorId, statusFilter);
       } else {
         dados = await reservaService.getReservasProfessor(professorId);
@@ -61,9 +63,9 @@ function ReservasProfessor() {
       // Filtro local por termo de busca
       if (searchTerm.trim() !== "") {
         dados = dados.filter(reserva =>
-          reserva.espaco?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (reserva.espaco?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           reserva.espaco?.codigoIdentificacao?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          reserva.data?.includes(searchTerm)
+          reserva.data?.includes(searchTerm))
         );
       }
 

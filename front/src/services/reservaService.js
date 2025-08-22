@@ -27,20 +27,15 @@ const ReservaService = {
     }
   },
 
-  async getReservasAceitas() {
-    try {
-      const response = await api.get(`${API_BASE_URL}/listar?status=aceita`);
-      return response.data;
-    } catch (error) {
-      console.error("ReservaService.getReservasAceitas error:", error);
-      throw this._handleError(error);
-    }
-  },
-
   async getReservasProfessor(professorId) {
     try {
-      const response = await api.get(`${API_BASE_URL}/listar?professorId=${professorId}`);
-      return response.data;
+      // O controller não aceita mais filtro por query param, então filtra no front
+      const response = await api.get(`${API_BASE_URL}/listar`);
+      // Filtra localmente pelo professorId
+      return response.data.filter(r => 
+        String(r.professorId) === String(professorId) ||
+        (r.Usuario && String(r.Usuario.id) === String(professorId))
+      );
     } catch (error) {
       console.error("ReservaService.getReservasProfessor error:", error);
       throw this._handleError(error);
@@ -49,10 +44,28 @@ const ReservaService = {
 
   async getReservasProfessorPorStatus(professorId, status) {
     try {
-      const response = await api.get(`${API_BASE_URL}/listar?professorId=${professorId}&status=${status}`);
-      return response.data;
+      // Busca todas e filtra localmente por professorId e status
+      const response = await api.get(`${API_BASE_URL}/listar`);
+      return response.data.filter(r =>
+        (String(r.professorId) === String(professorId) ||
+         (r.Usuario && String(r.Usuario.id) === String(professorId)))
+        && r.status?.toLowerCase() === status?.toLowerCase()
+      );
     } catch (error) {
       console.error("ReservaService.getReservasProfessorPorStatus error:", error);
+      throw this._handleError(error);
+    }
+  },
+
+  async getReservasAceitas() {
+    try {
+      // Busca todas e filtra localmente por status aceito/aceita
+      const response = await api.get(`${API_BASE_URL}/listar`);
+      return response.data.filter(r =>
+        r.status?.toLowerCase() === "aceita" || r.status?.toLowerCase() === "aceito"
+      );
+    } catch (error) {
+      console.error("ReservaService.getReservasAceitas error:", error);
       throw this._handleError(error);
     }
   },
