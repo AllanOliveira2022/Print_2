@@ -131,3 +131,61 @@ export const verSolicitacoes = async (req, res) => {
         res.status(500).json({ message: 'Erro interno ao listar solicitações.' });
     }
 };
+
+//mostra as reservas feitas pelo professor logado
+export const verSolicitacaoProf = async (req, res) => {
+    try {
+        // Se você tiver middleware de autenticação JWT/Session, geralmente vem de req.user.id
+        const professorId = req.user?.id || req.params.id;
+
+        if (!professorId) {
+            return res.status(400).json({ message: 'ID do professor não encontrado.' });
+        }
+
+        const solicitacoes = await db.SolicitacaoReserva.findAll({
+            where: { professorId }, // <<--- filtro por usuário logado
+            include: [
+                {
+                    model: db.Usuario,
+                    attributes: ['id', 'nome', 'email', 'tipo'],
+                },
+                {
+                    model: db.Espaco,
+                    include: [
+                        {
+                            model: db.Bloco,
+                            as: 'bloco',
+                            attributes: ['id', 'nome']
+                        },
+                        {
+                            model: db.Tipo,
+                            as: 'Tipo',
+                            attributes: ['id', 'nome']
+                        }
+                    ],
+                    attributes: [
+                        'id',
+                        'nome',
+                        'codigoIdentificacao',
+                        'andar',
+                        'capacidade',
+                        'capacidadePCD',
+                        'responsavel',
+                        'observacoes',
+                        'situacao'
+                    ]
+                }
+            ]
+        });
+
+        if (solicitacoes.length === 0) {
+            return res.status(404).json({ message: 'Nenhuma solicitação encontrada para este professor.' });
+        }
+
+        res.status(200).json(solicitacoes);
+    } catch (error) {
+        console.error('Erro ao listar solicitações do professor:', error);
+        res.status(500).json({ message: 'Erro interno ao listar solicitações do professor.' });
+    }
+};
+
