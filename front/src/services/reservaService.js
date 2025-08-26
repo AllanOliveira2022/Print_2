@@ -29,13 +29,9 @@ const ReservaService = {
 
   async getReservasProfessor(professorId) {
     try {
-      // O controller não aceita mais filtro por query param, então filtra no front
-      const response = await api.get(`${API_BASE_URL}/listar`);
-      // Filtra localmente pelo professorId
-      return response.data.filter(r => 
-        String(r.professorId) === String(professorId) ||
-        (r.Usuario && String(r.Usuario.id) === String(professorId))
-      );
+      // Agora usa o endpoint dedicado do controller
+      const response = await api.get(`${API_BASE_URL}/listarprof/${professorId}`);
+      return response.data;
     } catch (error) {
       console.error("ReservaService.getReservasProfessor error:", error);
       throw this._handleError(error);
@@ -44,12 +40,10 @@ const ReservaService = {
 
   async getReservasProfessorPorStatus(professorId, status) {
     try {
-      // Busca todas e filtra localmente por professorId e status
-      const response = await api.get(`${API_BASE_URL}/listar`);
+      // Busca todas do professor e filtra localmente por status
+      const response = await api.get(`${API_BASE_URL}/professor/${professorId}`);
       return response.data.filter(r =>
-        (String(r.professorId) === String(professorId) ||
-         (r.Usuario && String(r.Usuario.id) === String(professorId)))
-        && r.status?.toLowerCase() === status?.toLowerCase()
+        r.status?.toLowerCase() === status?.toLowerCase()
       );
     } catch (error) {
       console.error("ReservaService.getReservasProfessorPorStatus error:", error);

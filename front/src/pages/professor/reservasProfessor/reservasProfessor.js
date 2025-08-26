@@ -9,7 +9,6 @@ function ReservasProfessor() {
   const [reservas, setReservas] = useState([]);
   const [pendentes, setPendentes] = useState([]);
   const [outras, setOutras] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("todos");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,25 +24,19 @@ function ReservasProfessor() {
   }, [professorId]);
 
   useEffect(() => {
-    if (searchTerm.trim() === "" && statusFilter === "todos") {
+    if (statusFilter === "todos") {
       carregarReservas();
     } else {
       filtrarReservas();
     }
-  }, [searchTerm, statusFilter]);
+  }, [statusFilter]);
 
-  // Carrega todas as reservas e divide em pendentes e outras
+  // Carrega todas as reservas do professor logado e divide em pendentes e outras
   const carregarReservas = async () => {
     try {
       setLoading(true);
       setError(null);
-      // Busca todas as reservas (não filtra por professorId)
-      const dados = await reservaService.listarSolicitacoes();
-      // Filtra localmente apenas as reservas do professor logado
-      const minhasReservas = dados.filter(r =>
-        String(r.professorId) === String(professorId) ||
-        (r.Usuario && String(r.Usuario.id) === String(professorId))
-      );
+      const minhasReservas = await reservaService.getReservasProfessor(professorId);
       separarReservas(minhasReservas);
     } catch (err) {
       console.error("Erro ao carregar reservas:", err);
@@ -58,27 +51,12 @@ function ReservasProfessor() {
     try {
       setLoading(true);
       setError(null);
-      // Busca todas as reservas (não filtra por professorId)
-      const dados = await reservaService.listarSolicitacoes();
-      // Filtra localmente apenas as reservas do professor logado
-      let minhasReservas = dados.filter(r =>
-        String(r.professorId) === String(professorId) ||
-        (r.Usuario && String(r.Usuario.id) === String(professorId))
-      );
+      let minhasReservas = await reservaService.getReservasProfessor(professorId);
 
       // Filtro por status
       if (statusFilter !== "todos") {
         minhasReservas = minhasReservas.filter(r =>
           r.status?.toLowerCase() === statusFilter?.toLowerCase()
-        );
-      }
-
-      // Filtro local por termo de busca
-      if (searchTerm.trim() !== "") {
-        minhasReservas = minhasReservas.filter(reserva =>
-          (reserva.espaco?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          reserva.espaco?.codigoIdentificacao?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          reserva.data?.includes(searchTerm))
         );
       }
 
@@ -244,6 +222,20 @@ function ReservasProfessor() {
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Select de status entre as seções */}
+          <div className="flex justify-start mb-8">
+            <select
+              value={statusFilter}
+              onChange={e => setStatusFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 bg-gray-200 text-gray-700 focus:outline-none"
+            >
+              <option value="todos">Todos os Status</option>
+              <option value="aceita">Aceita</option>
+              <option value="recusada">Recusada</option>
+              <option value="redirecionada">Redirecionada</option>
+            </select>
           </div>
 
           {/* Seção Todas Solicitações */}

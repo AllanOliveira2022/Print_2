@@ -163,46 +163,12 @@ function ReservasAdmin() {
             </div>
           )}
 
-          <div className="flex flex-col sm:flex-row gap-6 w-full justify-between items-center mb-8">
-            <div className="w-full sm:w-2/5 relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <FaSearch className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Pesquisar reservas..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-2 border border-gray-300 bg-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:text-green-600 focus:ring-green-600 focus:border-none"
-              />
-            </div>
-            <div className="w-full sm:w-auto flex flex-col sm:flex-row justify-end items-center gap-6 font-bold mt-6 sm:mt-0 font-medium">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 bg-gray-200 text-gray-700 focus:outline-none"
-              >
-                <option value="todos">Todos os Status</option>
-                <option value="pendente">Pendente</option>
-                <option value="aceita">Aceita</option>
-                <option value="recusada">Recusada</option>
-                <option value="cancelada">Cancelada</option>
-                <option value="redirecionada">Redirecionada</option>
-              </select>
-              <button
-                onClick={() => setSearchTerm("")}
-                className="w-full sm:w-auto px-6 py-2 text-green-600 border-2 border-green-600 uppercase hover:bg-green-100 transition-colors"
-              >
-                Limpar
-              </button>
-            </div>
-          </div>
-
           {/* Seção Solicitações Pendentes */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-green-700 mb-2">
               Solicitações Pendentes ({pendentes.length})
             </h2>
+            {/* Select de status movido para cá */}
             <div className="overflow-x-auto">
               <table className="min-w-full table-auto border border-gray-300 rounded-lg text-center">
                 <thead className="bg-green-600 text-white">
@@ -276,6 +242,19 @@ function ReservasAdmin() {
               </table>
             </div>
           </div>
+
+          <div className="mb-6 flex justify-start">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-2 border border-gray-300 bg-gray-200 text-gray-700 focus:outline-none"
+              >
+                <option value="todos">Todos os Status</option>
+                <option value="aceita">Aceita</option>
+                <option value="recusada">Recusada</option>
+                <option value="redirecionada">Redirecionada</option>
+              </select>
+            </div>
 
           {/* Seção Todas Solicitações */}
           <div>
