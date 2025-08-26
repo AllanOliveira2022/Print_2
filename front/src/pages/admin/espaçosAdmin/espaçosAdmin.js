@@ -20,10 +20,10 @@ function EspacosAdmin() {
     }, []);
 
     useEffect(() => {
-        if (searchTerm.trim() === "") {
-            carregarEspacos();
+        if (searchTerm.trim()) {
+            findByName(searchTerm);
         } else {
-            buscarPorNome();
+            carregarEspacos();
         }
     }, [searchTerm]);
 
@@ -36,9 +36,9 @@ function EspacosAdmin() {
         }
     };
 
-    const buscarPorNome = async () => {
+    const findByName = async (termo) => {
         try {
-            const dados = await espacoService.buscarPorNome(searchTerm);
+            const dados = await espacoService.buscarPorNome(termo);
             setEspacos(dados);
         } catch (err) {
             console.error("Erro na busca:", err);
@@ -62,7 +62,7 @@ function EspacosAdmin() {
             try {
                 await espacoService.excluir(id);
                 if (searchTerm.trim()) {
-                    await buscarPorNome();
+                    await findByName(searchTerm);
                 } else {
                     await carregarEspacos();
                 }
@@ -153,6 +153,8 @@ function EspacosAdmin() {
                                 onClose={() => setShowFiltrosModal(false)}
                                 onConfirm={handleAplicarFiltros}
                             />
+                        </div>
+                        <div className="w-full sm:w-auto flex flex-col sm:flex-row justify-end items-center gap-6 font-bold mt-6 sm:mt-0 font-medium">
                             <button
                                 onClick={handleCadastro}
                                 className="w-auto px-6 py-2 bg-green-600 border-2 border-green-600 text-white hover:bg-green-700 hover:border-green-700 transition-colors uppercase"
