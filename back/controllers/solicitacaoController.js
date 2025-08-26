@@ -189,3 +189,57 @@ export const verSolicitacaoProf = async (req, res) => {
     }
 };
 
+// aceitar, recusar ou redirecionar uma solicitação - ADMIN
+export const tratarSolicitacao = async (req, res) => {
+    const { id } = req.params; // id da solicitação que vai ser tratada
+    const { status, justificativa, novoEspacoId } = req.body;
+
+    // Validação de status
+    const statusValidos = ['aceita', 'recusada', 'redirecionada'];
+    if (!statusValidos.includes(status)) {
+        return res.status(400).json({ message: 'Status inválido. Use: aceita, recusada ou redirecionada.' });
+    }
+
+    try {
+        const solicitacao = await db.SolicitacaoReserva.findByPk(id);
+
+        if (!solicitacao) {
+            return res.status(404).json({ message: 'Solicitação não encontrada.' });
+        }
+
+        // Caso seja recusada ou redirecionada, justificativa é obrigatória
+        if ((status === 'recusada' || status === 'redirecionada') && !justificativa) {
+            return res.status(400).json({ message: 'É necessário fornecer uma justificativa.' });
+        }
+
+        // Se for redirecionada, precisa de novo espaço
+        if (status === 'redirecionada') {
+            if (!novoEspacoId) {
+                return res.status(400).json({ message: 'É necessário informar o novo espaço para redirecionar.' });
+            }
+
+            const novoEspaco = await db.Espaco.findByPk(novoEspacoId);
+            if (!novoEspaco) {
+                return res.status(404).json({ message: 'Novo espaço informado não encontrado.' });
+            }
+
+            solicitacao.espacoId = novoEspacoId; // Atualiza o espaço da solicitação
+        }
+
+        solicitacao.status = status;
+        solicitacao.justificativa = justificativa || solicitacao.justificativa;
+
+        await solicitacao.save();
+
+        return res.status(200).json({
+            message: `Solicitação ${status} com sucesso.`,
+            solicitacao,
+        });
+
+    } catch (error) {
+        console.error('Erro ao tratar solicitação:', error);
+        return res.status(500).json({ message: 'Erro interno ao tratar solicitação.' });
+    }
+};
+
+
