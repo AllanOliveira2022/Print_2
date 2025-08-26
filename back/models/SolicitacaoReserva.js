@@ -54,7 +54,7 @@ export default (sequelize) => {
         status: {
             type: DataTypes.ENUM('pendente', 'aceita', 'recusada', 'redirecionada'),
             allowNull: false,
-            defaultValue: 'aceita',
+            defaultValue: 'pendente',
         }
     }, {
         tableName: 'SolicitacoesReserva',
