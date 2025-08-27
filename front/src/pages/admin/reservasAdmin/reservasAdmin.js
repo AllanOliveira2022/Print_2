@@ -146,6 +146,17 @@ function ReservasAdmin() {
     return "-";
   };
 
+  // Função para obter o nome do professor responsável pela reserva
+  const getProfessorNome = (reserva) => {
+    // Backend pode retornar como usuario, Usuario, professor, Professor, ou nomeProfessor
+    if (reserva.usuario && reserva.usuario.nome) return reserva.usuario.nome;
+    if (reserva.Usuario && reserva.Usuario.nome) return reserva.Usuario.nome;
+    if (reserva.professor && reserva.professor.nome) return reserva.professor.nome;
+    if (reserva.Professor && reserva.Professor.nome) return reserva.Professor.nome;
+    if (reserva.nomeProfessor) return reserva.nomeProfessor;
+    return "-";
+  };
+
   return (
     <div className="flex flex-col md:flex-row w-full min-h-screen">
       <Menu />
@@ -208,7 +219,7 @@ function ReservasAdmin() {
                           {getEspacoNome(reserva)}
                         </td>
                         <td className="px-4 py-3 text-center">
-                          {reserva.usuario?.nome || "-"}
+                          {getProfessorNome(reserva)}
                         </td>
                         <td className="px-4 py-3 text-center">
                           {formatarData(getData(reserva))}
@@ -300,7 +311,7 @@ function ReservasAdmin() {
                           {getEspacoNome(reserva)}
                         </td>
                         <td className="px-4 py-3 text-center">
-                          {reserva.usuario?.nome || "-"}
+                          {getProfessorNome(reserva)}
                         </td>
                         <td className="px-4 py-3 text-center">
                           {formatarData(getData(reserva))}
