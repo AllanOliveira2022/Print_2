@@ -84,6 +84,16 @@ const ReservaService = {
     }
   },
 
+  async tratarSolicitacao(reservaId, body) {
+    try {
+      const response = await api.put(`${API_BASE_URL}/${reservaId}/tratar`, body);
+      return response.data;
+    } catch (error) {
+      console.error("ReservaService.tratarSolicitacao error:", error);
+      throw this._handleError(error);
+    }
+  },
+
   _handleError(error) {
     if (error.response) {
       // Erros vindos do servidor (com status code)

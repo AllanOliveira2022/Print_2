@@ -4,6 +4,9 @@ import { FaArrowLeft, FaCalendar, FaClock, FaMapMarkerAlt, FaUser, FaInfoCircle 
 import Menu from "../../../components/tecLab/menu/menu";
 import reservaService from "../../../services/reservaService";
 import professorService from "../../../services/professorService";
+import NegarReservaModal from "../../../components/modals/negarReserva/negarReserva";
+import RedirecionarReservaModal from "../../../components/modals/redirecionarReserva/redirecionarReserva";
+import AceitarReservaModal from "../../../components/modals/aceitarReserva/aceitarReserva";
 
 function DetalhesReservaAdmin() {
   const { id } = useParams();
@@ -12,6 +15,10 @@ function DetalhesReservaAdmin() {
   const [professor, setProfessor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showNegarModal, setShowNegarModal] = useState(false);
+  const [showRedirecionarModal, setShowRedirecionarModal] = useState(false);
+  const [showAceitarModal, setShowAceitarModal] = useState(false);
+  const [espacosDisponiveis, setEspacosDisponiveis] = useState([]);
 
   useEffect(() => {
     carregarDetalhesReserva();
@@ -122,6 +129,56 @@ function DetalhesReservaAdmin() {
     if (Array.isArray(dias)) return dias.join(", ");
     if (typeof dias === "string") return dias.split(",").map(d => d.trim()).join(", ");
     return dias;
+  };
+
+  // Exemplo de busca de espaços disponíveis para redirecionamento (ajuste conforme sua lógica real)
+  const buscarEspacosDisponiveis = async () => {
+    // Aqui você pode buscar todos os espaços disponíveis para redirecionar
+    // Exemplo: const espacos = await espacoService.listarTodos();
+    // setEspacosDisponiveis(espacos);
+    setEspacosDisponiveis([]); // Troque por sua lógica real
+  };
+
+  // Handlers para cada ação
+  const handleNegar = async (justificativa) => {
+    setShowNegarModal(false);
+    if (!justificativa) return;
+    try {
+      await reservaService.tratarSolicitacao(reserva.id, {
+        status: "recusada",
+        justificativa,
+      });
+      await carregarDetalhesReserva();
+    } catch (err) {
+      alert(err.message || "Erro ao negar solicitação.");
+    }
+  };
+
+  const handleRedirecionar = async ({ espacoId, justificativa }) => {
+    setShowRedirecionarModal(false);
+    if (!espacoId || !justificativa) return;
+    try {
+      await reservaService.tratarSolicitacao(reserva.id, {
+        status: "redirecionada",
+        justificativa,
+        novoEspacoId: espacoId,
+      });
+      await carregarDetalhesReserva();
+    } catch (err) {
+      alert(err.message || "Erro ao redirecionar solicitação.");
+    }
+  };
+
+  const handleAceitar = async () => {
+    setShowAceitarModal(false);
+    try {
+      await reservaService.tratarSolicitacao(reserva.id, {
+        status: "aceita",
+      });
+      await carregarDetalhesReserva();
+    } catch (err) {
+      alert(err.message || "Erro ao aceitar solicitação.");
+    }
   };
 
   if (loading) {
@@ -363,6 +420,51 @@ function DetalhesReservaAdmin() {
               </div>
             </div>
           )}
+
+          {/* Botões de ação - só aparecem se status for Pendente */}
+          {String(reserva.status).toLowerCase() === "pendente" && (
+            <div className="w-full flex flex-col md:flex-row gap-4 justify-end mt-8">
+              <button
+                className="w-1/3 px-6 py-2 bg-red-600 text-white font-bold uppercase hover:bg-red-700 transition-colors"
+                onClick={() => setShowNegarModal(true)}
+              >
+                Negar solicitação
+              </button>
+              <button
+                className="w-1/3 px-6 py-2 border-2 border-green-600 text-green-600 font-bold uppercase bg-transparent hover:bg-green-50 transition-colors"
+                onClick={async () => {
+                  await buscarEspacosDisponiveis();
+                  setShowRedirecionarModal(true);
+                }}
+              >
+                Redirecionar
+              </button>
+              <button
+                className="w-1/3 px-6 py-2 bg-green-600 text-white font-bold uppercase hover:bg-green-700 transition-colors"
+                onClick={() => setShowAceitarModal(true)}
+              >
+                Aceitar Solicitação
+              </button>
+            </div>
+          )}
+
+          {/* Modals */}
+          <NegarReservaModal
+            isOpen={showNegarModal}
+            onClose={() => setShowNegarModal(false)}
+            onConfirm={handleNegar}
+          />
+          <RedirecionarReservaModal
+            isOpen={showRedirecionarModal}
+            onClose={() => setShowRedirecionarModal(false)}
+            onConfirm={handleRedirecionar}
+            espacosDisponiveis={espacosDisponiveis}
+          />
+          <AceitarReservaModal
+            isOpen={showAceitarModal}
+            onClose={() => setShowAceitarModal(false)}
+            onConfirm={handleAceitar}
+          />
         </div>
       </div>
     </div>
