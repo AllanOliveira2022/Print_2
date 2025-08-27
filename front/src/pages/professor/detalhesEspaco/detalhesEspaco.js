@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import espacoService from '../../../services/espacoService';
 import MenuProfessor from '../../../components/professor/menu/menu';
+import CalendarComponent from '../../../components/Calendar/Calendar';
 
 function DetalhesEspacoProf() {
   const navigate = useNavigate();
@@ -191,6 +192,12 @@ function DetalhesEspacoProf() {
             <div>
               {renderizarDados()}
             </div>
+          </div>
+
+          {/* Adiciona o calendário, passando o id do espaço */}
+          <div className="bg-white p-6 shadow-sm rounded-lg mt-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Agenda do Espaço</h2>
+            <CalendarComponent espacoId={id} />
           </div>
 
           <div className="w-full flex justify-between mt-5 gap-5">

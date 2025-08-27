@@ -1,34 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "moment/locale/pt-br";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import ReservaService from "../../services/reservaService"; // import do service
 
 moment.locale("pt-br");
 const localizer = momentLocalizer(moment);
 
-function CalendarComponent() {
+function CalendarComponent({ espacoId }) {
   const navigate = useNavigate();
-  const { id } = useParams();
   const [date, setDate] = useState(new Date());
   const [view, setView] = useState("month");
+  const [events, setEvents] = useState([]);
 
-  const events = [
-    {
-      id: 1,
-      title: "Aula de Matemática",
-      start: new Date(2025, 5, 15, 8, 0),
-      end: new Date(2025, 5, 15, 10, 0),
-    },
-    {
-      id: 2,
-      title: "Reunião de Departamento",
-      start: new Date(2025, 5, 16, 14, 0),
-      end: new Date(2025, 5, 16, 16, 0),
-      resourceId: 1,
-    },
-  ];
+  useEffect(() => {
+    async function fetchReservas() {
+      try {
+        const reservas = await ReservaService.getReservasAceitas();
+        // Filtra por espacoId e converte para eventos do calendário
+        const eventosEspaco = reservas
+          .filter((r) => String(r.espacoId) === String(espacoId))
+          .map((r) => ({
+            id: r.id,
+            title: r.Usuario?.nome || "Reserva",
+            start: new Date(r.data_inicio),
+            end: new Date(r.data_fim),
+          }));
+        setEvents(eventosEspaco);
+      } catch (err) {
+        setEvents([]);
+      }
+    }
+    if (espacoId) fetchReservas();
+  }, [espacoId]);
 
   const handleNavigate = (newDate) => {
     setDate(newDate);
