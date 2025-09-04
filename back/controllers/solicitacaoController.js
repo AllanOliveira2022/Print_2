@@ -243,3 +243,80 @@ export const tratarSolicitacao = async (req, res) => {
 };
 
 
+//mostra todos os espaços disponiveis na data solicitada
+export const verEspacosDisponiveis = async (req, res) => {
+    const {
+        data_inicio,
+        data_fim,
+        dias_semana,
+        turno,
+        horario,
+    } = req.query; // Usar req.query para dados GET
+
+    // Validação de campos
+    if (!data_inicio || !data_fim || !dias_semana || !turno || !horario) {
+        return res.status(400).json({ message: 'Todos os campos obrigatórios devem ser preenchidos.' });
+    }
+
+    // Garante que 'dias_semana' seja um array
+    let diasSemanaArray = dias_semana.split(',').map(dia => dia.trim());
+
+    try {
+        const condicaoDiasSemana = diasSemanaArray.map(dia => ({
+            dias_semana: { [Op.like]: `%${dia}%` }
+        }));
+
+        // Primeiro, encontre todos os espaços que ESTÃO ocupados
+        const espacosOcupados = await db.SolicitacaoReserva.findAll({
+            attributes: ['espacoId'],
+            where: {
+                status: 'aceita',
+                turno: turno,
+                horario: horario,
+                data_inicio: { [Op.lte]: data_fim },
+                data_fim: { [Op.gte]: data_inicio },
+                [Op.or]: condicaoDiasSemana,
+            },
+            group: ['espacoId'], // Agrupa para ter IDs únicos
+        });
+
+        // Extrai os IDs dos espaços ocupados para uma lista
+        const idsEspacosOcupados = espacosOcupados.map(solicitacao => solicitacao.espacoId);
+
+        // Agora, encontre todos os espaços que NÃO ESTÃO nessa lista de ocupados
+        const espacosDisponiveis = await db.Espaco.findAll({
+            where: {
+                id: {
+                    [Op.notIn]: idsEspacosOcupados,
+                },
+            },
+            include: [
+                {
+                    model: db.Bloco,
+                    as: 'bloco',
+                    attributes: ['id', 'nome']
+                },
+                {
+                    model: db.Tipo,
+                    as: 'Tipo',
+                    attributes: ['id', 'nome']
+                }
+            ],
+        });
+
+        if (espacosDisponiveis.length === 0) {
+            return res.status(404).json({ message: 'Nenhum espaço disponível encontrado com os critérios fornecidos.' });
+        }
+
+        return res.status(200).json({
+            message: 'Espaços disponíveis encontrados com sucesso.',
+            espacos: espacosDisponiveis,
+        });
+
+    } catch (error) {
+        console.error('Erro ao verificar disponibilidade de espaços:', error);
+        return res.status(500).json({ message: 'Erro interno ao verificar disponibilidade.' });
+    }
+};
+
+

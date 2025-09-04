@@ -1,5 +1,5 @@
 import express from 'express';
-import {fazerSolicitacao,verSolicitacoes, verSolicitacaoProf, tratarSolicitacao } from '../controllers/solicitacaoController.js';
+import {fazerSolicitacao,verSolicitacoes, verSolicitacaoProf, tratarSolicitacao, verEspacosDisponiveis } from '../controllers/solicitacaoController.js';
 // Importar middlewares de autenticação/autorização aqui.
 // Ex: import { verificarToken, verificarAdmin } from '../middleware/authMiddleware.js';
 
@@ -9,6 +9,7 @@ const router = express.Router();
 // Exemplo de rota pública:
 router.get('/listar', verSolicitacoes);
 router.get('/listarprof/:id', verSolicitacaoProf);
+router.get('/listarespacos', verEspacosDisponiveis);
 // Exemplo de rota protegida:
 // router.get('/listar', verificarToken, tipoController.listarTodosTiposLab);
 

@@ -93,6 +93,16 @@ const ReservaService = {
       throw this._handleError(error);
     }
   },
+    async verificarDisponibilidade(params) {
+    try {
+      const queryString = new URLSearchParams(params).toString();
+      const response = await api.get(`${API_BASE_URL}/listarespacos?${queryString}`);
+      return response.data;
+    } catch (error) {
+      console.error("ReservaService.verificarDisponibilidade error:", error);
+      throw this._handleError(error);
+    }
+  },
 
   _handleError(error) {
     if (error.response) {
